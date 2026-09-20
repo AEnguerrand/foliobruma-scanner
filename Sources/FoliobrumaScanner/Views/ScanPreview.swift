@@ -21,7 +21,7 @@ struct ScanPreview: View {
   @ViewBuilder
   private func cropOverlay(in size: CGSize) -> some View {
     if model.connected, model.autoCrop, let q = model.quad {
-      let ratio = dimensionsRatio(model.resolution)
+      let ratio = CGFloat(dimensionsRatio(model.resolution))
       let w = min(size.width, size.height * ratio)
       let h = w / ratio
       let ox = (size.width - w) / 2
@@ -32,7 +32,7 @@ struct ScanPreview: View {
         for v in a.dropFirst() { p.addLine(to: v) }
         p.closeSubpath()
         if model.book && model.split && model.replacementID == nil {
-          let t = model.divider
+          let t = CGFloat(model.divider)
           p.move(
             to: CGPoint(
               x: ox + (q.tl.x + (q.tr.x - q.tl.x) * t) * w,
@@ -45,7 +45,7 @@ struct ScanPreview: View {
       }.stroke(gold, lineWidth: 2).allowsHitTesting(false)
       if model.book && model.split && model.replacementID == nil {
         let middleX =
-          (q.tl.x + q.bl.x) / 2 + ((q.tr.x + q.br.x - q.tl.x - q.bl.x) / 2) * model.divider
+          (q.tl.x + q.bl.x) / 2 + ((q.tr.x + q.br.x - q.tl.x - q.bl.x) / 2) * CGFloat(model.divider)
         let middleY = (q.tl.y + q.bl.y + q.tr.y + q.br.y) / 4
         Image(systemName: "arrow.left.and.right.circle.fill").font(.title).foregroundStyle(
           gold
@@ -57,7 +57,7 @@ struct ScanPreview: View {
             let left = (q.tl.x + q.bl.x) / 2
             let span = (q.tr.x + q.br.x) / 2 - left
             if span > 0 {
-              model.divider = min(0.7, max(0.3, ((value.location.x - ox) / w - left) / span))
+              model.divider = Double(min(0.7, max(0.3, ((value.location.x - ox) / w - left) / span)))
             }
           }
         )
