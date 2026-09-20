@@ -13,7 +13,12 @@ Foliobruma Scanner is a local macOS document camera app for books, letters, and 
 
 ## Source map
 
-- `Sources/Scanner.swift`: SwiftUI interface, camera capture, image checks, session model, and PDF export.
+- `Sources/FoliobrumaScanner/App/`: app entry point and window setup.
+- `Sources/FoliobrumaScanner/Models/`: saved document and page data.
+- `Sources/FoliobrumaScanner/Scanner/`: observable state and extensions for camera capture, processing, sessions, feedback, and PDF export.
+- `Sources/FoliobrumaScanner/Capture/`: capture and warning gates.
+- `Sources/FoliobrumaScanner/Imaging/`: paper detection, quality checks, and crop coordinates.
+- `Sources/FoliobrumaScanner/Views/`: SwiftUI interface and camera preview.
 - `Resources/Info.plist`: app metadata and camera permission text.
 - `Tests/SessionTests.swift`: regression tests using temporary sessions.
 - `build.sh`: compile and locally sign the app.

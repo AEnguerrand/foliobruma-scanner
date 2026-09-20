@@ -1,0 +1,12 @@
+import SwiftUI
+
+#if !SCANNER_TESTS
+  @main struct FoliobrumaApp: App {
+    var body: some Scene {
+      WindowGroup("Foliobruma Scanner") { ContentView() }.windowStyle(.hiddenTitleBar).defaultSize(
+        width: 1440, height: 1000
+      ).commands { CommandGroup(replacing: .newItem) {} }
+    }
+  }
+
+#endif

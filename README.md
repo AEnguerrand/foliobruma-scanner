@@ -115,6 +115,10 @@ Run the regression tests without connecting a scanner:
 
 Tests use temporary sessions and do not request camera access. They cover session persistence, failed-write recovery, page operations, crop coordinates, capture gates, warning gates, and quality rejection with manual override.
 
+Source files are grouped by purpose under `Sources/FoliobrumaScanner/`: app setup,
+models, scanner operations, capture gates, image checks, and views. The build and
+test scripts include all Swift files in these folders.
+
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the source layout, checks, and bug report guidance.
 
 ## License
