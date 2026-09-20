@@ -3,6 +3,7 @@ import SwiftUI
 struct DocumentToolbar: View {
   @ObservedObject var model: Scanner
   @Binding var rename: Bool
+  @ObservedObject private var account = CloudAccount.shared
   var body: some View {
     HStack(spacing: 16) {
       BrandIcon().frame(width: 34, height: 34)
@@ -18,9 +19,10 @@ struct DocumentToolbar: View {
           Button(L10n.text("New item…"), action: model.prepareNewItem).keyboardShortcut("n")
           Button(L10n.text("Edit details…"), action: model.showItemMetadata)
           Button(L10n.text("Create label…"), action: model.showItemLabel)
+          Button(L10n.text("Clear upload record…"), action: model.clearCloudUpload)
           Button(L10n.text("Open session folder…"), action: model.openSession)
         }.font(.headline).disabled(model.busy)
-        Text(L10n.format("Pages: %ld · Local only", model.document.pages.count)).font(.caption).foregroundStyle(
+        Text(L10n.format(account.automatic ? "Pages: %ld · Upload on finish" : "Pages: %ld · Local only", model.document.pages.count)).font(.caption).foregroundStyle(
           .secondary)
       }.frame(maxWidth: 240, alignment: .leading)
       Spacer()
@@ -43,6 +45,8 @@ struct DocumentToolbar: View {
         Text(L10n.text("Scan")).tag("scan")
         Text(L10n.text("Review")).tag("review")
       }.pickerStyle(.segmented).labelsHidden().frame(minWidth: 240).disabled(model.busy)
+      Button(L10n.text("Finish item")) { model.finishItem() }
+        .disabled(model.busy || model.document.pages.isEmpty)
       Button(action: model.prepareExport) {
         Label(L10n.text("Export PDF"), systemImage: "square.and.arrow.up")
       }
@@ -53,5 +57,6 @@ struct DocumentToolbar: View {
       .help(L10n.text("Settings"))
       .accessibilityLabel(L10n.text("Settings"))
     }.padding(16).background(Color(white: 0.14))
+      .task { await account.restore() }
   }
 }

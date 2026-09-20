@@ -374,6 +374,7 @@ import Vision
   print("PASS: metadata-only records; batch inheritance; multi-page letters; reference recovery; failed writes; HTTPS validation; QR decoding; 62 x 25 mm PDF")
  }
  static func main() throws {
+  try CloudUploadTests.run()
   try testCatalogAndLabels()
   try testPageMerge()
   testDuplicateDetail()

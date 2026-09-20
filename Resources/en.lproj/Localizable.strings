@@ -298,3 +298,43 @@
 "Click Learn button, then press the physical button." = "Click Learn button, then press the physical button.";
 
 "Signals received: %ld" = "Signals received: %ld";
+
+// Account and document upload.
+"Foliobruma account" = "Foliobruma account";
+"Signed in as" = "Signed in as";
+"Upload archive" = "Upload archive";
+"Select an archive" = "Select an archive";
+"Create or join an archive on foliobruma.com, then sign in again." = "Create or join an archive on foliobruma.com, then sign in again.";
+"Sign out" = "Sign out";
+"Email" = "Email";
+"Password" = "Password";
+"Sign in" = "Sign in";
+"Upload when I finish an item" = "Upload when I finish an item";
+"Print a label after upload" = "Print a label after upload";
+"Finish item uploads all saved pages as one PDF. Next letter also finishes the current letter. Both options are off by default." = "Finish item uploads all saved pages as one PDF. Next letter also finishes the current letter. Both options are off by default.";
+"Scans stay on this Mac. Upload requires an account and an archive. Labels open a private PDF link; sign in on the reading device first." = "Scans stay on this Mac. Upload requires an account and an archive. Labels open a private PDF link; sign in on the reading device first.";
+"Open Foliobruma" = "Open Foliobruma";
+"Finish item" = "Finish item";
+"Pages: %ld · Upload on finish" = "Pages: %ld · Upload on finish";
+"Clear upload record…" = "Clear upload record…";
+"Clear upload record?" = "Clear upload record?";
+"Clear upload record" = "Clear upload record";
+"First check the archive on the website. Remove any incomplete upload there. This clears only the local retry record. The next upload can create another copy. Local scans and PDFs are kept." = "First check the archive on the website. Remove any incomplete upload there. This clears only the local retry record. The next upload can create another copy. Local scans and PDFs are kept.";
+"An uploaded item uses its private PDF link. You can also paste an existing HTTPS link." = "An uploaded item uses its private PDF link. You can also paste an existing HTTPS link.";
+"The server response is invalid." = "The server response is invalid.";
+"Your session has expired. Sign in again in Settings." = "Your session has expired. Sign in again in Settings.";
+"The server could not complete the request. Check your account, connection, and archive storage." = "The server could not complete the request. Check your account, connection, and archive storage.";
+"Could not read the session from Keychain." = "Could not read the session from Keychain.";
+"Could not save the session in Keychain." = "Could not save the session in Keychain.";
+"Could not remove the session from Keychain." = "Could not remove the session from Keychain.";
+"Signed out on this Mac. The server session could not be closed." = "Signed out on this Mac. The server session could not be closed.";
+"The PDF could not be created or exceeds 500 MiB. Export it locally instead." = "The PDF could not be created or exceeds 500 MiB. Export it locally instead.";
+"The upload PDF is missing or too large." = "The upload PDF is missing or too large.";
+"The upload start was not confirmed. Check the archive on the website before clearing the upload record." = "The upload start was not confirmed. Check the archive on the website before clearing the upload record.";
+"The server did not confirm the upload." = "The server did not confirm the upload.";
+"Sign in and select an upload archive in Settings. Your scan is saved on this Mac." = "Sign in and select an upload archive in Settings. Your scan is saved on this Mac.";
+"An account operation is in progress. Try again when it finishes." = "An account operation is in progress. Try again when it finishes.";
+"This item has an upload in another account or archive. Select its original destination to continue." = "This item has an upload in another account or archive. Select its original destination to continue.";
+"The pages changed during an incomplete upload. Clear its upload record before uploading the changed item." = "The pages changed during an incomplete upload. Clear its upload record before uploading the changed item.";
+"Uploading PDF…" = "Uploading PDF…";
+"Uploaded to Foliobruma" = "Uploaded to Foliobruma";

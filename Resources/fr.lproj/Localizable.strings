@@ -298,3 +298,43 @@
 "Click Learn button, then press the physical button." = "Cliquez sur Détecter le bouton, puis appuyez sur le bouton physique.";
 
 "Signals received: %ld" = "Signaux reçus : %ld";
+
+// Account and document upload.
+"Foliobruma account" = "Compte Foliobruma";
+"Signed in as" = "Connecté en tant que";
+"Upload archive" = "Archive de destination";
+"Select an archive" = "Sélectionnez une archive";
+"Create or join an archive on foliobruma.com, then sign in again." = "Créez ou rejoignez une archive sur foliobruma.com, puis reconnectez-vous.";
+"Sign out" = "Se déconnecter";
+"Email" = "E-mail";
+"Password" = "Mot de passe";
+"Sign in" = "Se connecter";
+"Upload when I finish an item" = "Envoyer quand je termine un document";
+"Print a label after upload" = "Imprimer une étiquette après l’envoi";
+"Finish item uploads all saved pages as one PDF. Next letter also finishes the current letter. Both options are off by default." = "Terminer le document envoie toutes les pages enregistrées dans un PDF. Lettre suivante termine aussi la lettre actuelle. Les deux options sont désactivées par défaut.";
+"Scans stay on this Mac. Upload requires an account and an archive. Labels open a private PDF link; sign in on the reading device first." = "Les scans restent sur ce Mac. L’envoi nécessite un compte et une archive. Les étiquettes ouvrent un lien PDF privé ; connectez-vous d’abord sur l’appareil de lecture.";
+"Open Foliobruma" = "Ouvrir Foliobruma";
+"Finish item" = "Terminer le document";
+"Pages: %ld · Upload on finish" = "Pages : %ld · Envoi à la fin";
+"Clear upload record…" = "Effacer le suivi d’envoi…";
+"Clear upload record?" = "Effacer le suivi d’envoi ?";
+"Clear upload record" = "Effacer le suivi d’envoi";
+"First check the archive on the website. Remove any incomplete upload there. This clears only the local retry record. The next upload can create another copy. Local scans and PDFs are kept." = "Vérifiez d’abord l’archive sur le site et supprimez tout envoi incomplet. Seul le suivi local est effacé. Le prochain envoi peut créer une autre copie. Les scans et PDF locaux sont conservés.";
+"An uploaded item uses its private PDF link. You can also paste an existing HTTPS link." = "Un document envoyé utilise son lien PDF privé. Vous pouvez aussi coller un lien HTTPS existant.";
+"The server response is invalid." = "La réponse du serveur est incorrecte.";
+"Your session has expired. Sign in again in Settings." = "Votre session a expiré. Reconnectez-vous dans les réglages.";
+"The server could not complete the request. Check your account, connection, and archive storage." = "Le serveur n’a pas pu terminer la demande. Vérifiez votre compte, votre connexion et l’espace de stockage de l’archive.";
+"Could not read the session from Keychain." = "Impossible de lire la session dans le trousseau.";
+"Could not save the session in Keychain." = "Impossible d’enregistrer la session dans le trousseau.";
+"Could not remove the session from Keychain." = "Impossible de supprimer la session du trousseau.";
+"Signed out on this Mac. The server session could not be closed." = "Déconnecté sur ce Mac. La session du serveur n’a pas pu être fermée.";
+"The PDF could not be created or exceeds 500 MiB. Export it locally instead." = "Le PDF n’a pas pu être créé ou dépasse 500 Mio. Exportez-le sur ce Mac.";
+"The upload PDF is missing or too large." = "Le PDF à envoyer est absent ou trop volumineux.";
+"The upload start was not confirmed. Check the archive on the website before clearing the upload record." = "Le début de l’envoi n’a pas été confirmé. Vérifiez l’archive sur le site avant d’effacer le suivi d’envoi.";
+"The server did not confirm the upload." = "Le serveur n’a pas confirmé l’envoi.";
+"Sign in and select an upload archive in Settings. Your scan is saved on this Mac." = "Connectez-vous et sélectionnez une archive dans les réglages. Votre scan est enregistré sur ce Mac.";
+"An account operation is in progress. Try again when it finishes." = "Une opération sur le compte est en cours. Réessayez une fois celle-ci terminée.";
+"This item has an upload in another account or archive. Select its original destination to continue." = "Ce document a un envoi dans un autre compte ou une autre archive. Sélectionnez sa destination d’origine pour continuer.";
+"The pages changed during an incomplete upload. Clear its upload record before uploading the changed item." = "Les pages ont changé pendant un envoi incomplet. Effacez son suivi d’envoi avant d’envoyer le document modifié.";
+"Uploading PDF…" = "Envoi du PDF…";
+"Uploaded to Foliobruma" = "Envoyé vers Foliobruma";

@@ -4,7 +4,7 @@
 
 **Turn books, letters, and paper documents into PDFs on your Mac.**
 
-Foliobruma is a free, open-source document camera app. Place a page under the camera, let it capture, then turn the page after the saved signal. Your scans stay on your Mac. No account or internet connection is required.
+Foliobruma is a free, open-source document camera app. Place a page under the camera, let it capture, then turn the page after the saved signal. Your scans stay on your Mac. Local scanning needs no account or internet connection. Optional upload connects to your Foliobruma account.
 
 > Early version for Apple Silicon Macs. Tested with the **IRIScan Desk 6 Pro**. Use a release download when available, or build from source below. Releases have no Apple Developer ID signature or notarization. Automatic updates are not available.
 
@@ -20,7 +20,7 @@ Foliobruma is a free, open-source document camera app. Place a page under the ca
 - **Metadata records and letter batches:** save details without a scan. Use automatic references and shared batch details.
 - **QR labels:** preview, export, and print a compact label with an existing HTTPS link. QR codes are generated on your Mac.
 
-There is no OCR, cloud upload, SaaS publishing, or telemetry in this version. Exported PDFs contain page images, without a searchable text layer.
+There is no OCR or telemetry in this version. Cloud upload is optional and off by default. Exported PDFs contain page images, without a searchable text layer.
 
 ## Download and install
 
@@ -112,19 +112,67 @@ items use `DOC-` references and share the same counter. Gaps are possible after
 a failed write. References do not change when you rename an item. Documents
 can be searched by title, reference, or batch name.
 
+### Sign in, upload, and print
+
+Open **Settings → Foliobruma account** and sign in with your existing email and
+password. Select the destination archive. Create or join an archive on the
+website first if the list is empty. The app saves the session in macOS Keychain;
+it does not save your password. Sign out removes the local session and disables
+automatic upload. If server sign-out fails, the app reports that limit.
+
+Enable **Upload when I finish an item** to send scans to the selected archive.
+Enable **Print a label after upload** to open the macOS print dialog after a
+successful upload. Both options are off by default. Choose the printer and
+confirm printing in the dialog. With the label option off, no print dialog opens.
+
+1. Scan and review all pages of the letter or book. Rejected photos stay excluded
+   unless you choose to keep them.
+2. Click **Finish item**. The app saves the session, creates one PDF with the saved
+   page order and rotations, and uploads it. A page turn does not finish an item.
+3. In a letter batch, **Next letter** finishes and uploads the current letter before
+   it starts the next one. The USB **Next document** action also finishes first.
+   An upload failure keeps the current document open. **New item…** is a local
+   creation action; use **Finish item** before it when you want to upload.
+4. The label uses the private PDF link. Sign in on the device that reads the QR
+   first. A label does not make the document public. Use **Create label…** to
+   print again or to print after cancelling the first print dialog.
+
+Upload progress appears in the footer. Uploads accept PDFs up to 500 MiB and use
+8 MiB parts. Server storage and membership limits still apply. Metadata stays in
+the local session; this API stores the PDF and its filename. No originals or
+rejected photos are uploaded. The app must remain open to finish an upload.
+
+After a connection failure, click **Finish item** again. The app reuses the saved
+PDF and upload ID. It checks for a completed upload before sending parts again.
+A completed, unchanged item does not upload or prompt for printing twice. Editing
+an uploaded item and finishing it creates a new PDF version in the archive;
+it does not replace or delete the earlier version.
+
+The retry record is `cloud-upload.json` in the session folder. Upload PDFs use
+`upload-<id>.pdf` and are retained locally. If an upload start was not confirmed,
+or the pages changed during a pending upload, the app stops. Check the archive
+on the website and remove any incomplete entry before using the document menu's
+**Clear upload record…** action. Clearing the record can cause another copy on
+retry. It does not delete local scans or remote files.
+
+Without automatic upload, **Finish item** saves locally and needs no connection.
+PDF export remains available without signing in. Account and upload tests use a
+mock server. Real account sign-in, Keychain access, network uploads, and physical
+label printing require an end-to-end check on the target Mac.
+
 ### Compact QR labels
 
 Open **Create label…** from the document title menu or the Details view.
 
 - **Item link:** paste an existing permanent HTTPS link from `foliobruma.com`.
-  **Save item link** stores it in the current record. The app does not create
-  the web record, upload scans, check access permissions, or verify that the
-  destination is live. No URL is invented from a local reference.
+  **Save item link** stores it in the current record. After upload, the app uses
+  the private PDF endpoint returned by the upload API. Manually entered links
+  are not checked for access or availability.
 - **Custom link:** enter any HTTPS destination independently of the current
   record. Custom label text and links are not saved with the record.
 
 Edit the label title and optional second line. The default uses the item title
-(or batch name) and its reference. These edits change only the label. Links
+(or batch name) and its reference. These edits change only the label. Custom links
 are limited to 100 UTF-8 bytes to keep the QR compact; long printed text is
 shortened, while the QR contains the full link. A short permanent link is best.
 
@@ -135,6 +183,8 @@ a working macOS printer queue and driver. Exporting the label PDF does not.
 The QR has a white border. Test a printed label with a phone before a batch;
 physical print quality and QL-600 feed/cutter behaviour are not yet verified.
 Label generation works offline. Opening the SaaS link requires a connection.
+Private uploaded PDF links can use up to 180 bytes; these produce denser QR codes.
+Sign in to Foliobruma on the reading device before opening a private PDF link.
 
 ### Review and correct pages
 

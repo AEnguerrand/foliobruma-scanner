@@ -15,10 +15,11 @@ struct SettingsView: View {
         .font(.callout).foregroundStyle(.secondary)
       Text(L10n.text("Your saved documents keep their names."))
         .font(.caption).foregroundStyle(.secondary)
+      CloudSettings()
       USBButtonSettings()
     }
     .formStyle(.grouped)
     .padding(12)
-    .frame(width: 600, height: 640)
+    .frame(width: 600, height: 760)
   }
 }

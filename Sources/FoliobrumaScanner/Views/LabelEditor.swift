@@ -28,7 +28,7 @@ struct LabelEditor: View {
       }.pickerStyle(.segmented)
       Text(L10n.text(custom
         ? "Custom labels are not saved with this item."
-        : "Paste the existing permanent link from foliobruma.com. This app does not upload or publish items."))
+        : "An uploaded item uses its private PDF link. You can also paste an existing HTTPS link."))
         .font(.callout).foregroundStyle(.secondary)
       TextField("https://foliobruma.com/d/…", text: custom ? $customLink : $itemLink)
         .accessibilityLabel(L10n.text("HTTPS link"))

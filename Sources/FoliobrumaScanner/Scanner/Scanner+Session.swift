@@ -55,6 +55,12 @@ extension Scanner {
   }
   func newDocument() {
     guard !busy else { return }
+    if tracksActiveSession, UserDefaults.standard.bool(forKey: "cloudAutomatic"), !document.pages.isEmpty {
+      finishItem(nextDocument: true)
+    } else { newDocumentLocally() }
+  }
+  func newDocumentLocally() {
+    guard !busy else { return }
     autoCapture = false
     do {
       try createDocument(ScanDocument())
