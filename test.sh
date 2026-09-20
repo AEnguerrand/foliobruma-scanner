@@ -11,5 +11,5 @@ xcrun swiftc \
   -parse-as-library -swift-version 5 \
   -D SCANNER_TESTS -framework SwiftUI -framework AppKit -framework AVFoundation \
   -framework Vision -framework PDFKit -framework CoreImage \
-  "${SOURCES[@]}" Tests/SessionTests.swift -o build/tests/session-tests
+  "${SOURCES[@]}" Tests/*.swift -o build/tests/session-tests
 build/tests/session-tests

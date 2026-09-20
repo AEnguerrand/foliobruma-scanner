@@ -299,6 +299,92 @@
 
 "Signals received: %ld" = "Signals received: %ld";
 
+// Account and document upload.
+"Foliobruma account" = "Foliobruma account";
+"Signed in as" = "Signed in as";
+"Upload archive" = "Upload archive";
+"Select an archive" = "Select an archive";
+"Create or join an archive on foliobruma.com, then sign in again." = "Create or join an archive on foliobruma.com, then sign in again.";
+"Sign out" = "Sign out";
+"Email" = "Email";
+"Password" = "Password";
+"Sign in" = "Sign in";
+"Upload when I finish an item" = "Upload when I finish an item";
+"Print a label after upload" = "Print a label after upload";
+"Finish item uploads all saved pages as one PDF. Next letter also finishes the current letter. Both options are off by default." = "Finish item uploads all saved pages as one PDF. Next letter also finishes the current letter. Both options are off by default.";
+"Scans stay on this Mac. Upload requires an account and an archive. Labels open a private PDF link; sign in on the reading device first." = "Scans stay on this Mac. Upload requires an account and an archive. Labels open a private PDF link; sign in on the reading device first.";
+"Open Foliobruma" = "Open Foliobruma";
+"Finish item" = "Finish item";
+"Pages: %ld · Upload on finish" = "Pages: %ld · Upload on finish";
+"Clear upload record…" = "Clear upload record…";
+"Clear upload record?" = "Clear upload record?";
+"Clear upload record" = "Clear upload record";
+"First check the archive on the website. Remove any incomplete upload there. This clears only the local retry record. The next upload can create another copy. Local scans and PDFs are kept." = "First check the archive on the website. Remove any incomplete upload there. This clears only the local retry record. The next upload can create another copy. Local scans and PDFs are kept.";
+"An uploaded item uses its private PDF link. You can also paste an existing HTTPS link." = "An uploaded item uses its private PDF link. You can also paste an existing HTTPS link.";
+"The server response is invalid." = "The server response is invalid.";
+"Your session has expired. Sign in again in Settings." = "Your session has expired. Sign in again in Settings.";
+"The server could not complete the request. Check your account, connection, and archive storage." = "The server could not complete the request. Check your account, connection, and archive storage.";
+"Could not read the session from Keychain." = "Could not read the session from Keychain.";
+"Could not save the session in Keychain." = "Could not save the session in Keychain.";
+"Could not remove the session from Keychain." = "Could not remove the session from Keychain.";
+"Signed out on this Mac. The server session could not be closed." = "Signed out on this Mac. The server session could not be closed.";
+"The PDF could not be created or exceeds 500 MiB. Export it locally instead." = "The PDF could not be created or exceeds 500 MiB. Export it locally instead.";
+"The upload PDF is missing or too large." = "The upload PDF is missing or too large.";
+"The upload start was not confirmed. Check the archive on the website before clearing the upload record." = "The upload start was not confirmed. Check the archive on the website before clearing the upload record.";
+"The server did not confirm the upload." = "The server did not confirm the upload.";
+"Sign in and select an upload archive in Settings. Your scan is saved on this Mac." = "Sign in and select an upload archive in Settings. Your scan is saved on this Mac.";
+"An account operation is in progress. Try again when it finishes." = "An account operation is in progress. Try again when it finishes.";
+"This item has an upload in another account or archive. Select its original destination to continue." = "This item has an upload in another account or archive. Select its original destination to continue.";
+"The pages changed during an incomplete upload. Clear its upload record before uploading the changed item." = "The pages changed during an incomplete upload. Clear its upload record before uploading the changed item.";
+"Uploading PDF…" = "Uploading PDF…";
+"Uploaded to Foliobruma" = "Uploaded to Foliobruma";
+
+// Connection bar and browser sign-in.
+"Camera connected" = "Camera connected";
+"Camera not connected" = "Camera not connected";
+"Camera connection" = "Camera connection";
+"SaaS · Signed out" = "SaaS · Signed out";
+"SaaS · Signed in" = "SaaS · Signed in";
+"Connect to Foliobruma" = "Connect to Foliobruma";
+"Upload on finish" = "Upload on finish";
+"Upload off" = "Upload off";
+"Labels on" = "Labels on";
+"Labels off" = "Labels off";
+"Could not start sign-in. Try again." = "Could not start sign-in. Try again.";
+"Sign in on the website to connect this version of the scanner." = "Sign in on the website to connect this version of the scanner.";
+"Could not open the browser. Try again." = "Could not open the browser. Try again.";
+"The connection request expired. Start again." = "The connection request expired. Start again.";
+"Waiting for website sign-in…" = "Waiting for website sign-in…";
+"Check this code on the website, then approve the connection." = "Check this code on the website, then approve the connection.";
+"Open sign-in page" = "Open sign-in page";
+"Cancel sign-in" = "Cancel sign-in";
+"Connect on website" = "Connect on website";
+"Your normal browser opens Foliobruma. Sign in there, then return to the scanner." = "Your normal browser opens Foliobruma. Sign in there, then return to the scanner.";
+"Signed in" = "Signed in";
+"Signed out" = "Signed out";
+
+// Document overview
+"No scans yet" = "No scans yet";
+"Add pages to this item when you are ready." = "Add pages to this item when you are ready.";
+"Scans are saved on this Mac." = "Scans are saved on this Mac.";
+"Pages: %ld" = "Pages: %ld";
+
+// Account panel
+"Connect your account" = "Connect your account";
+"Sign in with your browser to upload scans to your archive." = "Sign in with your browser to upload scans to your archive.";
+"Upload automatically" = "Upload automatically";
+"Upload one PDF when you select Finish item or Next letter." = "Upload one PDF when you select Finish item or Next letter.";
+"Open the print dialog after a successful upload." = "Open the print dialog after a successful upload.";
+"After scanning" = "After scanning";
+"Scans stay on this Mac. Upload needs an account and an archive. Label links require website sign-in." = "Scans stay on this Mac. Upload needs an account and an archive. Label links require website sign-in.";
+
+// Manual upload
+"Upload to Foliobruma" = "Upload to Foliobruma";
+"Upload this item without turning on automatic upload." = "Upload this item without turning on automatic upload.";
+"Upload destination" = "Upload destination";
+"Upload now" = "Upload now";
+"Upload %ld pages as one PDF. Automatic upload stays unchanged." = "Upload %ld pages as one PDF. Automatic upload stays unchanged.";
+"Pages: %ld · Auto upload off" = "Pages: %ld · Auto upload off";
 /* Interface review */
 "Start another letter with the same batch details." = "Start another letter with the same batch details.";
 "Scanning tips" = "Scanning tips";

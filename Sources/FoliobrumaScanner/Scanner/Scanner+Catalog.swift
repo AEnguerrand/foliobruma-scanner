@@ -40,6 +40,13 @@ extension Scanner {
   }
 
   func nextLetter() {
+    guard !busy, document.metadata?.batchID != nil else { return }
+    if tracksActiveSession, UserDefaults.standard.bool(forKey: "cloudAutomatic"), !document.pages.isEmpty {
+      finishItem(nextLetter: true)
+    } else { createNextLetter() }
+  }
+
+  func createNextLetter() {
     guard !busy, let details = document.metadata, details.batchID != nil else { return }
     let scanPages = !metadataWorkspace
     do {

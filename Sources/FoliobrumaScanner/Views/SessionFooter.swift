@@ -13,15 +13,21 @@ struct SessionFooter: View {
           model.sessionSaved ? L10n.text("Session saved on this Mac") : L10n.text("New session · No pages saved"),
           systemImage: "internaldrive"
         ).font(.caption).foregroundStyle(.secondary)
+        if !model.busy && model.status == L10n.text("Uploaded to Foliobruma") {
+          Label(model.status, systemImage: "checkmark.icloud")
+            .font(.caption).foregroundStyle(.secondary)
+        }
         Spacer()
         if !model.rejectedScans.isEmpty {
           Button(L10n.format("Rejected (%ld)", model.rejectedScans.count)) {
             model.autoCapture = false
             model.showRejected = true
-          }.disabled(model.busy)
+          }.disabled(model.busy || model.rejectedScans.isEmpty)
         }
-        Button(L10n.text("Undo removal"), action: model.undo).keyboardShortcut("z")
-          .disabled(model.deleting == nil || model.busy)
+        if model.deleting != nil {
+          Button(L10n.text("Undo removal"), action: model.undo).keyboardShortcut("z")
+            .disabled(model.deleting == nil || model.busy)
+        }
         Menu {
           Button(L10n.text("Originals and session")) { NSWorkspace.shared.open(model.folder) }
           if let pdf = model.lastPDF {
@@ -39,6 +45,6 @@ struct SessionFooter: View {
           .font(.caption).foregroundStyle(model.pdfIsCurrent ? .secondary : .primary)
         }
       }
-    }.padding(12)
+    }.controlSize(.small).padding(.horizontal, 20).padding(.vertical, 10)
   }
 }

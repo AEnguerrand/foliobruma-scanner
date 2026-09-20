@@ -8,14 +8,16 @@ struct DocumentLabel: Hashable {
   static let size = NSSize(width: 62 * 72 / 25.4, height: 25 * 72 / 25.4)
 
   // A short HTTPS address keeps the code readable at this fixed label size.
-  // No network request is made; the user supplies an existing destination.
+  // No network request is made. Uploaded PDFs use the existing private API route.
   static func validURL(_ text: String) -> URL? {
     let value = text.trimmingCharacters(in: .whitespacesAndNewlines)
-    guard value.utf8.count <= 100,
+    let isPrivatePDF = value.range(of: #"^https://foliobruma\.com/api/organisations/[a-f0-9-]{36}/documents/[a-f0-9-]{36}$"#, options: .regularExpression) != nil
+    let limit = isPrivatePDF ? 180 : 100
+    guard value.utf8.count <= limit,
       !value.unicodeScalars.contains(where: { CharacterSet.whitespacesAndNewlines.contains($0) }),
       let parts = URLComponents(string: value), parts.scheme?.lowercased() == "https",
       let host = parts.host, !host.isEmpty, parts.user == nil, parts.password == nil,
-      let url = parts.url, url.absoluteString.utf8.count <= 100
+      let url = parts.url, url.absoluteString.utf8.count <= limit
     else { return nil }
     return url
   }

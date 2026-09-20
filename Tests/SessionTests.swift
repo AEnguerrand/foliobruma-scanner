@@ -429,6 +429,7 @@ import Vision
   print("PASS: page input boundaries; adjacent selection; undo selection; failed-save selection; label validation feedback")
  }
  static func main() throws {
+  try CloudUploadTests.run()
   try testReviewNavigation()
   try testCatalogAndLabels()
   try testPageMerge()

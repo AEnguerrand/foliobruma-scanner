@@ -299,6 +299,92 @@
 
 "Signals received: %ld" = "Signaux reçus : %ld";
 
+// Account and document upload.
+"Foliobruma account" = "Compte Foliobruma";
+"Signed in as" = "Connecté en tant que";
+"Upload archive" = "Archive de destination";
+"Select an archive" = "Sélectionnez une archive";
+"Create or join an archive on foliobruma.com, then sign in again." = "Créez ou rejoignez une archive sur foliobruma.com, puis reconnectez-vous.";
+"Sign out" = "Se déconnecter";
+"Email" = "E-mail";
+"Password" = "Mot de passe";
+"Sign in" = "Se connecter";
+"Upload when I finish an item" = "Envoyer quand je termine un document";
+"Print a label after upload" = "Imprimer une étiquette après l’envoi";
+"Finish item uploads all saved pages as one PDF. Next letter also finishes the current letter. Both options are off by default." = "Terminer le document envoie toutes les pages enregistrées dans un PDF. Lettre suivante termine aussi la lettre actuelle. Les deux options sont désactivées par défaut.";
+"Scans stay on this Mac. Upload requires an account and an archive. Labels open a private PDF link; sign in on the reading device first." = "Les scans restent sur ce Mac. L’envoi nécessite un compte et une archive. Les étiquettes ouvrent un lien PDF privé ; connectez-vous d’abord sur l’appareil de lecture.";
+"Open Foliobruma" = "Ouvrir Foliobruma";
+"Finish item" = "Terminer le document";
+"Pages: %ld · Upload on finish" = "Pages : %ld · Envoi à la fin";
+"Clear upload record…" = "Effacer le suivi d’envoi…";
+"Clear upload record?" = "Effacer le suivi d’envoi ?";
+"Clear upload record" = "Effacer le suivi d’envoi";
+"First check the archive on the website. Remove any incomplete upload there. This clears only the local retry record. The next upload can create another copy. Local scans and PDFs are kept." = "Vérifiez d’abord l’archive sur le site et supprimez tout envoi incomplet. Seul le suivi local est effacé. Le prochain envoi peut créer une autre copie. Les scans et PDF locaux sont conservés.";
+"An uploaded item uses its private PDF link. You can also paste an existing HTTPS link." = "Un document envoyé utilise son lien PDF privé. Vous pouvez aussi coller un lien HTTPS existant.";
+"The server response is invalid." = "La réponse du serveur est incorrecte.";
+"Your session has expired. Sign in again in Settings." = "Votre session a expiré. Reconnectez-vous dans les réglages.";
+"The server could not complete the request. Check your account, connection, and archive storage." = "Le serveur n’a pas pu terminer la demande. Vérifiez votre compte, votre connexion et l’espace de stockage de l’archive.";
+"Could not read the session from Keychain." = "Impossible de lire la session dans le trousseau.";
+"Could not save the session in Keychain." = "Impossible d’enregistrer la session dans le trousseau.";
+"Could not remove the session from Keychain." = "Impossible de supprimer la session du trousseau.";
+"Signed out on this Mac. The server session could not be closed." = "Déconnecté sur ce Mac. La session du serveur n’a pas pu être fermée.";
+"The PDF could not be created or exceeds 500 MiB. Export it locally instead." = "Le PDF n’a pas pu être créé ou dépasse 500 Mio. Exportez-le sur ce Mac.";
+"The upload PDF is missing or too large." = "Le PDF à envoyer est absent ou trop volumineux.";
+"The upload start was not confirmed. Check the archive on the website before clearing the upload record." = "Le début de l’envoi n’a pas été confirmé. Vérifiez l’archive sur le site avant d’effacer le suivi d’envoi.";
+"The server did not confirm the upload." = "Le serveur n’a pas confirmé l’envoi.";
+"Sign in and select an upload archive in Settings. Your scan is saved on this Mac." = "Connectez-vous et sélectionnez une archive dans les réglages. Votre scan est enregistré sur ce Mac.";
+"An account operation is in progress. Try again when it finishes." = "Une opération sur le compte est en cours. Réessayez une fois celle-ci terminée.";
+"This item has an upload in another account or archive. Select its original destination to continue." = "Ce document a un envoi dans un autre compte ou une autre archive. Sélectionnez sa destination d’origine pour continuer.";
+"The pages changed during an incomplete upload. Clear its upload record before uploading the changed item." = "Les pages ont changé pendant un envoi incomplet. Effacez son suivi d’envoi avant d’envoyer le document modifié.";
+"Uploading PDF…" = "Envoi du PDF…";
+"Uploaded to Foliobruma" = "Envoyé vers Foliobruma";
+
+// Connection bar and browser sign-in.
+"Camera connected" = "Caméra connectée";
+"Camera not connected" = "Caméra non connectée";
+"Camera connection" = "Connexion de la caméra";
+"SaaS · Signed out" = "SaaS · Déconnecté";
+"SaaS · Signed in" = "SaaS · Connecté";
+"Connect to Foliobruma" = "Se connecter à Foliobruma";
+"Upload on finish" = "Envoi à la fin";
+"Upload off" = "Envoi désactivé";
+"Labels on" = "Étiquettes activées";
+"Labels off" = "Étiquettes désactivées";
+"Could not start sign-in. Try again." = "Impossible de démarrer la connexion. Réessayez.";
+"Sign in on the website to connect this version of the scanner." = "Connectez-vous sur le site pour utiliser cette version du scanner.";
+"Could not open the browser. Try again." = "Impossible d’ouvrir le navigateur. Réessayez.";
+"The connection request expired. Start again." = "La demande de connexion a expiré. Recommencez.";
+"Waiting for website sign-in…" = "En attente de la connexion sur le site…";
+"Check this code on the website, then approve the connection." = "Vérifiez ce code sur le site, puis autorisez la connexion.";
+"Open sign-in page" = "Ouvrir la page de connexion";
+"Cancel sign-in" = "Annuler la connexion";
+"Connect on website" = "Se connecter sur le site";
+"Your normal browser opens Foliobruma. Sign in there, then return to the scanner." = "Votre navigateur habituel ouvre Foliobruma. Connectez-vous sur le site, puis revenez au scanner.";
+"Signed in" = "Connecté";
+"Signed out" = "Déconnecté";
+
+// Document overview
+"No scans yet" = "Aucune numérisation";
+"Add pages to this item when you are ready." = "Ajoutez des pages à cet élément quand vous le souhaitez.";
+"Scans are saved on this Mac." = "Les numérisations sont enregistrées sur ce Mac.";
+"Pages: %ld" = "Pages : %ld";
+
+// Account panel
+"Connect your account" = "Connectez votre compte";
+"Sign in with your browser to upload scans to your archive." = "Connectez-vous dans votre navigateur pour envoyer les numérisations dans votre archive.";
+"Upload automatically" = "Envoi automatique";
+"Upload one PDF when you select Finish item or Next letter." = "Envoie un PDF quand vous sélectionnez Terminer cet élément ou Lettre suivante.";
+"Open the print dialog after a successful upload." = "Ouvre la fenêtre d’impression après un envoi réussi.";
+"After scanning" = "Après la numérisation";
+"Scans stay on this Mac. Upload needs an account and an archive. Label links require website sign-in." = "Les numérisations restent sur ce Mac. Un compte et une archive sont nécessaires pour l’envoi. Les liens des étiquettes nécessitent une connexion au site.";
+
+// Manual upload
+"Upload to Foliobruma" = "Envoyer vers Foliobruma";
+"Upload this item without turning on automatic upload." = "Envoyez cet élément sans activer l’envoi automatique.";
+"Upload destination" = "Destination de l’envoi";
+"Upload now" = "Envoyer maintenant";
+"Upload %ld pages as one PDF. Automatic upload stays unchanged." = "Envoie %ld pages dans un PDF. Le réglage d’envoi automatique reste inchangé.";
+"Pages: %ld · Auto upload off" = "Pages : %ld · Envoi automatique désactivé";
 /* Interface review */
 "Start another letter with the same batch details." = "Créer une autre lettre avec les mêmes détails de lot.";
 "Scanning tips" = "Conseils de numérisation";
