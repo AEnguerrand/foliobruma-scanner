@@ -377,3 +377,11 @@
 "Open the print dialog after a successful upload." = "Ouvre la fenêtre d’impression après un envoi réussi.";
 "After scanning" = "Après la numérisation";
 "Scans stay on this Mac. Upload needs an account and an archive. Label links require website sign-in." = "Les numérisations restent sur ce Mac. Un compte et une archive sont nécessaires pour l’envoi. Les liens des étiquettes nécessitent une connexion au site.";
+
+// Manual upload
+"Upload to Foliobruma" = "Envoyer vers Foliobruma";
+"Upload this item without turning on automatic upload." = "Envoyez cet élément sans activer l’envoi automatique.";
+"Upload destination" = "Destination de l’envoi";
+"Upload now" = "Envoyer maintenant";
+"Upload %ld pages as one PDF. Automatic upload stays unchanged." = "Envoie %ld pages dans un PDF. Le réglage d’envoi automatique reste inchangé.";
+"Pages: %ld · Auto upload off" = "Pages : %ld · Envoi automatique désactivé";

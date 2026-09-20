@@ -13,6 +13,10 @@ struct SessionFooter: View {
           model.sessionSaved ? L10n.text("Session saved on this Mac") : L10n.text("New session · No pages saved"),
           systemImage: "internaldrive"
         ).font(.caption).foregroundStyle(.secondary)
+        if !model.busy && model.status == L10n.text("Uploaded to Foliobruma") {
+          Label(model.status, systemImage: "checkmark.icloud")
+            .font(.caption).foregroundStyle(.secondary)
+        }
         Spacer()
         if !model.rejectedScans.isEmpty {
           Button(L10n.format("Rejected (%ld)", model.rejectedScans.count)) {

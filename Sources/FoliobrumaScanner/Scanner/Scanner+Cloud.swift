@@ -1,7 +1,7 @@
 import AppKit
 
 extension Scanner {
-  func finishItem(nextLetter: Bool = false, nextDocument: Bool = false) {
+  func finishItem(nextLetter: Bool = false, nextDocument: Bool = false, uploadRequested: Bool = false) {
     guard !busy, !document.pages.isEmpty else { return }
     autoCapture = false
     busy = true
@@ -10,7 +10,7 @@ extension Scanner {
       defer { busy = false; exportProgress = nil; finishPendingReview() }
       do {
         try persist()
-        if account.automatic {
+        if uploadRequested || account.automatic {
           await account.restore()
           guard account.ready, let user = account.user else {
             throw CloudFailure(message: "Sign in and select an upload archive in Settings. Your scan is saved on this Mac.")

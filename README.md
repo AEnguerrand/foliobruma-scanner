@@ -356,3 +356,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the source layout, checks, release st
 The Foliobruma account panel groups sign-in and **After scanning** settings.
 Enable **Upload automatically** to make **Print a label after upload** available.
 The label option opens the print dialog only after a successful upload.
+
+To upload an item manually, select **Upload to Foliobruma** beside **Export PDF**.
+Sign in if needed, select the destination archive, and select **Upload now**.
+All saved pages are sent as one PDF. This does not enable automatic upload or
+start another item. The sheet also lets you choose whether to print a label.

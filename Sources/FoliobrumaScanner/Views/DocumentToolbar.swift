@@ -3,6 +3,7 @@ import SwiftUI
 struct DocumentToolbar: View {
   @ObservedObject var model: Scanner
   @Binding var rename: Bool
+  @State private var showUpload = false
   @ObservedObject private var account = CloudAccount.shared
   var body: some View {
     VStack(spacing: 0) {
@@ -25,7 +26,7 @@ struct DocumentToolbar: View {
             Button(L10n.text("Clear upload record…"), action: model.clearCloudUpload)
             Button(L10n.text("Open session folder…"), action: model.openSession)
           }.menuStyle(.borderlessButton).font(.headline).disabled(model.busy)
-          Text(L10n.format(account.automatic ? "Pages: %ld · Upload on finish" : "Pages: %ld · Local only", model.document.pages.count))
+          Text(L10n.format(account.automatic ? "Pages: %ld · Upload on finish" : "Pages: %ld · Auto upload off", model.document.pages.count))
             .font(.caption).foregroundStyle(.secondary)
         }.frame(maxWidth: 300, alignment: .leading)
         Spacer(minLength: 16)
@@ -61,11 +62,20 @@ struct DocumentToolbar: View {
           Label(L10n.text("Export PDF"), systemImage: "square.and.arrow.up")
         }
         .keyboardShortcut("e").disabled(model.document.pages.isEmpty || model.busy)
+        Button {
+          model.autoCapture = false
+          showUpload = true
+        } label: {
+          Label(L10n.text("Upload to Foliobruma"), systemImage: "icloud.and.arrow.up")
+        }
+        .disabled(model.busy || model.document.pages.isEmpty)
+        .help(L10n.text("Upload this item without turning on automatic upload."))
         Button(L10n.text("Finish item")) { model.finishItem() }
           .buttonStyle(.borderedProminent)
           .disabled(model.busy || model.document.pages.isEmpty)
       }.padding(.horizontal, 20).padding(.vertical, 10)
     }.background(Color(white: 0.14))
+      .sheet(isPresented: $showUpload) { ManualUploadView(model: model) }
       .task { await account.restore() }
   }
 }
