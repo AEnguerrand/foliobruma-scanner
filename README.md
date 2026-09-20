@@ -184,7 +184,11 @@ Source files are grouped by purpose under `Sources/FoliobrumaScanner/`: app setu
 models, scanner operations, capture gates, image checks, and views. The build and
 test scripts include all Swift files in these folders.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the source layout, checks, and bug report guidance.
+GitHub Actions uses separate workflows. **Build** tests and builds branch
+pushes, pull requests, and manual runs. **Release** tests, packages, and
+publishes only when a version tag (`vX.Y.Z`) is pushed.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the source layout, checks, release steps, and bug report guidance.
 
 ## License
 

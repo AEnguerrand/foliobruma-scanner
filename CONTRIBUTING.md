@@ -58,13 +58,18 @@ For camera, crop, or capture changes, also test with a real document camera. Rep
 
 Keep local scanning available without an account. Preserve existing sessions and original captures. Explain any change to the storage format or capture behaviour in the pull request.
 
-## Release pipeline
+## Build and release workflows
 
-GitHub Actions runs tests and creates a DMG, ZIP, install notes, license, and
-SHA-256 checksums for pull requests, branch pushes, and manual runs. Download
-these files from the `macOS-arm64` artifact on the Actions run page. The runner
-uses Apple Silicon and macOS 15; the app deployment target remains macOS 14.
-Artifacts expire after 14 days. Published release files remain on Releases.
+The **Build** workflow runs regression tests, builds the app, and checks
+whitespace for pull requests, branch pushes, and manual runs. It does not
+package or publish releases, so normal builds have no skipped release job.
+
+The separate **Release** workflow runs only when a `vX.Y.Z` tag is pushed.
+It runs tests and creates a DMG, ZIP, install notes, license, and SHA-256
+checksums before publishing. Download these files from GitHub Releases or the
+`macOS-arm64` artifact on the release run page. Artifacts expire after 14 days.
+Published release files remain on Releases. Both workflows use Apple Silicon
+and macOS 15; the app deployment target remains macOS 14.
 
 To check the same package locally:
 
