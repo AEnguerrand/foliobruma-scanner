@@ -4,6 +4,11 @@ struct SessionBrowser: View {
   @ObservedObject var model: Scanner
   @State private var search = ""
   var body: some View {
+    let matchingSessions = model.sessions.filter {
+      search.isEmpty || $0.title.localizedCaseInsensitiveContains(search)
+        || ($0.reference ?? "").localizedCaseInsensitiveContains(search)
+        || ($0.batchName ?? "").localizedCaseInsensitiveContains(search)
+    }
     VStack(alignment: .leading, spacing: 16) {
       HStack {
         Text(L10n.text("Documents on this Mac")).font(.title2)
@@ -17,14 +22,11 @@ struct SessionBrowser: View {
         ContentUnavailableView(
           L10n.text("No saved documents"), systemImage: "books.vertical",
           description: Text(L10n.text("Create a document, or open a saved session folder.")))
+      } else if matchingSessions.isEmpty {
+        ContentUnavailableView(L10n.text("No matching documents"), systemImage: "magnifyingglass",
+          description: Text(L10n.text("Try another title, reference, or batch name.")))
       } else {
-        List(
-          model.sessions.filter {
-            search.isEmpty || $0.title.localizedCaseInsensitiveContains(search)
-              || ($0.reference ?? "").localizedCaseInsensitiveContains(search)
-              || ($0.batchName ?? "").localizedCaseInsensitiveContains(search)
-          }
-        ) { item in
+        List(matchingSessions) { item in
           Button {
             model.openSession(at: item.folder)
           } label: {

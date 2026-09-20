@@ -21,8 +21,8 @@
 "Capture is paused. These photos are excluded from your PDF." = "La capture est en pause. Ces photos sont exclues du PDF.";
 "Capture page" = "Capturer la page";
 "Capture paused" = "Capture en pause";
-"Capture paused · Ready when you are" = "Capture en pause · Reprenez quand vous voulez";
-"Capture paused · Review your pages" = "Capture en pause · Vérifiez vos pages";
+"Capture paused · Ready when you are" = "Capture en pause";
+"Capture paused · Review your pages" = "Capture en pause";
 "Capture replacement" = "Capturer le remplacement";
 "Capture sounds" = "Sons de capture";
 "Capturing… Hold still" = "Capture en cours… Ne bougez pas";
@@ -51,7 +51,7 @@
 "Document name" = "Nom du document";
 "Document type" = "Type de document";
 "Documents" = "Documents";
-"Documents on this Mac" = "Documents sur ce Mac";
+"Documents on this Mac" = "Documents";
 "Done" = "Terminé";
 "Drag the gold handle in the camera view to adjust the split." = "Déplacez la poignée dorée dans l’image pour régler la séparation.";
 "Export PDF" = "Exporter en PDF";
@@ -76,10 +76,10 @@
 "Move earlier" = "Avancer";
 "Move later" = "Reculer";
 "Move your hands away…" = "Retirez vos mains…";
-"Name your document" = "Nommez votre document";
+"Name your document" = "Renommer le document";
 "New document" = "Nouveau document";
 "New document · Previous session kept on disk" = "Nouveau document · La session précédente reste sur le disque";
-"New session · No pages saved" = "Nouvelle session · Aucune page enregistrée";
+"New session · No pages saved" = "Pas encore enregistré";
 "Next page" = "Page suivante";
 "Next page (→)" = "Page suivante (→)";
 "No camera found" = "Aucune caméra détectée";
@@ -113,17 +113,17 @@
 "Pages" = "Pages";
 "Pages in document order: %ld" = "Pages dans l’ordre du document : %ld";
 "Pages: %ld · %@" = "Pages : %ld · %@";
-"Pages: %ld · Local only" = "Pages : %ld · Stockage local";
+"Pages: %ld · Local only" = "Pages : %ld";
 "Pause auto capture" = "Suspendre la capture automatique";
 "Photo" = "Photo";
 "Photo %ld · %@" = "Photo %ld · %@";
 "Place one page under the camera, then capture its replacement" = "Placez une page sous la caméra, puis capturez la page de remplacement";
 "Preparing preview…" = "Préparation de l’aperçu…";
 "Preview crop and split" = "Voir le recadrage et la séparation";
-"Preview from the camera feed. No page has been saved. Check edges and spine before scanning." = "Aperçu de la caméra. Aucune page n’a été enregistrée. Vérifiez les bords et la reliure avant de numériser.";
+"Preview from the camera feed. No page has been saved. Check edges and spine before scanning." = "Vérifiez les bords et la reliure. Cet aperçu n’est pas enregistré.";
 "Previous page" = "Page précédente";
 "Previous page (←)" = "Page précédente (←)";
-"Quit and reopen the app to apply a language change." = "Quittez et rouvrez l’application pour appliquer un changement de langue.";
+"Quit and reopen the app to apply a language change." = "Redémarrez l’application pour changer de langue.";
 "Ready to capture" = "Prêt à numériser";
 "Reconnect" = "Reconnecter";
 "Recovered photo. Check it before keeping it. Earlier crop settings may be unavailable." = "Photo récupérée. Vérifiez-la avant de la conserver. Les anciens réglages de recadrage peuvent être indisponibles.";
@@ -145,22 +145,22 @@
 "Right" = "Droite";
 "Right crop edge" = "Bord droit du recadrage";
 "Rotate" = "Pivoter";
-"Rotations and crops are included. This PDF contains images, without searchable text." = "Les rotations et les recadrages sont inclus. Ce PDF contient des images, sans texte interrogeable.";
+"Rotations and crops are included. This PDF contains images, without searchable text." = "Le recadrage et la rotation sont inclus. Le texte ne peut pas être recherché.";
 "Save crop" = "Enregistrer le recadrage";
-"Save name" = "Enregistrer le nom";
+"Save name" = "Enregistrer";
 "Saved — turn the page" = "Enregistré — tournez la page";
 "Saving scan…" = "Enregistrement de la photo…";
 "Scan" = "Numériser";
 "Scan looks blurred · Hold the page still and rescan" = "Image floue · Maintenez la page immobile et recommencez";
 "Scan setup" = "Réglages de numérisation";
-"Scan your first page" = "Numérisez votre première page";
+"Scan your first page" = "Connecter une caméra";
 "Scroll to inspect a zoomed image" = "Faites défiler pour examiner l’image agrandie";
 "Select a camera first" = "Sélectionnez d’abord une caméra";
-"Select a camera in Scan setup, then connect it." = "Sélectionnez une caméra dans les réglages de numérisation, puis connectez-la.";
+"Select a camera in Scan setup, then connect it." = "Choisissez une caméra dans le panneau latéral, puis connectez-la.";
 "Select a camera to scan" = "Sélectionnez une caméra pour numériser";
 "Select a page in the sidebar, or return to Scan to add pages." = "Sélectionnez une page dans la barre latérale ou revenez à Numériser pour ajouter des pages.";
-"Select the area for this page. For a book spread, select only the required side. The original and earlier page image are kept." = "Sélectionnez la zone de cette page. Pour un livre ouvert, sélectionnez uniquement le côté voulu. L’original et l’image précédente sont conservés.";
-"Session saved on this Mac" = "Session enregistrée sur ce Mac";
+"Select the area for this page. For a book spread, select only the required side. The original and earlier page image are kept." = "Ajustez les bords pour garder la zone voulue. Les originaux sont conservés.";
+"Session saved on this Mac" = "Enregistré sur ce Mac";
 "Settings" = "Réglages";
 "Show PDF in Finder" = "Afficher le PDF dans le Finder";
 "Single page" = "Page seule";
@@ -211,16 +211,16 @@
 "Item saved on this Mac" = "Élément enregistré sur ce Mac";
 "New item" = "Nouvel élément";
 "New item…" = "Nouvel élément…";
-"Item details" = "Détails de l’élément";
+"Item details" = "Détails";
 "Start with" = "Commencer par";
-"Metadata only" = "Métadonnées uniquement";
+"Metadata only" = "Détails uniquement";
 "Scan pages" = "Numériser des pages";
 "Start a letter batch" = "Commencer un lot de lettres";
 "Reference" = "Référence";
 "Batch name" = "Nom du lot";
-"Next letter copies the batch name, location, and tags. Earlier letters do not change." = "Lettre suivante reprend le nom du lot, l’emplacement et les étiquettes. Les lettres précédentes ne changent pas.";
+"Next letter copies the batch name, location, and tags. Earlier letters do not change." = "Les nouvelles lettres reprennent le nom du lot, le lieu et les étiquettes.";
 "Title (optional)" = "Titre (facultatif)";
-"Leave the title empty to use the automatic reference." = "Laissez le titre vide pour utiliser la référence automatique.";
+"Leave the title empty to use the automatic reference." = "Sans titre, la référence est utilisée.";
 "Item type" = "Type d’élément";
 "Document" = "Document";
 "Folder" = "Dossier";
@@ -251,7 +251,7 @@
 "Second line (optional)" = "Deuxième ligne (facultative)";
 "Label preview" = "Aperçu de l’étiquette";
 "Enter an HTTPS link of 100 bytes or fewer to preview the QR code." = "Saisissez un lien HTTPS de 100 octets maximum pour afficher le code QR.";
-"DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link." = "DK-22205 · 62 × 25 mm · Noir sur blanc. Le texte long est abrégé sur l’étiquette. Le QR contient le lien complet.";
+"DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link." = "62 × 25 mm · DK-22205. Le texte long est raccourci ; le QR conserve le lien complet.";
 "Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone." = "Sélectionnez la QL-600 et le papier 62 × 25 mm dans la fenêtre d’impression. Utilisez une échelle de 100 %. Testez une étiquette avec votre téléphone.";
 "Item link saved" = "Lien de l’élément enregistré";
 "Save item link" = "Enregistrer le lien";
@@ -283,7 +283,7 @@
 
 "Use Capture page for scanning. Use Next letter within a letter batch. New item opens the item form." = "Utilisez Capturer la page pour scanner. Utilisez Lettre suivante dans un lot de lettres. Nouvel élément ouvre le formulaire.";
 
-"Actions are off in Settings. Close Settings and select the document window to use the button." = "Les actions sont désactivées dans Réglages. Fermez Réglages et sélectionnez la fenêtre du document pour utiliser le bouton.";
+"Actions are off in Settings. Close Settings and select the document window to use the button." = "Fermez les réglages pour utiliser le bouton dans la fenêtre du document.";
 
 "Supports USB HID button and vendor controls with a repeatable signal. Keyboards and mice are not listed." = "Prend en charge les boutons USB HID et les commandes constructeur à signal stable. Les claviers et souris ne sont pas affichés.";
 
@@ -293,8 +293,20 @@
 
 "No signal received. Try Learn button again." = "Aucun signal reçu. Réessayez Détecter le bouton.";
 
-"Button learned. Press it again to test, then enable the action." = "Bouton détecté. Appuyez à nouveau pour tester, puis activez l’action.";
+"Button learned. Press it again to test, then enable the action." = "Bouton mémorisé. Appuyez à nouveau pour tester.";
 
 "Click Learn button, then press the physical button." = "Cliquez sur Détecter le bouton, puis appuyez sur le bouton physique.";
 
 "Signals received: %ld" = "Signaux reçus : %ld";
+
+/* Interface review */
+"Start another letter with the same batch details." = "Créer une autre lettre avec les mêmes détails de lot.";
+"Scanning tips" = "Conseils de numérisation";
+"Supported buttons" = "Boutons compatibles";
+"Print setup" = "Réglages d’impression";
+"Review rejected scans…" = "Examiner les photos rejetées…";
+"No pages yet" = "Aucune page";
+"Scan a page to add it to this document." = "Numérisez une page pour l’ajouter à ce document.";
+"Select a page in the sidebar." = "Sélectionnez une page dans le panneau latéral.";
+"No matching documents" = "Aucun document trouvé";
+"Try another title, reference, or batch name." = "Essayez un autre titre, une autre référence ou un autre nom de lot.";

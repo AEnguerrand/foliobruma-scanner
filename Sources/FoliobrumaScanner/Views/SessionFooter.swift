@@ -14,10 +14,12 @@ struct SessionFooter: View {
           systemImage: "internaldrive"
         ).font(.caption).foregroundStyle(.secondary)
         Spacer()
-        Button(L10n.format("Rejected (%ld)", model.rejectedScans.count)) {
-          model.autoCapture = false
-          model.showRejected = true
-        }.disabled(model.busy || model.rejectedScans.isEmpty)
+        if !model.rejectedScans.isEmpty {
+          Button(L10n.format("Rejected (%ld)", model.rejectedScans.count)) {
+            model.autoCapture = false
+            model.showRejected = true
+          }.disabled(model.busy)
+        }
         Button(L10n.text("Undo removal"), action: model.undo).keyboardShortcut("z")
           .disabled(model.deleting == nil || model.busy)
         Menu {

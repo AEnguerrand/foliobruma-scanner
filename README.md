@@ -64,6 +64,15 @@ Allow camera access when macOS asks. The build uses Apple frameworks and needs n
 
 The app is signed locally for development. It is not notarized. A rebuild can cause macOS to ask for camera access again.
 
+## Interface
+
+The app uses the Mac’s appearance and accent colour. The camera and page image
+views use a dark background. Gold marks the detected page edges and book spine.
+Open **Scanning tips**, **Supported buttons**, or **Print setup** for extra help.
+The footer shows rejected scans when photos need review. The Review view has an
+**Add scans** button when no page is selected. In Documents, an empty search
+result gives a prompt to try another title, reference, or batch name.
+
 ## Language
 
 The interface supports English and French. On first use, the app follows the
@@ -84,14 +93,14 @@ text or add OCR.
 4. Check the gold crop outline. For a book, enable **Split into two pages** and adjust **Spine position** to the centre of the spread. You can also drag the gold handle or click **Centre spine**. Use **Preview crop and split** to inspect a camera frame without saving pages.
 5. Click **Start auto capture**, then move your hands away. For manual capture, click **Capture page** or press **Space** in Scan mode.
 6. Wait for the green **Saved — turn the page** signal and chime before turning the page. Repeat for each page or spread.
-7. Click **Review pages** or choose **Review**. Capture pauses. Select a page in the sidebar, or enter a page number and click **Go**. Zoom and scroll to inspect the text. Use **Rotate**, **Move earlier**, **Move later**, **Remove**, or **Undo removal** as needed.
+7. Choose **Review**. Capture pauses. Select a page in the sidebar, or enter a page number and click **Go**. Zoom and scroll to inspect the text. Use **Rotate**, **Move earlier**, **Move later**, **Remove**, or **Undo removal** as needed.
 8. Click **Export PDF**, check the page count and rejected-photo notice, then choose where to save the file. Progress appears at the bottom of the window. Open the result from **Files → Open PDF** or **Show PDF in Finder**.
 
 Use **Documents → New item…** for another book or group of pages. Select **Scan pages** to use the camera. The document title menu also contains **New item…** and **Rename document…**. Use **Documents** to search saved documents and open one by name. **Open session folder…** remains available for sessions stored elsewhere. Closing the app keeps the session. Returning to Scan does not restart automatic capture.
 
 ### Metadata records and letter batches
 
-Open the document title menu and select **New item…** (⌘N). Select **Metadata
+Open the document title menu and select **New item…** (⌘N). Select **Details
 only** to record a physical item without a camera, or **Scan pages** to start
 with scanning. The title is optional. An empty title uses the automatic
 reference. Type, author or sender, date or period, physical location, tags, and

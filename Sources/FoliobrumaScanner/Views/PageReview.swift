@@ -43,10 +43,17 @@ struct PageReview: View {
           }
         }.padding(14)
       } else {
-        ContentUnavailableView(
-          L10n.text("No page selected"), systemImage: "doc.text.magnifyingglass",
-          description: Text(L10n.text("Select a page in the sidebar, or return to Scan to add pages."))
-        )
+        ContentUnavailableView {
+          Label(L10n.text(model.document.pages.isEmpty ? "No pages yet" : "No page selected"),
+                systemImage: "doc.text")
+        } description: {
+          Text(L10n.text(model.document.pages.isEmpty
+            ? "Scan a page to add it to this document."
+            : "Select a page in the sidebar."))
+        } actions: {
+          Button(L10n.text("Add scans"), action: model.showCamera)
+            .buttonStyle(.borderedProminent)
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
       }
     }.disabled(model.busy)
@@ -114,14 +121,13 @@ struct ZoomImage: View {
             L10n.text("Image unavailable"), systemImage: "doc.questionmark",
             description: Text(L10n.text("Check that the session image file is still on this Mac.")))
         }
-      }.background(.black)
+      }.background(.black).environment(\.colorScheme, .dark)
       HStack {
         Button(L10n.text("Fit")) { zoom = 1 }.keyboardShortcut("0")
           .help(L10n.text("Fit image (⌘0)"))
         Slider(value: $zoom, in: 1...5).frame(width: 180).accessibilityLabel(L10n.text("Image zoom"))
         Text(L10n.format("%ld%% of fit", Int(zoom * 100))).monospacedDigit().frame(width: 110)
         Spacer()
-        Text(L10n.text("Scroll to inspect a zoomed image")).font(.caption).foregroundStyle(.secondary)
       }.padding(10)
     }.task(id: url) {
       let file = url

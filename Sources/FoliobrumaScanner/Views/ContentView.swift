@@ -14,7 +14,7 @@ struct ContentView: View {
         ItemSummary(model: model)
       } else {
       HStack(spacing: 0) {
-        if model.reviewing { PageStrip(model: model, gold: gold).frame(width: 190) }
+        if model.reviewing { PageStrip(model: model).frame(width: 190) }
         VStack(spacing: 0) {
           if model.reviewing {
             PageReview(model: model)
@@ -28,7 +28,7 @@ struct ContentView: View {
       }
       Divider()
       SessionFooter(model: model)
-    }.background(Color(white: 0.10)).preferredColorScheme(.dark).tint(gold)
+    }.background(Color(nsColor: .windowBackgroundColor))
       .frame(minWidth: 900, minHeight: 640)
       .alert(
         "Scanner",

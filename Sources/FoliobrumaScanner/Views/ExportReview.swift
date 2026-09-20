@@ -13,7 +13,10 @@ struct ExportReview: View {
         Label(
           L10n.format("Rejected photos excluded: %ld.", model.rejectedScans.count),
           systemImage: "exclamationmark.triangle")
-        Text(L10n.text("Close this panel and open Rejected to inspect them before export.")).font(.callout)
+        Button(L10n.text("Review rejected scans…")) {
+          model.showExport = false
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { model.showRejected = true }
+        }
       }
       HStack {
         Button(L10n.text("Cancel")) { model.showExport = false }.keyboardShortcut(.cancelAction)

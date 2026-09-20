@@ -3,7 +3,6 @@ import SwiftUI
 
 struct PageStrip: View {
   @ObservedObject var model: Scanner
-  let gold: Color
   @State private var pageNumber = 1
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
@@ -13,7 +12,7 @@ struct PageStrip: View {
           .accessibilityLabel(L10n.text("Page number"))
           .onSubmit { jump() }
         Button(L10n.text("Go"), action: jump)
-      }.padding(.horizontal, 12)
+      }.padding(.horizontal, 12).disabled(model.document.pages.isEmpty)
       ScrollViewReader { proxy in
         ScrollView {
           LazyVGrid(columns: [GridItem(.flexible())], spacing: 12) {
@@ -31,10 +30,10 @@ struct PageStrip: View {
                     if model.selected == page.id { Image(systemName: "checkmark.circle.fill") }
                   }.font(.caption)
                 }.padding(8).frame(maxWidth: .infinity)
-                  .background(model.selected == page.id ? gold.opacity(0.15) : Color.clear)
+                  .background(model.selected == page.id ? Color.accentColor.opacity(0.12) : Color.clear)
                   .overlay(
                     RoundedRectangle(cornerRadius: 8).stroke(
-                      model.selected == page.id ? gold : .clear, lineWidth: 2))
+                      model.selected == page.id ? Color.accentColor : .clear, lineWidth: 2))
               }.buttonStyle(.plain).id(page.id)
                 .accessibilityLabel(L10n.format("Page %ld of %ld", index + 1, model.document.pages.count))
                 .accessibilityAddTraits(model.selected == page.id ? [.isSelected] : [])
@@ -44,7 +43,7 @@ struct PageStrip: View {
           if let id = model.selected { proxy.scrollTo(id, anchor: .center) }
         }.onAppear { if let id = model.selected { proxy.scrollTo(id, anchor: .center) } }
       }
-    }.padding(.top, 14).background(Color(white: 0.13)).disabled(model.busy)
+    }.padding(.top, 14).background(Color(nsColor: .controlBackgroundColor)).disabled(model.busy)
   }
   private func jump() {
     guard model.document.pages.indices.contains(pageNumber - 1) else { return }

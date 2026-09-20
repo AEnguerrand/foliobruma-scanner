@@ -50,8 +50,10 @@ struct LabelEditor: View {
       }.frame(maxWidth: .infinity)
       Text(L10n.text("DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link."))
         .font(.caption).foregroundStyle(.secondary)
-      Text(L10n.text("Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone."))
-        .font(.caption).foregroundStyle(.secondary)
+      DisclosureGroup(L10n.text("Print setup")) {
+        Text(L10n.text("Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone."))
+          .font(.callout).foregroundStyle(.secondary)
+      }
       if let failure { Text(failure).foregroundStyle(.red) }
       if saved { Text(L10n.text("Item link saved")).foregroundStyle(.secondary) }
       HStack {

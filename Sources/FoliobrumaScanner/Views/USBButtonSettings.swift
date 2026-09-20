@@ -29,12 +29,12 @@ struct USBButtonSettings: View {
       if !button.status.isEmpty { Text(button.status).font(.callout) }
       Toggle(L10n.text("Enable button action"), isOn: $button.binding.enabled)
         .disabled(button.binding.signal == nil || !button.connected || button.learning)
-      Text(L10n.text("Use Capture page for scanning. Use Next letter within a letter batch. New item opens the item form."))
-        .font(.caption).foregroundStyle(.secondary)
       Text(L10n.text("Actions are off in Settings. Close Settings and select the document window to use the button."))
         .font(.caption).foregroundStyle(.secondary)
-      Text(L10n.text("Supports USB HID button and vendor controls with a repeatable signal. Keyboards and mice are not listed."))
-        .font(.caption).foregroundStyle(.secondary)
+      DisclosureGroup(L10n.text("Supported buttons")) {
+        Text(L10n.text("Supports USB HID button and vendor controls with a repeatable signal. Keyboards and mice are not listed."))
+          .font(.callout).foregroundStyle(.secondary)
+      }
     }
     .onAppear { button.start(); button.settingsVisible = true }
     .onDisappear { button.cancelLearning(); button.settingsVisible = false }

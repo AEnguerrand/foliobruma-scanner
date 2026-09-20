@@ -5,7 +5,6 @@ struct ItemSummary: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 20) {
-        Label(L10n.text("Item details"), systemImage: "tray.full").font(.title2)
         Text(model.document.displayTitle).font(.largeTitle).textSelection(.enabled)
         if let details = model.document.metadata {
           Grid(alignment: .leading, horizontalSpacing: 28, verticalSpacing: 12) {
@@ -19,17 +18,10 @@ struct ItemSummary: View {
             row("Notes", details.notes)
           }.textSelection(.enabled)
         }
-        Label(L10n.format("Pages: %ld · Local only", model.document.pages.count), systemImage: "internaldrive")
-          .foregroundStyle(.secondary)
         HStack {
           Button(L10n.text("Edit details"), action: model.showItemMetadata)
-          Button(L10n.text("Add scans"), action: model.showCamera)
+          Button(L10n.text("Add scans"), action: model.showCamera).buttonStyle(.borderedProminent)
           Button(L10n.text("Create label…"), action: model.showItemLabel)
-        }
-        if model.document.metadata?.batchID != nil {
-          Divider()
-          Text(L10n.text("Keep all pages of one letter in this item. Use Next letter only when you start another letter."))
-          Button(L10n.text("Next letter"), action: model.nextLetter).buttonStyle(.borderedProminent)
         }
       }.padding(32).frame(maxWidth: 720, alignment: .leading).frame(maxWidth: .infinity)
     }.disabled(model.busy)

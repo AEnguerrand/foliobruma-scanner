@@ -47,8 +47,6 @@ struct ItemEditor: View {
           TextField(L10n.text("Notes"), text: $details.notes, axis: .vertical).lineLimit(3...6)
         }.formStyle(.grouped)
       }
-      Text(L10n.text("Saved on this Mac. No camera or account is required. Add scans later."))
-        .font(.caption).foregroundStyle(.secondary)
       if let failure { Text(failure).foregroundStyle(.red) }
       HStack {
         Button(L10n.text("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)

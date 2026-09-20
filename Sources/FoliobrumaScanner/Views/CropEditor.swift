@@ -29,7 +29,7 @@ struct CropEditor: View {
         } else {
           Text(L10n.text("Original image unavailable")).frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-      }.background(.black)
+      }.background(.black).environment(\.colorScheme, .dark)
       Grid(alignment: .leading) {
         GridRow {
           Text(L10n.text("Left"))
