@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
   @StateObject var model = Scanner()
+  @State private var usbWindow: NSWindow?
   @State private var rename = false
   @State private var draftTitle = ""
   let gold = Color(red: 1, green: 0.74, blue: 0.27)
@@ -9,6 +10,9 @@ struct ContentView: View {
     VStack(spacing: 0) {
       DocumentToolbar(model: model, rename: $rename)
       Divider()
+      if model.metadataWorkspace {
+        ItemSummary(model: model)
+      } else {
       HStack(spacing: 0) {
         if model.reviewing { PageStrip(model: model, gold: gold).frame(width: 190) }
         VStack(spacing: 0) {
@@ -20,6 +24,7 @@ struct ContentView: View {
           CaptureControls(model: model)
         }
         if !model.reviewing { CaptureSettings(model: model).frame(width: 290) }
+      }
       }
       Divider()
       SessionFooter(model: model)
@@ -56,13 +61,25 @@ struct ContentView: View {
         }.padding(24).frame(width: 380)
           .onAppear { draftTitle = model.document.title }
       }
+      .sheet(isPresented: $model.showNewItem) { ItemEditor(model: model, creating: true) }
+      .sheet(isPresented: $model.showMetadata) { ItemEditor(model: model, creating: false) }
+      .sheet(isPresented: $model.showLabel) { LabelEditor(model: model) }
       .sheet(isPresented: $model.showSessions) { SessionBrowser(model: model) }
       .sheet(isPresented: $model.showRejected) { RejectedReview(model: model) }
       .sheet(isPresented: $model.showExport) { ExportReview(model: model) }
       .sheet(isPresented: $model.showCrop) { CropEditor(model: model) }
       .sheet(isPresented: $model.showFraming) { FramingPreview(model: model) }
+      .background(USBButtonWindow { usbWindow = $0 })
+      .onReceive(USBButton.shared.actions) { action in
+        guard NSApp.isActive, let window = usbWindow, NSApp.keyWindow === window,
+          window.attachedSheet == nil, NSApp.modalWindow == nil, !rename else { return }
+        model.performUSBAction(action)
+      }
       .onAppear {
-        if !model.document.pages.isEmpty { model.beginReview() }
+        USBButton.shared.start()
+        if model.document.metadata != nil && model.document.pages.isEmpty {
+          model.showCatalog()
+        } else if !model.document.pages.isEmpty { model.beginReview() }
       }
   }
 }

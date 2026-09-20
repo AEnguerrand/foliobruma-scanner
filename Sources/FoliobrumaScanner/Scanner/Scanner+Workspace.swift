@@ -13,6 +13,7 @@ extension Scanner {
       pendingReview = true
       return
     }
+    metadataWorkspace = false
     reviewing = true
     selected = id ?? selected ?? document.pages.first?.id
     captureSaved = false
@@ -26,6 +27,7 @@ extension Scanner {
   }
   func showCamera() {
     guard !busy else { return }
+    metadataWorkspace = false
     reviewing = false
     selected = nil
     autoCapture = false
@@ -49,6 +51,7 @@ extension Scanner {
     guard !busy, let page = selectedPage else { return }
     autoCapture = false
     replacementID = page.id
+    metadataWorkspace = false
     reviewing = false
     selected = nil
     status = L10n.text("Place one page under the camera, then capture its replacement")
@@ -75,6 +78,7 @@ extension Scanner {
     try commit(next)
   }
   func resetWorkspace() {
+    metadataWorkspace = false
     reviewing = false
     selected = nil
     replacementID = nil
@@ -106,6 +110,7 @@ extension Scanner {
       if tracksActiveSession { UserDefaults.standard.set(url.path, forKey: "activeSession") }
       seedRecentPages()
       beginReview()
+      metadataWorkspace = restored.pages.isEmpty && restored.metadata != nil
       showSessions = false
     } catch { self.error = L10n.text("This folder does not contain a valid scanner session.") }
   }
@@ -129,7 +134,8 @@ extension Scanner {
           (try? manifest.resourceValues(forKeys: [.contentModificationDateKey]))?
           .contentModificationDate ?? .distantPast
         return SavedSession(
-          folder: url, title: doc.title, pageCount: doc.pages.count, modified: date)
+          folder: url, title: doc.displayTitle, pageCount: doc.pages.count, modified: date,
+          reference: doc.metadata?.reference, batchName: doc.metadata?.batchName)
       }.sorted { $0.modified > $1.modified }
       DispatchQueue.main.async {
         self.sessions = items

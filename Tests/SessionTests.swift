@@ -2,6 +2,7 @@ import Foundation
 import CoreImage
 import AppKit
 import PDFKit
+import Vision
 
 @main struct SessionTests {
  static func readData(_ url: URL) -> Data { try! Data(contentsOf: url) }
@@ -9,6 +10,78 @@ import PDFKit
   let deadline = Date().addingTimeInterval(10)
   while scanner.busy && Date() < deadline { RunLoop.main.run(until: Date().addingTimeInterval(0.01)) }
   precondition(!scanner.busy, "Background operation timed out")
+ }
+ static func testUSBButton() throws {
+  let suite = "foliobruma-usb-test-" + UUID().uuidString
+  let defaults = UserDefaults(suiteName: suite)!
+  defer { defaults.removePersistentDomain(forName: suite) }
+  let button = USBButton(defaults: defaults)
+  let press = USBButtonSignal(page: 65280, usage: 2, bytes: Data(0..<64))
+  let release = USBButtonSignal(page: 65280, usage: 2, bytes: Data([0]))
+  button.binding = USBButtonBinding(deviceID: "test", signal: press, action: .nextDocument, enabled: true)
+  var actions: [USBButtonAction] = []
+  let subscription = button.actions.sink { actions.append($0) }
+  defer { subscription.cancel() }
+  button.handle(release, at: 0)
+  precondition(actions.isEmpty && button.receivedCount == 1)
+  button.handle(press, at: 1)
+  button.handle(press, at: 1.1)
+  button.handle(press, at: 1.5)
+  button.handle(press, at: 2)
+  precondition(actions == [.nextDocument], "Held reports must not repeat actions")
+  button.handle(press, at: 3)
+  precondition(actions.count == 2)
+  button.settingsVisible = true
+  button.handle(press, at: 4)
+  precondition(actions.count == 2 && button.testCount == 3, "Settings tests must not run actions")
+  button.settingsVisible = false
+  button.binding.enabled = false
+  button.handle(press, at: 5)
+  precondition(actions.count == 2)
+  let restored = USBButton(defaults: defaults)
+  precondition(restored.binding.signal == press && restored.binding.action == .nextDocument)
+  precondition(!restored.binding.enabled)
+  restored.select("another-device")
+  precondition(restored.binding.signal == nil && !restored.binding.enabled)
+  restored.handle(press, at: 1)
+  precondition(restored.receivedCount == 1 && restored.testCount == 0, "Unlearned input must be visible without running an action")
+
+  let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: root) }
+  let scanner = Scanner(storageRoot: root)
+  let originalFolder = scanner.folder
+  scanner.performUSBAction(.nextDocument)
+  precondition(scanner.folder == originalFolder, "Do not create repeated empty documents")
+  scanner.busy = true
+  scanner.performUSBAction(.newItem)
+  precondition(!scanner.showNewItem)
+  scanner.busy = false
+  scanner.showExport = true
+  scanner.performUSBAction(.newItem)
+  precondition(!scanner.showNewItem)
+  scanner.showExport = false
+  scanner.performUSBAction(.autoCapture)
+  precondition(!scanner.autoCapture, "Disconnected camera must not start auto capture")
+  scanner.connected = true
+  scanner.performUSBAction(.autoCapture)
+  precondition(scanner.autoCapture)
+  scanner.performUSBAction(.autoCapture)
+  precondition(!scanner.autoCapture)
+  scanner.reviewing = true
+  scanner.performUSBAction(.capture)
+  precondition(!scanner.busy)
+  scanner.performUSBAction(.autoCapture)
+  precondition(!scanner.autoCapture)
+  scanner.reviewing = false
+  try scanner.commit(ScanDocument(pages: [ScanPage(file: "Pages/test.jpg", original: "Originals/test.jpg")]))
+  scanner.performUSBAction(.nextDocument)
+  precondition(scanner.folder != originalFolder && scanner.document.pages.isEmpty)
+  let old = try JSONDecoder().decode(ScanDocument.self,
+    from: Data(contentsOf: originalFolder.appendingPathComponent("session.json")))
+  precondition(old.pages.count == 1, "Next document must keep the saved session")
+  scanner.performUSBAction(.newItem)
+  precondition(scanner.showNewItem)
+  print("PASS: USB report matching, repeat suppression, disabled and test modes, preferences, action guards, next document preservation")
  }
  static func testLocalization() throws {
   let resources = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
@@ -192,10 +265,120 @@ import PDFKit
   precondition(scanner.selected == pages[0].id)
   print("PASS: page merge order, rotation, pixels, source preservation, reload, PDF, crop, and failed-write recovery")
  }
+ static func testCatalogAndLabels() throws {
+  let root = FileManager.default.temporaryDirectory.appendingPathComponent("catalog-test-" + UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: root) }
+  let scanner = Scanner(storageRoot: root)
+  let legacy = try JSONDecoder().decode(ScanDocument.self, from: Data(#"{"title":"Old book","pages":[]}"#.utf8))
+  precondition(legacy.metadata == nil && legacy.displayTitle == "Old book")
+  let batch = ItemMetadata(batchID: UUID().uuidString, batchName: "Family letters", kind: "Letter",
+    author: "Synthetic sender", period: "1932", location: "Box 3", tags: "Family", notes: "Test only",
+    webLink: "https://foliobruma.com/d/test")
+  scanner.book = true; scanner.split = true
+  try scanner.createItem(title: "", metadata: batch, scanPages: false)
+  precondition(scanner.document.displayTitle == "LET-0001")
+  precondition(scanner.document.pages.isEmpty && scanner.sessionSaved && scanner.metadataWorkspace)
+  precondition(!scanner.connected && !scanner.book && !scanner.split)
+  let firstFolder = scanner.folder
+  let pages = [ScanPage(file: "Pages/one.jpg", original: "Originals/one.jpg"),
+               ScanPage(file: "Pages/two.jpg", original: "Originals/two.jpg")]
+  try scanner.applyCapture(pages, replacing: nil, resolving: nil)
+  precondition(scanner.document.metadata?.reference == "LET-0001" && scanner.document.pages.count == 2,
+    "Additional pages must stay in the same letter")
+  let firstBytes = readData(firstFolder.appendingPathComponent("session.json"))
+  scanner.autoCapture = true
+  scanner.nextLetter()
+  precondition(scanner.error == nil && !scanner.autoCapture && scanner.metadataWorkspace)
+  precondition(scanner.document.metadata?.reference == "LET-0002" && scanner.document.pages.isEmpty)
+  let next = scanner.document.metadata!
+  precondition(next.batchID == batch.batchID && next.batchName == batch.batchName)
+  precondition(next.location == batch.location && next.tags == batch.tags)
+  precondition(next.author.isEmpty && next.period.isEmpty && next.notes.isEmpty && next.webLink.isEmpty)
+  let savedFirst = try JSONDecoder().decode(ScanDocument.self, from: readData(firstFolder.appendingPathComponent("session.json")))
+  let originalFirst = try JSONDecoder().decode(ScanDocument.self, from: firstBytes)
+  precondition(savedFirst.metadata == originalFirst.metadata && savedFirst.pages.map(\.id) == pages.map(\.id))
+  let secondFolder = scanner.folder
+  var edited = next
+  edited.reference = "DO-NOT-CHANGE"; edited.batchID = "DO-NOT-CHANGE"
+  edited.location = "Box 4"
+  scanner.pdfIsCurrent = true
+  try scanner.saveMetadata(title: "A title", metadata: edited)
+  precondition(scanner.document.metadata?.reference == "LET-0002")
+  precondition(scanner.document.metadata?.batchID == batch.batchID && scanner.pdfIsCurrent)
+  try scanner.restore()
+  precondition(scanner.document.title == "A title" && scanner.document.metadata?.location == "Box 4")
+  scanner.busy = true; scanner.nextLetter(); scanner.busy = false
+  precondition(scanner.folder == secondFolder)
+  scanner.showCamera(); scanner.nextLetter()
+  precondition(!scanner.metadataWorkspace && !scanner.reviewing && !scanner.autoCapture)
+  precondition(scanner.document.metadata?.reference == "LET-0003")
+  scanner.openSession(at: firstFolder)
+  scanner.nextLetter()
+  precondition(scanner.document.metadata?.reference == "LET-0004", "Reopening an older letter must not reuse a reference")
+  scanner.browseSessions()
+  let deadline = Date().addingTimeInterval(5)
+  while scanner.loadingSessions && Date() < deadline { RunLoop.main.run(until: Date().addingTimeInterval(0.01)) }
+  precondition(scanner.sessions.contains { $0.reference == "LET-0002" && $0.batchName == batch.batchName })
+  scanner.showSessions = false
+  let lastFolder = scanner.folder
+  let manifest = readData(lastFolder.appendingPathComponent("session.json"))
+  let blocker = root.appendingPathComponent("blocker")
+  try Data("blocked".utf8).write(to: blocker)
+  scanner.root = blocker
+  scanner.nextLetter()
+  precondition(scanner.error != nil && scanner.folder == lastFolder)
+  precondition(readData(lastFolder.appendingPathComponent("session.json")) == manifest)
+  scanner.root = root; scanner.error = nil
+  scanner.folder = blocker
+  do { try scanner.createItem(title: "", metadata: batch, scanPages: false); preconditionFailure("Expected failed save") }
+  catch { precondition(scanner.document.metadata?.reference == "LET-0004") }
+  scanner.folder = lastFolder
+  scanner.nextLetter()
+  precondition(scanner.document.metadata?.reference == "LET-0006", "Failed writes can leave gaps")
+  try FileManager.default.removeItem(at: root.appendingPathComponent("item-reference.json"))
+  scanner.nextLetter()
+  precondition(scanner.document.metadata?.reference == "LET-0007", "Recover counter from saved sessions")
+  try Data("invalid".utf8).write(to: root.appendingPathComponent("item-reference.json"))
+  scanner.nextLetter()
+  precondition(scanner.error != nil && scanner.document.metadata?.reference == "LET-0007",
+    "A broken counter must stop creation instead of reusing a reference")
+
+  for bad in ["", "http://foliobruma.com/d/test", "javascript:alert(1)", "file:///tmp/a", "https://",
+              "https://user:secret@foliobruma.com/d/test", "https://foliobruma.com/a b",
+              "https://foliobruma.com/" + String(repeating: "a", count: 100)] {
+    precondition(DocumentLabel.validURL(bad) == nil)
+  }
+  let link = "https://foliobruma.com/d/7K2M9"
+  let label = DocumentLabel(title: "Family letters", subtitle: "LET-0042", link: link)
+  let qr = label.qrImage()!
+  var qrRect = CGRect(origin: .zero, size: qr.size)
+  let image = qr.cgImage(forProposedRect: &qrRect, context: nil, hints: nil)!
+  let request = VNDetectBarcodesRequest()
+  request.symbologies = [.qr]
+  try VNImageRequestHandler(cgImage: image).perform([request])
+  precondition(request.results?.first?.payloadStringValue == link, "Generated QR must decode to the exact URL")
+  let view = DocumentLabelView(label: label, qr: label.qrImage()!)
+  let data = view.dataWithPDF(inside: view.bounds)
+  let pdf = PDFDocument(data: data)!
+  precondition(pdf.pageCount == 1)
+  let page = pdf.page(at: 0)!
+  let bounds = page.bounds(for: .mediaBox)
+  precondition(abs(bounds.width - DocumentLabel.size.width) < 0.1 && abs(bounds.height - DocumentLabel.size.height) < 0.1)
+  // Read the QR from the whole exported page at the printer's standard resolution.
+  let preview = page.thumbnail(of: NSSize(width: bounds.width * 300 / 72, height: bounds.height * 300 / 72), for: .mediaBox)
+  var previewRect = CGRect(origin: .zero, size: preview.size)
+  let rendered = preview.cgImage(forProposedRect: &previewRect, context: nil, hints: nil)!
+  let printed = VNDetectBarcodesRequest(); printed.symbologies = [.qr]
+  try VNImageRequestHandler(cgImage: rendered).perform([printed])
+  precondition(printed.results?.first?.payloadStringValue == link, "QR must survive the PDF layout")
+  print("PASS: metadata-only records; batch inheritance; multi-page letters; reference recovery; failed writes; HTTPS validation; QR decoding; 62 x 25 mm PDF")
+ }
  static func main() throws {
+  try testCatalogAndLabels()
   try testPageMerge()
   testDuplicateDetail()
   try testLocalization()
+  try testUSBButton()
   let root=FileManager.default.temporaryDirectory.appendingPathComponent("sovenelia-test-"+UUID().uuidString)
   defer {try? FileManager.default.removeItem(at:root)}
   let scanner=Scanner(storageRoot:root)

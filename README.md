@@ -17,8 +17,10 @@ Foliobruma is a free, open-source document camera app. Place a page under the ca
 - **Page review:** browse a page sidebar, zoom, rotate, reorder, merge two pages, crop from the original, replace a page, or undo the last removal.
 - **Saved sessions:** browse documents by name, page count, and edit date. Original images stay on your Mac.
 - **PDF export:** save the pages in the current document to a local PDF.
+- **Metadata records and letter batches:** save details without a scan. Use automatic references and shared batch details.
+- **QR labels:** preview, export, and print a compact label with an existing HTTPS link. QR codes are generated on your Mac.
 
-There is no OCR, cloud upload, QR code generation, or telemetry in this version. Exported PDFs contain page images, without a searchable text layer.
+There is no OCR, cloud upload, SaaS publishing, or telemetry in this version. Exported PDFs contain page images, without a searchable text layer.
 
 ## Download and install
 
@@ -85,7 +87,54 @@ text or add OCR.
 7. Click **Review pages** or choose **Review**. Capture pauses. Select a page in the sidebar, or enter a page number and click **Go**. Zoom and scroll to inspect the text. Use **Rotate**, **Move earlier**, **Move later**, **Remove**, or **Undo removal** as needed.
 8. Click **Export PDF**, check the page count and rejected-photo notice, then choose where to save the file. Progress appears at the bottom of the window. Open the result from **Files → Open PDF** or **Show PDF in Finder**.
 
-Use **Documents → New document** for another book or group of pages. The document title menu also contains **New document** and **Rename document…**. Use **Documents** to search saved documents and open one by name. **Open session folder…** remains available for sessions stored elsewhere. Closing the app keeps the session. Returning to Scan does not restart automatic capture.
+Use **Documents → New item…** for another book or group of pages. Select **Scan pages** to use the camera. The document title menu also contains **New item…** and **Rename document…**. Use **Documents** to search saved documents and open one by name. **Open session folder…** remains available for sessions stored elsewhere. Closing the app keeps the session. Returning to Scan does not restart automatic capture.
+
+### Metadata records and letter batches
+
+Open the document title menu and select **New item…** (⌘N). Select **Metadata
+only** to record a physical item without a camera, or **Scan pages** to start
+with scanning. The title is optional. An empty title uses the automatic
+reference. Type, author or sender, date or period, physical location, tags, and
+notes are optional details. Use **Details → Edit details** to change them later.
+Use **Add scans** to add pages to the same record.
+
+For a batch of letters, enable **Start a letter batch**. Enter the batch name,
+location, and tags once. Each letter gets a reference such as `LET-0001`.
+**Next letter** saves a new, empty record and copies those three batch fields.
+It clears the title, author, date, notes, and web link. It pauses automatic
+capture and selects single-page scanning. Start capture again when ready.
+All pages of a letter stay in the same record until you select **Next letter**.
+A page turn does not create another letter. Editing batch fields affects the
+current letter and later letters created from it, not earlier records.
+
+References are unique within this Mac's library, not across devices. Other
+items use `DOC-` references and share the same counter. Gaps are possible after
+a failed write. References do not change when you rename an item. Documents
+can be searched by title, reference, or batch name.
+
+### Compact QR labels
+
+Open **Create label…** from the document title menu or the Details view.
+
+- **Item link:** paste an existing permanent HTTPS link from `foliobruma.com`.
+  **Save item link** stores it in the current record. The app does not create
+  the web record, upload scans, check access permissions, or verify that the
+  destination is live. No URL is invented from a local reference.
+- **Custom link:** enter any HTTPS destination independently of the current
+  record. Custom label text and links are not saved with the record.
+
+Edit the label title and optional second line. The default uses the item title
+(or batch name) and its reference. These edits change only the label. Links
+are limited to 100 UTF-8 bytes to keep the QR compact; long printed text is
+shortened, while the QR contains the full link. A short permanent link is best.
+
+The layout is **62 × 25 mm** for the **DK-22205** continuous roll, in black on
+white. Use **Save label PDF…** or **Print…**. In the macOS print dialog, select
+the Brother QL-600, the correct paper size, and 100% scale. Printing requires
+a working macOS printer queue and driver. Exporting the label PDF does not.
+The QR has a white border. Test a printed label with a phone before a batch;
+physical print quality and QL-600 feed/cutter behaviour are not yet verified.
+Label generation works offline. Opening the SaaS link requires a connection.
 
 ### Review and correct pages
 
@@ -96,7 +145,7 @@ Use **Documents → New document** for another book or group of pages. The docum
 - **Rejected** opens photos that are excluded from the PDF. Inspect the image with zoom before using **Keep this scan anyway**. **Rescan** returns to the camera, but keeps the rejected photo in the review list until you keep or dismiss it. **Dismiss from review** keeps its image file and removes the review entry.
 - The footer distinguishes the saved session from the exported PDF. After an edit, **PDF needs export** means that the earlier PDF has not changed. Export again to include the edit. PDF export status applies to the current app session.
 
-Keyboard controls: **⌘O** opens Documents, **⌘N** creates a document, **⌘E** opens the export summary, **← / →** changes the selected review page, **⌘⇧← / ⌘⇧→** moves that page earlier or later, **⌘R** rotates it, and **⌘Z** undoes the last removal. **Space** captures a page in Scan mode. Use Tab to move between controls.
+Keyboard controls: **⌘O** opens Documents, **⌘N** opens New item, **⌘E** opens the export summary, **← / →** changes the selected review page, **⌘⇧← / ⌘⇧→** moves that page earlier or later, **⌘R** rotates it, and **⌘Z** undoes the last removal. **Space** captures a page in Scan mode. Use Tab to move between controls.
 
 ### Review shortcuts
 
@@ -116,6 +165,39 @@ Keyboard controls: **⌘O** opens Documents, **⌘N** creates a document, **⌘E
 Saved pages are already included in PDF export. They do not need approval.
 Use **Keep this scan anyway** only after you check a rejected photo. Shortcuts
 for page changes are disabled while a save or other operation is in progress.
+
+### Physical USB button
+
+Open **Settings → USB button**. Select the device, select an action, then click
+**Learn button** and press the physical button once. Learning stays active until
+you press or click **Cancel**. **Signals received** shows input from the selected
+device, even before learning. Press it again to check the
+**Test presses** counter. Enable **Enable button action**, close Settings, and
+select the document window. The setting is saved on this Mac.
+
+| Action | Suggested use |
+| --- | --- |
+| **Capture page** | Recommended for a scanner button or foot control. Uses manual capture with the normal quality checks. |
+| **Start or pause auto capture** | Start or stop a scanning run without the keyboard. |
+| **Next document** | Save the current document and start an empty document. Requires at least one saved page. |
+| **New item…** | Open the form for a new document or metadata record. |
+| **Next letter** | Start the next letter in the current batch, with shared batch details. |
+| **Review pages** | Pause capture and inspect saved pages. |
+| **Export PDF** | Open the export summary. You still choose the file location. |
+
+One device and one learned signal can be assigned at a time. Actions run only
+in the active document window. They are blocked in Settings, dialogs, and while
+the app is busy. Reports less than 0.6 seconds apart are treated as one press;
+wait at least 0.6 seconds between presses. Device removal stops input. Reconnect
+to the same USB port if the device has no serial number, or select and learn it
+again. A disconnected saved device remains in the selector.
+
+The IRIScan button with USB ID `2e5a:2015` sent a repeatable signal during a local
+test. Other USB HID button or vendor controls can be learned if they send the
+same report for each press. Keyboards, mice, and devices with changing report
+counters are not supported by this setting. Test the counter before enabling
+an action: a release or an idle report must not count as another press. This
+feature does not change camera detection, capture quality checks, or saved files.
 
 ### Capture signals
 
@@ -147,8 +229,13 @@ The old `Sovenelia Scanner` folder name and app identifier are retained to keep 
 ├── Originals/    Original captures
 ├── Pages/        Processed page images
 ├── Rejected/     Photos rejected by quality checks, when present
-└── session.json  Document name, page order, rotations, and rejected-photo review records
+└── session.json  Document name, optional metadata, page order, rotations, and rejected-photo review records
 ```
+
+Metadata is stored in `session.json`; older sessions remain readable. The local
+reference counter and lock file are in `~/Library/Application Support/Sovenelia Scanner/`.
+Back up this folder with Sessions to retain the counter. If the counter is
+missing, the app checks saved records before assigning another reference.
 
 Removing a page removes it from the document, but keeps its image files. Replacement and crop operations also keep previous image files. Older sessions remain readable. Rejected photos with no saved review record are recovered for inspection; their earlier crop settings may be unavailable. Rejected photos are excluded from PDF export unless you keep them. Exported PDFs are separate files. Back up the whole session folder if you want to retain the originals and continue editing later.
 

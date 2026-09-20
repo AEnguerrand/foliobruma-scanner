@@ -208,3 +208,93 @@
 "Pages merged · Original files kept" = "Pages merged · Original files kept";
 "Merge failed · Pages unchanged" = "Merge failed · Pages unchanged";
 "The pages could not be merged. Check the image files and their size." = "The pages could not be merged. Check the image files and their size.";
+"Item saved on this Mac" = "Item saved on this Mac";
+"New item" = "New item";
+"New item…" = "New item…";
+"Item details" = "Item details";
+"Start with" = "Start with";
+"Metadata only" = "Metadata only";
+"Scan pages" = "Scan pages";
+"Start a letter batch" = "Start a letter batch";
+"Reference" = "Reference";
+"Batch name" = "Batch name";
+"Next letter copies the batch name, location, and tags. Earlier letters do not change." = "Next letter copies the batch name, location, and tags. Earlier letters do not change.";
+"Title (optional)" = "Title (optional)";
+"Leave the title empty to use the automatic reference." = "Leave the title empty to use the automatic reference.";
+"Item type" = "Item type";
+"Document" = "Document";
+"Folder" = "Folder";
+"Letter" = "Letter";
+"Author or sender" = "Author or sender";
+"Date or period" = "Date or period";
+"Physical location" = "Physical location";
+"Tags" = "Tags";
+"Notes" = "Notes";
+"Saved on this Mac. No camera or account is required. Add scans later." = "Saved on this Mac. No camera or account is required. Add scans later.";
+"Create item" = "Create item";
+"Save details" = "Save details";
+"Edit details" = "Edit details";
+"Edit details…" = "Edit details…";
+"Add scans" = "Add scans";
+"Create label…" = "Create label…";
+"Keep all pages of one letter in this item. Use Next letter only when you start another letter." = "Keep all pages of one letter in this item. Use Next letter only when you start another letter.";
+"Next letter" = "Next letter";
+"Details" = "Details";
+"Create label" = "Create label";
+"Label destination" = "Label destination";
+"Item link" = "Item link";
+"Custom link" = "Custom link";
+"Custom labels are not saved with this item." = "Custom labels are not saved with this item.";
+"Paste the existing permanent link from foliobruma.com. This app does not upload or publish items." = "Paste the existing permanent link from foliobruma.com. This app does not upload or publish items.";
+"HTTPS link" = "HTTPS link";
+"Label title" = "Label title";
+"Second line (optional)" = "Second line (optional)";
+"Label preview" = "Label preview";
+"Enter an HTTPS link of 100 bytes or fewer to preview the QR code." = "Enter an HTTPS link of 100 bytes or fewer to preview the QR code.";
+"DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link." = "DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link.";
+"Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone." = "Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone.";
+"Item link saved" = "Item link saved";
+"Save item link" = "Save item link";
+"Save label PDF…" = "Save label PDF…";
+"Print…" = "Print…";
+"Could not create the QR code." = "Could not create the QR code.";
+
+"USB button" = "USB button";
+
+"Device" = "Device";
+
+"None" = "None";
+
+"Saved device · Disconnected or ambiguous" = "Saved device · Disconnected or ambiguous";
+
+"Refresh devices" = "Refresh devices";
+
+"Action" = "Action";
+
+"Learn button" = "Learn button";
+
+"Test presses: %ld" = "Test presses: %ld";
+
+"Enable button action" = "Enable button action";
+
+"Start or pause auto capture" = "Start or pause auto capture";
+
+"Next document" = "Next document";
+
+"Use Capture page for scanning. Use Next letter within a letter batch. New item opens the item form." = "Use Capture page for scanning. Use Next letter within a letter batch. New item opens the item form.";
+
+"Actions are off in Settings. Close Settings and select the document window to use the button." = "Actions are off in Settings. Close Settings and select the document window to use the button.";
+
+"Supports USB HID button and vendor controls with a repeatable signal. Keyboards and mice are not listed." = "Supports USB HID button and vendor controls with a repeatable signal. Keyboards and mice are not listed.";
+
+"USB access failed. Check Input Monitoring in System Settings, then reopen the app." = "USB access failed. Check Input Monitoring in System Settings, then reopen the app.";
+
+"Press the button once. Do not hold it." = "Press the button once. Do not hold it.";
+
+"No signal received. Try Learn button again." = "No signal received. Try Learn button again.";
+
+"Button learned. Press it again to test, then enable the action." = "Button learned. Press it again to test, then enable the action.";
+
+"Click Learn button, then press the physical button." = "Click Learn button, then press the physical button.";
+
+"Signals received: %ld" = "Signals received: %ld";

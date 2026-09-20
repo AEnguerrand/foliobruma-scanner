@@ -208,3 +208,93 @@
 "Pages merged · Original files kept" = "Pages fusionnées · Fichiers originaux conservés";
 "Merge failed · Pages unchanged" = "Échec de la fusion · Pages inchangées";
 "The pages could not be merged. Check the image files and their size." = "Impossible de fusionner les pages. Vérifiez les fichiers image et leur taille.";
+"Item saved on this Mac" = "Élément enregistré sur ce Mac";
+"New item" = "Nouvel élément";
+"New item…" = "Nouvel élément…";
+"Item details" = "Détails de l’élément";
+"Start with" = "Commencer par";
+"Metadata only" = "Métadonnées uniquement";
+"Scan pages" = "Numériser des pages";
+"Start a letter batch" = "Commencer un lot de lettres";
+"Reference" = "Référence";
+"Batch name" = "Nom du lot";
+"Next letter copies the batch name, location, and tags. Earlier letters do not change." = "Lettre suivante reprend le nom du lot, l’emplacement et les étiquettes. Les lettres précédentes ne changent pas.";
+"Title (optional)" = "Titre (facultatif)";
+"Leave the title empty to use the automatic reference." = "Laissez le titre vide pour utiliser la référence automatique.";
+"Item type" = "Type d’élément";
+"Document" = "Document";
+"Folder" = "Dossier";
+"Letter" = "Lettre";
+"Author or sender" = "Auteur ou expéditeur";
+"Date or period" = "Date ou période";
+"Physical location" = "Emplacement physique";
+"Tags" = "Étiquettes";
+"Notes" = "Notes";
+"Saved on this Mac. No camera or account is required. Add scans later." = "Enregistré sur ce Mac. Aucune caméra ni aucun compte requis. Ajoutez les pages plus tard.";
+"Create item" = "Créer l’élément";
+"Save details" = "Enregistrer les détails";
+"Edit details" = "Modifier les détails";
+"Edit details…" = "Modifier les détails…";
+"Add scans" = "Ajouter des pages";
+"Create label…" = "Créer une étiquette…";
+"Keep all pages of one letter in this item. Use Next letter only when you start another letter." = "Conservez toutes les pages d’une lettre dans cet élément. Utilisez Lettre suivante uniquement pour commencer une autre lettre.";
+"Next letter" = "Lettre suivante";
+"Details" = "Détails";
+"Create label" = "Créer une étiquette";
+"Label destination" = "Destination de l’étiquette";
+"Item link" = "Lien de l’élément";
+"Custom link" = "Lien personnalisé";
+"Custom labels are not saved with this item." = "Les étiquettes personnalisées ne sont pas enregistrées avec cet élément.";
+"Paste the existing permanent link from foliobruma.com. This app does not upload or publish items." = "Collez le lien permanent existant de foliobruma.com. Cette application ne téléverse ni ne publie les éléments.";
+"HTTPS link" = "Lien HTTPS";
+"Label title" = "Titre de l’étiquette";
+"Second line (optional)" = "Deuxième ligne (facultative)";
+"Label preview" = "Aperçu de l’étiquette";
+"Enter an HTTPS link of 100 bytes or fewer to preview the QR code." = "Saisissez un lien HTTPS de 100 octets maximum pour afficher le code QR.";
+"DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link." = "DK-22205 · 62 × 25 mm · Noir sur blanc. Le texte long est abrégé sur l’étiquette. Le QR contient le lien complet.";
+"Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone." = "Sélectionnez la QL-600 et le papier 62 × 25 mm dans la fenêtre d’impression. Utilisez une échelle de 100 %. Testez une étiquette avec votre téléphone.";
+"Item link saved" = "Lien de l’élément enregistré";
+"Save item link" = "Enregistrer le lien";
+"Save label PDF…" = "Enregistrer l’étiquette PDF…";
+"Print…" = "Imprimer…";
+"Could not create the QR code." = "Impossible de créer le code QR.";
+
+"USB button" = "Bouton USB";
+
+"Device" = "Périphérique";
+
+"None" = "Aucun";
+
+"Saved device · Disconnected or ambiguous" = "Périphérique enregistré · Déconnecté ou ambigu";
+
+"Refresh devices" = "Actualiser les périphériques";
+
+"Action" = "Action";
+
+"Learn button" = "Détecter le bouton";
+
+"Test presses: %ld" = "Appuis de test : %ld";
+
+"Enable button action" = "Activer l’action du bouton";
+
+"Start or pause auto capture" = "Démarrer ou suspendre la capture automatique";
+
+"Next document" = "Document suivant";
+
+"Use Capture page for scanning. Use Next letter within a letter batch. New item opens the item form." = "Utilisez Capturer la page pour scanner. Utilisez Lettre suivante dans un lot de lettres. Nouvel élément ouvre le formulaire.";
+
+"Actions are off in Settings. Close Settings and select the document window to use the button." = "Les actions sont désactivées dans Réglages. Fermez Réglages et sélectionnez la fenêtre du document pour utiliser le bouton.";
+
+"Supports USB HID button and vendor controls with a repeatable signal. Keyboards and mice are not listed." = "Prend en charge les boutons USB HID et les commandes constructeur à signal stable. Les claviers et souris ne sont pas affichés.";
+
+"USB access failed. Check Input Monitoring in System Settings, then reopen the app." = "Échec de l’accès USB. Vérifiez Surveillance de l’entrée dans Réglages Système, puis rouvrez l’application.";
+
+"Press the button once. Do not hold it." = "Appuyez une fois sur le bouton. Ne le maintenez pas enfoncé.";
+
+"No signal received. Try Learn button again." = "Aucun signal reçu. Réessayez Détecter le bouton.";
+
+"Button learned. Press it again to test, then enable the action." = "Bouton détecté. Appuyez à nouveau pour tester, puis activez l’action.";
+
+"Click Learn button, then press the physical button." = "Cliquez sur Détecter le bouton, puis appuyez sur le bouton physique.";
+
+"Signals received: %ld" = "Signaux reçus : %ld";

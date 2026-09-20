@@ -21,6 +21,8 @@ struct SessionBrowser: View {
         List(
           model.sessions.filter {
             search.isEmpty || $0.title.localizedCaseInsensitiveContains(search)
+              || ($0.reference ?? "").localizedCaseInsensitiveContains(search)
+              || ($0.batchName ?? "").localizedCaseInsensitiveContains(search)
           }
         ) { item in
           Button {
@@ -30,6 +32,10 @@ struct SessionBrowser: View {
               Image(systemName: "doc.text").font(.title2)
               VStack(alignment: .leading, spacing: 5) {
                 Text(item.title).font(.headline)
+                if let reference = item.reference {
+                  Text([item.batchName ?? "", reference].filter { !$0.isEmpty }.joined(separator: " · "))
+                    .font(.caption).foregroundStyle(.secondary)
+                }
                 Text(
                   L10n.format("Pages: %ld · %@", item.pageCount, item.modified.formatted(date: .abbreviated, time: .shortened))
                 )
@@ -48,9 +54,9 @@ struct SessionBrowser: View {
       HStack {
         Button(L10n.text("Open session folder…"), action: model.openSession)
         Spacer()
-        Button(L10n.text("New document")) {
-          model.newDocument()
-          if model.error == nil { model.showSessions = false }
+        Button(L10n.text("New item…")) {
+          model.showSessions = false
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { model.prepareNewItem() }
         }
         .buttonStyle(.borderedProminent)
       }
