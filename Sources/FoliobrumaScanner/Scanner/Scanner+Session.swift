@@ -39,7 +39,9 @@ extension Scanner {
     do {
       try commit(next)
       deleting = (page, index)
-      selected = nil
+      if selected == page.id {
+        selected = next.pages.isEmpty ? nil : next.pages[min(index, next.pages.count - 1)].id
+      }
       status = L10n.text("Page removed · Undo available")
     } catch { self.error = error.localizedDescription }
   }
@@ -50,6 +52,7 @@ extension Scanner {
     do {
       try commit(next)
       deleting = nil
+      if reviewing { selected = removed.page.id }
       status = L10n.text("Page restored")
     } catch { self.error = error.localizedDescription }
   }

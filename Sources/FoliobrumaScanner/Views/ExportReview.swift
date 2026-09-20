@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ExportReview: View {
   @ObservedObject var model: Scanner
+  @Binding var reviewRejectedAfterDismiss: Bool
   var body: some View {
     VStack(alignment: .leading, spacing: 18) {
       Text(L10n.text("Export PDF")).font(.title2)
@@ -13,7 +14,10 @@ struct ExportReview: View {
         Label(
           L10n.format("Rejected photos excluded: %ld.", model.rejectedScans.count),
           systemImage: "exclamationmark.triangle")
-        Text(L10n.text("Close this panel and open Rejected to inspect them before export.")).font(.callout)
+        Button(L10n.text("Review rejected scans…")) {
+          reviewRejectedAfterDismiss = true
+          model.showExport = false
+        }
       }
       HStack {
         Button(L10n.text("Cancel")) { model.showExport = false }.keyboardShortcut(.cancelAction)

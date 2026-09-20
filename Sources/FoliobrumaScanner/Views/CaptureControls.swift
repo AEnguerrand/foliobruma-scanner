@@ -38,8 +38,6 @@ struct CaptureControls: View {
               systemImage: "camera.fill")
           }.keyboardShortcut(.space, modifiers: []).controlSize(.large)
             .disabled(!model.connected || model.busy)
-          Button(L10n.text("Review pages")) { model.beginReview() }
-            .disabled(model.document.pages.isEmpty || model.busy)
         }
       }.padding(16)
     }
@@ -94,11 +92,11 @@ struct CaptureSettings: View {
           .disabled(!model.connected)
         Divider()
         Toggle(L10n.text("Capture sounds"), isOn: $model.soundEnabled)
-        Text(
-          L10n.text("Keep all page edges in view. Use even light. Wait for the saved signal before turning the page.")
-        )
-        .font(.callout).foregroundStyle(.secondary)
+        DisclosureGroup(L10n.text("Scanning tips")) {
+          Text(L10n.text("Keep all page edges in view. Use even light. Wait for the saved signal before turning the page."))
+            .font(.callout).foregroundStyle(.secondary).padding(.top, 6)
+        }
       }.padding(18)
-    }.background(Color(white: 0.13)).disabled(model.busy || model.autoCapture)
+    }.background(Color(nsColor: .controlBackgroundColor)).disabled(model.busy || model.autoCapture)
   }
 }

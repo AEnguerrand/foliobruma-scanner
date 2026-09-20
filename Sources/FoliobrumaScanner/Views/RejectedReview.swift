@@ -32,7 +32,7 @@ struct RejectedReview: View {
           }
         }.disabled(model.busy)
         Text(L10n.text(scan.reason)).font(.headline)
-        ZoomImage(url: model.folder.appendingPathComponent(scan.file))
+        ZoomImage(url: model.folder.appendingPathComponent(scan.file)).id(scan.file)
         HStack {
           Button(L10n.text("Rescan")) {
             model.replacementID = scan.replacementID

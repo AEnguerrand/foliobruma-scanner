@@ -21,8 +21,8 @@
 "Capture is paused. These photos are excluded from your PDF." = "Capture is paused. These photos are excluded from your PDF.";
 "Capture page" = "Capture page";
 "Capture paused" = "Capture paused";
-"Capture paused · Ready when you are" = "Capture paused · Ready when you are";
-"Capture paused · Review your pages" = "Capture paused · Review your pages";
+"Capture paused · Ready when you are" = "Capture paused";
+"Capture paused · Review your pages" = "Capture paused";
 "Capture replacement" = "Capture replacement";
 "Capture sounds" = "Capture sounds";
 "Capturing… Hold still" = "Capturing… Hold still";
@@ -51,7 +51,7 @@
 "Document name" = "Document name";
 "Document type" = "Document type";
 "Documents" = "Documents";
-"Documents on this Mac" = "Documents on this Mac";
+"Documents on this Mac" = "Documents";
 "Done" = "Done";
 "Drag the gold handle in the camera view to adjust the split." = "Drag the gold handle in the camera view to adjust the split.";
 "Export PDF" = "Export PDF";
@@ -76,10 +76,10 @@
 "Move earlier" = "Move earlier";
 "Move later" = "Move later";
 "Move your hands away…" = "Move your hands away…";
-"Name your document" = "Name your document";
+"Name your document" = "Rename document";
 "New document" = "New document";
 "New document · Previous session kept on disk" = "New document · Previous session kept on disk";
-"New session · No pages saved" = "New session · No pages saved";
+"New session · No pages saved" = "Not saved yet";
 "Next page" = "Next page";
 "Next page (→)" = "Next page (→)";
 "No camera found" = "No camera found";
@@ -113,17 +113,17 @@
 "Pages" = "Pages";
 "Pages in document order: %ld" = "Pages in document order: %ld";
 "Pages: %ld · %@" = "Pages: %ld · %@";
-"Pages: %ld · Local only" = "Pages: %ld · Local only";
+"Pages: %ld · Local only" = "Pages: %ld";
 "Pause auto capture" = "Pause auto capture";
 "Photo" = "Photo";
 "Photo %ld · %@" = "Photo %ld · %@";
 "Place one page under the camera, then capture its replacement" = "Place one page under the camera, then capture its replacement";
 "Preparing preview…" = "Preparing preview…";
 "Preview crop and split" = "Preview crop and split";
-"Preview from the camera feed. No page has been saved. Check edges and spine before scanning." = "Preview from the camera feed. No page has been saved. Check edges and spine before scanning.";
+"Preview from the camera feed. No page has been saved. Check edges and spine before scanning." = "Check the edges and spine. This preview is not saved.";
 "Previous page" = "Previous page";
 "Previous page (←)" = "Previous page (←)";
-"Quit and reopen the app to apply a language change." = "Quit and reopen the app to apply a language change.";
+"Quit and reopen the app to apply a language change." = "Restart the app to change the language.";
 "Ready to capture" = "Ready to capture";
 "Reconnect" = "Reconnect";
 "Recovered photo. Check it before keeping it. Earlier crop settings may be unavailable." = "Recovered photo. Check it before keeping it. Earlier crop settings may be unavailable.";
@@ -145,22 +145,22 @@
 "Right" = "Right";
 "Right crop edge" = "Right crop edge";
 "Rotate" = "Rotate";
-"Rotations and crops are included. This PDF contains images, without searchable text." = "Rotations and crops are included. This PDF contains images, without searchable text.";
+"Rotations and crops are included. This PDF contains images, without searchable text." = "Crops and rotations are included. Text is not searchable.";
 "Save crop" = "Save crop";
-"Save name" = "Save name";
+"Save name" = "Save";
 "Saved — turn the page" = "Saved — turn the page";
 "Saving scan…" = "Saving scan…";
 "Scan" = "Scan";
 "Scan looks blurred · Hold the page still and rescan" = "Scan looks blurred · Hold the page still and rescan";
 "Scan setup" = "Scan setup";
-"Scan your first page" = "Scan your first page";
+"Scan your first page" = "Connect a camera";
 "Scroll to inspect a zoomed image" = "Scroll to inspect a zoomed image";
 "Select a camera first" = "Select a camera first";
-"Select a camera in Scan setup, then connect it." = "Select a camera in Scan setup, then connect it.";
+"Select a camera in Scan setup, then connect it." = "Choose a camera in the sidebar, then connect.";
 "Select a camera to scan" = "Select a camera to scan";
 "Select a page in the sidebar, or return to Scan to add pages." = "Select a page in the sidebar, or return to Scan to add pages.";
-"Select the area for this page. For a book spread, select only the required side. The original and earlier page image are kept." = "Select the area for this page. For a book spread, select only the required side. The original and earlier page image are kept.";
-"Session saved on this Mac" = "Session saved on this Mac";
+"Select the area for this page. For a book spread, select only the required side. The original and earlier page image are kept." = "Adjust the edges to keep the area you need. Original images are kept.";
+"Session saved on this Mac" = "Saved on this Mac";
 "Settings" = "Settings";
 "Show PDF in Finder" = "Show PDF in Finder";
 "Single page" = "Single page";
@@ -211,16 +211,16 @@
 "Item saved on this Mac" = "Item saved on this Mac";
 "New item" = "New item";
 "New item…" = "New item…";
-"Item details" = "Item details";
+"Item details" = "Details";
 "Start with" = "Start with";
-"Metadata only" = "Metadata only";
+"Metadata only" = "Details only";
 "Scan pages" = "Scan pages";
 "Start a letter batch" = "Start a letter batch";
 "Reference" = "Reference";
 "Batch name" = "Batch name";
-"Next letter copies the batch name, location, and tags. Earlier letters do not change." = "Next letter copies the batch name, location, and tags. Earlier letters do not change.";
+"Next letter copies the batch name, location, and tags. Earlier letters do not change." = "New letters use this batch name, location, and tags.";
 "Title (optional)" = "Title (optional)";
-"Leave the title empty to use the automatic reference." = "Leave the title empty to use the automatic reference.";
+"Leave the title empty to use the automatic reference." = "If blank, the reference is used as the title.";
 "Item type" = "Item type";
 "Document" = "Document";
 "Folder" = "Folder";
@@ -251,11 +251,11 @@
 "Second line (optional)" = "Second line (optional)";
 "Label preview" = "Label preview";
 "Enter an HTTPS link of 100 bytes or fewer to preview the QR code." = "Enter an HTTPS link of 100 bytes or fewer to preview the QR code.";
-"DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link." = "DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link.";
+"DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link." = "62 × 25 mm · DK-22205. Long text is shortened; the QR keeps the full link.";
 "Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone." = "Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone.";
 "Item link saved" = "Item link saved";
 "Save item link" = "Save item link";
-"Save label PDF…" = "Save label PDF…";
+"Save label PDF…" = "Save PDF…";
 "Print…" = "Print…";
 "Could not create the QR code." = "Could not create the QR code.";
 
@@ -283,7 +283,7 @@
 
 "Use Capture page for scanning. Use Next letter within a letter batch. New item opens the item form." = "Use Capture page for scanning. Use Next letter within a letter batch. New item opens the item form.";
 
-"Actions are off in Settings. Close Settings and select the document window to use the button." = "Actions are off in Settings. Close Settings and select the document window to use the button.";
+"Actions are off in Settings. Close Settings and select the document window to use the button." = "Close Settings to use the button in the document window.";
 
 "Supports USB HID button and vendor controls with a repeatable signal. Keyboards and mice are not listed." = "Supports USB HID button and vendor controls with a repeatable signal. Keyboards and mice are not listed.";
 
@@ -293,7 +293,7 @@
 
 "No signal received. Try Learn button again." = "No signal received. Try Learn button again.";
 
-"Button learned. Press it again to test, then enable the action." = "Button learned. Press it again to test, then enable the action.";
+"Button learned. Press it again to test, then enable the action." = "Button learned. Press again to test.";
 
 "Click Learn button, then press the physical button." = "Click Learn button, then press the physical button.";
 
@@ -385,3 +385,29 @@
 "Upload now" = "Upload now";
 "Upload %ld pages as one PDF. Automatic upload stays unchanged." = "Upload %ld pages as one PDF. Automatic upload stays unchanged.";
 "Pages: %ld · Auto upload off" = "Pages: %ld · Auto upload off";
+/* Interface review */
+"Start another letter with the same batch details." = "Start another letter with the same batch details.";
+"Scanning tips" = "Scanning tips";
+"Supported buttons" = "Supported buttons";
+"Print setup" = "Print setup";
+"Review rejected scans…" = "Review rejected scans…";
+"No pages yet" = "No pages yet";
+"Scan a page to add it to this document." = "Scan a page to add it to this document.";
+"Select a page in the sidebar." = "Select a page in the sidebar.";
+"No matching documents" = "No matching documents";
+"Try another title, reference, or batch name." = "Try another title, reference, or batch name.";
+
+/* Form and review feedback */
+"Description" = "Description";
+"Filing" = "Filing";
+"Clear search" = "Clear search";
+"Enter a page from 1 to %ld." = "Enter a page from 1 to %ld.";
+"Loading image…" = "Loading image…";
+"Preparing label…" = "Preparing label…";
+"Label preview unavailable" = "Label preview unavailable";
+"Enter a link to preview the label." = "Enter a link to preview the label.";
+"This link is too long for the label. Use a shorter link." = "This link is too long for the label. Use a shorter link.";
+"Use a link that starts with https://." = "Use a link that starts with https://.";
+"Enter a complete link without spaces or sign-in details." = "Enter a complete link without spaces or sign-in details.";
+
+"Zoom relative to the fitted page" = "Zoom relative to the fitted page";

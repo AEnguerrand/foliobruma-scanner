@@ -57,6 +57,7 @@ struct DocumentToolbar: View {
         Spacer(minLength: 16)
         if model.document.metadata?.batchID != nil {
           Button(L10n.text("Next letter"), action: model.nextLetter).disabled(model.busy)
+            .help(L10n.text("Start another letter with the same batch details."))
         }
         Button(action: model.prepareExport) {
           Label(L10n.text("Export PDF"), systemImage: "square.and.arrow.up")
@@ -74,7 +75,7 @@ struct DocumentToolbar: View {
           .buttonStyle(.borderedProminent)
           .disabled(model.busy || model.document.pages.isEmpty)
       }.padding(.horizontal, 20).padding(.vertical, 10)
-    }.background(Color(white: 0.14))
+    }.background(Color(nsColor: .controlBackgroundColor))
       .sheet(isPresented: $showUpload) { ManualUploadView(model: model) }
       .task { await account.restore() }
   }

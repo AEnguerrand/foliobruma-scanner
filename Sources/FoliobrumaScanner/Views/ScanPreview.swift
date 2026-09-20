@@ -7,8 +7,12 @@ struct ScanPreview: View {
   var body: some View {
     GeometryReader { geometry in
       ZStack {
-        Color.black
-        CameraView(session: model.session)
+        if model.connected {
+          Color.black
+          CameraView(session: model.session)
+        } else {
+          Color(nsColor: .textBackgroundColor)
+        }
         cropOverlay(in: geometry.size)
         connectionPrompt
         captureFeedback
@@ -71,8 +75,9 @@ struct ScanPreview: View {
   private var connectionPrompt: some View {
     if !model.connected {
       VStack(spacing: 20) {
-        BrandIcon().frame(width: 96, height: 96)
-          .accessibilityHidden(true)
+        Image(systemName: "camera")
+          .font(.system(size: 36, weight: .light))
+          .foregroundStyle(.secondary).accessibilityHidden(true)
         Text(
           model.document.pages.isEmpty ? L10n.text("Scan your first page") : L10n.text("Add pages to this document")
         ).font(.title2)
@@ -111,12 +116,16 @@ struct ScanPreview: View {
     }
   }
 
+  @ViewBuilder
   private var statusOverlay: some View {
-    VStack {
-      Text(model.status).font(.callout).padding(10).background(Color.black.opacity(0.8))
-        .cornerRadius(8).padding(.top, 16)
-      Spacer()
-    }.allowsHitTesting(false)
+    if model.connected || model.busy {
+      VStack {
+        Text(model.status).font(.callout).foregroundStyle(.white)
+          .padding(10).background(Color.black.opacity(0.8))
+          .cornerRadius(8).padding(.top, 16)
+        Spacer()
+      }.allowsHitTesting(false)
+    }
   }
 
   func dimensionsRatio(_ text: String) -> Double {
