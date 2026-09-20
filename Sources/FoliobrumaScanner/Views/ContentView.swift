@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 struct ContentView: View {
   @StateObject var model = Scanner()
@@ -9,8 +10,6 @@ struct ContentView: View {
   var body: some View {
     VStack(spacing: 0) {
       DocumentToolbar(model: model, rename: $rename)
-      Divider()
-      ConnectionBar(model: model)
       Divider()
       if model.metadataWorkspace {
         ItemSummary(model: model)
@@ -32,6 +31,16 @@ struct ContentView: View {
       SessionFooter(model: model)
     }.background(Color(white: 0.10)).preferredColorScheme(.dark).tint(gold)
       .frame(minWidth: 900, minHeight: 640)
+      .onReceive(NotificationCenter.default.publisher(for: AVCaptureSession.didStopRunningNotification, object: model.session)
+        .receive(on: DispatchQueue.main)) { _ in
+          model.connected = false
+          model.autoCapture = false
+        }
+      .onReceive(NotificationCenter.default.publisher(for: AVCaptureSession.runtimeErrorNotification, object: model.session)
+        .receive(on: DispatchQueue.main)) { _ in
+          model.connected = false
+          model.autoCapture = false
+        }
       .alert(
         "Scanner",
         isPresented: Binding(

@@ -5,7 +5,7 @@ struct DocumentToolbar: View {
   @Binding var rename: Bool
   @ObservedObject private var account = CloudAccount.shared
   var body: some View {
-    HStack(spacing: 16) {
+    HStack(spacing: 8) {
       BrandIcon().frame(width: 34, height: 34)
         .accessibilityHidden(true)
       Button(action: model.browseSessions) { Label(L10n.text("Documents"), systemImage: "books.vertical") }
@@ -56,6 +56,7 @@ struct DocumentToolbar: View {
       }
       .help(L10n.text("Settings"))
       .accessibilityLabel(L10n.text("Settings"))
+      FoliobrumaConnectionButton()
     }.padding(16).background(Color(white: 0.14))
       .task { await account.restore() }
   }

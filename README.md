@@ -114,10 +114,10 @@ can be searched by title, reference, or batch name.
 
 ### Sign in, upload, and print
 
-The connection bar below the toolbar shows camera and SaaS status, the selected
-archive, and the upload and label options. Click the camera status to select,
-refresh, or connect a camera. Click the SaaS status to open the account controls.
-The same controls are in **Settings → Foliobruma account**.
+The **Foliobruma** button at the top right shows whether you are signed in.
+Click it to connect, select an archive, or change upload and label options.
+The same controls are in **Settings → Foliobruma account**. Camera controls
+remain in **Scan setup**.
 
 Select **Connect on website**. Your normal browser opens Foliobruma. Sign in on
 the website, compare its code with the code in the Mac app, then select

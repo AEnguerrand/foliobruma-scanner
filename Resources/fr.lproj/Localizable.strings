@@ -360,3 +360,5 @@
 "Cancel sign-in" = "Annuler la connexion";
 "Connect on website" = "Se connecter sur le site";
 "Your normal browser opens Foliobruma. Sign in there, then return to the scanner." = "Votre navigateur habituel ouvre Foliobruma. Connectez-vous sur le site, puis revenez au scanner.";
+"Signed in" = "Connecté";
+"Signed out" = "Déconnecté";
