@@ -1,46 +1,122 @@
-# Foliobruma Scanner for macOS
+# Foliobruma Scanner
 
-A local-only Mac app for scanning family books, letters, and documents. The dark-and-gold interface uses SwiftUI. Camera capture uses AVFoundation; cropping uses Vision and local paper segmentation; PDF export uses PDFKit. No accounts, uploads, QR codes, OCR services, telemetry, or external runtime dependencies.
+**Turn books, letters, and paper documents into PDFs on your Mac.**
 
-## Build and run
+Foliobruma is a free, open-source document camera app. Place a page under the camera, let it capture, then turn the page after the saved signal. Your scans stay on your Mac. No account or internet connection is required.
 
-Apple Silicon, macOS 14 or later. Install Apple's Command Line Tools, then run `./build.sh`. Open `build/Foliobruma Scanner.app` and allow camera access. The script uses the installed Command Line Tools SDK; no Xcode project is required.
+> Early version for Apple Silicon Macs. Tested with the **IRIScan Desk 6 Pro**. Build from source with the steps below; a signed installer and automatic updates are not available yet.
 
-This development build is ad-hoc signed, not notarized. A rebuilt binary can require camera permission again. Public distribution requires proper signing and notarization.
+## What it does
 
-## Use
+- **Automatic capture:** waits for a clear, still page and checks for movement, hands, and recent duplicate scans.
+- **Automatic crop:** detects paper edges and corrects perspective.
+- **Book mode:** splits a spread into two pages, with an adjustable spine position.
+- **Capture feedback:** uses sounds and visual signals for saved pages, duplicates, obstructions, and rejected scans.
+- **Page review:** rotate pages, remove them, or undo the last removal.
+- **Saved sessions:** keep original images and return to a document later.
+- **PDF export:** save the pages in the current document to a local PDF.
 
-1. Connect the IRIScan by USB. The app selects it when present.
-2. Choose Book or Letters. Enable Split pages for a book spread.
-3. Check the gold crop outline. The Spine slider adjusts the split position.
-4. Press Capture or Space. Auto capture waits for a stable changed page. Automatic capture requires at least 0.55 seconds of a clear, still page. It checks for hands, movement in small image regions, and similarity to the four most recent saved spreads. Capture and saving add time. Manual Capture can save an intentional repeat.
-5. Wait for the chime and green “Saved — turn the page” signal before turning the page. They confirm that page files and the session are saved. A low tone indicates an error: check the screen. Use Capture sounds to mute the sounds; visual feedback stays on.
-   After capture, the app checks for hands, heavy blur, a very dark image, and detected page edges at the camera boundary. A red rescan message and a low tone indicate a rejected photo. It stays in `Rejected/` and is excluded from the PDF. Use “Keep this scan anyway” if the check is wrong. An already scanned page shows an amber message and plays a distinct tone once. It does not add an extra copy. A new saved page or restarting auto capture enables the next duplicate tone.
-   Before automatic capture, a hand that stays in view or missing page edges produces a small warning and a soft tone after 1.5 seconds. The tone sounds once until the obstruction clears.
-6. Select a thumbnail to review, rotate, or remove a page. Removed image files are kept; Undo removal restores the most recently removed page.
-7. Save PDF chooses a real local destination. Originals & session opens the source images and session folder.
-8. The document menu creates a new document or opens an earlier session. Closing the app keeps the current session.
+There is no OCR, cloud upload, QR code generation, or telemetry in this version. Exported PDFs contain page images, without a searchable text layer.
 
-## Storage
+## Build and open
 
-Sessions are in `~/Library/Application Support/Sovenelia Scanner/Sessions/`. Each session has `Originals/`, `Pages/`, and `session.json`. Original JPEG capture data is saved before derived page images. New documents keep earlier sessions. Exported PDFs are separate from session files.
+You need an Apple Silicon Mac, macOS 14 or later, and Apple Command Line Tools with a macOS 14 or newer SDK. Intel builds are not supported by the current scripts.
+
+Install the tools if needed, then wait for the installation to finish:
+
+```sh
+xcode-select --install
+```
+
+Clone the repository and build the app:
+
+```sh
+git clone https://github.com/AEnguerrand/foliobruma-scanner.git
+cd foliobruma-scanner
+./build.sh
+open "build/Foliobruma Scanner.app"
+```
+
+Allow camera access when macOS asks. The build uses Apple frameworks and needs no third-party packages or Xcode project. To use a full Xcode installation, set `DEVELOPER_DIR` to its `Contents/Developer` directory when you run the scripts.
+
+The app is signed locally for development. It is not notarized. A rebuild can cause macOS to ask for camera access again.
+
+## Scan your first document
+
+1. Connect the scanner by USB. Select it in the **Camera** menu and click **Connect scanner** if needed.
+2. Use the document menu to name your document. Choose **Book** or **Letters**.
+3. Put the paper on a contrasting surface with even light. Check that all page edges are visible.
+4. Check the gold crop outline. For a book, enable **Split pages** and adjust **Spine** to the centre of the spread.
+5. Click **Start auto capture**, then move your hands away. For manual capture, click **Capture** or press **Space**.
+6. Wait for the green **Saved — turn the page** signal and chime before turning the page. Repeat for each page or spread.
+7. Pause automatic capture and click a thumbnail to review it. Use **Rotate**, **Remove**, or **Undo removal** as needed.
+8. Click **Save PDF** and choose where to save the file.
+
+Use **New document** for another book or group of letters. Use **Open saved session…** to return to an earlier document. Closing the app keeps the session.
+
+### Capture signals
+
+| Signal | Meaning | What to do |
+| --- | --- | --- |
+| Green border and saved chime | Page files and the session are saved. | Turn the page. |
+| Amber **Already scanned** message and short tone | A recent duplicate was detected. No extra copy was saved. | Turn the page, or use manual capture for an intentional repeat. |
+| Small amber warning and soft tone | A hand or missing page edges are blocking automatic capture. | Clear the page and check its position. |
+| Red **Rescan needed** message and low tone | The captured photo failed a quality check. It is not in the PDF. | Correct the issue and capture again. |
+
+The speaker switch controls capture sounds. Visual signals remain active when sound is off. If a quality check is wrong, inspect the photo before using **Keep this scan anyway**.
+
+Automatic capture requires at least 0.55 seconds of a clear, still page. Camera capture, checks, and saving add time. A sustained obstruction produces a warning after 1.5 seconds; brief page-turn movements should not produce a warning tone.
+
+## Your files
+
+Click **Originals & session** to open the current session folder. Sessions are stored at:
+
+```text
+~/Library/Application Support/Sovenelia Scanner/Sessions/
+```
+
+The old `Sovenelia Scanner` folder name and app identifier are retained to keep existing scans and preferences available.
+
+```text
+<session-id>/
+├── Originals/    Original captures
+├── Pages/        Processed page images
+├── Rejected/     Photos rejected by quality checks, when present
+└── session.json  Document name, page order, and rotations
+```
+
+Removing a page removes it from the document, but keeps its image files. Rejected photos are excluded from PDF export unless you keep them. Exported PDFs are separate files. Back up the whole session folder if you want to retain the originals and continue editing later.
 
 ## Current limits
 
-Automatic cropping depends on visible edges or bright paper against a darker surface. Always check the outline; switch Auto crop off when detection fails. Perspective correction is supported, but curved-book dewarping is not. The spine is a straight adjustable split. Hand detection and page similarity checks are approximate. Very similar pages or missed hand detections can need manual Capture; keep hands clear of the page. Quality checks cannot find every defect. Glare, shadows, missing text, and book curvature still need visual review. Blur checks use a reduced image and can miss fine-detail blur. Lighting changes can defeat duplicate detection. This is an early v1, not a bulk archive certification. Keep normal backups of your archive.
+- **Check the crop outline.** Detection works best with clear edges and bright paper against a darker surface. Turn **Auto crop** off if the outline is wrong.
+- **Curved pages stay curved.** Perspective correction is supported; curved-book dewarping is not. The spine split is a straight line.
+- **Detection can miss problems.** Hand and duplicate checks are approximate. Similar pages can be mistaken for duplicates, and lighting changes can cause duplicates to pass.
+- **Review image quality.** Checks cover hands, very dark images, heavy blur, and detected page edges at the camera boundary. They do not reliably detect glare, shadows, missing text, or fine-detail blur.
+- **Hardware support is limited.** Other cameras may work, but only the IRIScan Desk 6 Pro has been tested. Live warning timing and sound playback need more hardware testing.
 
-## Hardware test status
+## Troubleshooting
 
-Verified with the connected IRIScan Desk 6 Pro and a handwritten ring-bound book: real 4160 × 3120 capture, corrected automatic crop, two-page split, native PDF export, page review, rotation, removal, Undo, new document, reopening saved sessions, and recovery after restart. Automatic capture saved one stable spread and did not repeat while it stayed unchanged. Exported PDF pages were rendered and visually checked. Test scans are private and are not included in this repository. Live warning timing and sound playback still need further hardware testing.
+| Problem | Try this |
+| --- | --- |
+| No camera preview | Check the USB connection and selected camera. Allow the app under **System Settings → Privacy & Security → Camera**, then reopen it. |
+| Automatic capture does not start | Check the page edges, remove your hands, and hold the paper still. Review any warning. Use manual capture if needed. |
+| An intentional repeat is blocked | Use **Capture** or **Space**. Manual capture bypasses duplicate detection; quality checks still apply. |
+| A good scan is rejected | Review it, then use **Keep this scan anyway** if it is complete and readable. |
+| A scan repeats after a lighting change | Pause automatic capture, remove the extra page, and keep the lighting steady. |
 
-## Local regression tests
+## Development
 
-Run `./test.sh`. It compiles the real scanner model with a separate test entry point. Tests use a temporary session root and do not request camera access. They check page-order undo, rotation persistence, failed-write rollback, session isolation, failed new-document recovery, blank-image crop rejection, off-center crop coordinate conversion, capture and warning gates, and quality rejection with a manual override.
+Run the regression tests without connecting a scanner:
 
-## Name compatibility
+```sh
+./test.sh
+```
 
-The app is now Foliobruma Scanner. This development build retains the existing bundle identifier and session directory so existing scans and preferences remain available. The source currently uses the MIT license.
+Tests use temporary sessions and do not request camera access. They cover session persistence, failed-write recovery, page operations, crop coordinates, capture gates, warning gates, and quality rejection with manual override.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the source layout, checks, and bug report guidance.
 
 ## License
 
-[MIT](LICENSE). Commercial use is permitted under the license terms.
+[MIT](LICENSE). You can use, modify, and distribute the app, including for commercial use, under the license terms.
