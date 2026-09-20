@@ -1,5 +1,7 @@
 # Foliobruma Scanner
 
+![Foliobruma Scanner — old letters under a document camera](Resources/Brand/README-logo.png)
+
 **Turn books, letters, and paper documents into PDFs on your Mac.**
 
 Foliobruma is a free, open-source document camera app. Place a page under the camera, let it capture, then turn the page after the saved signal. Your scans stay on your Mac. No account or internet connection is required.

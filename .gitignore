@@ -4,3 +4,6 @@ build/
 *.jpg
 *.jpeg
 *.png
+
+# Approved public README logo. Keep private scan images excluded.
+!/Resources/Brand/README-logo.png
