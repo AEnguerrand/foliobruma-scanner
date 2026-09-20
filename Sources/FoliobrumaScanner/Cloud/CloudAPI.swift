@@ -7,10 +7,11 @@ struct CloudFailure: LocalizedError {
   var errorDescription: String? { L10n.text(message) }
 }
 
-// An isolated cookie jar prevents account cookies from entering shared browser storage.
+// A separate scanner credential never reads or stores browser cookies.
 final class CloudAPI: NSObject, URLSessionTaskDelegate {
   static let origin = URL(string: "https://foliobruma.com")!
-  private var cookies: [HTTPCookie] = []
+  private var token: String?
+  static let sessionExpired = Notification.Name("FoliobrumaScannerSessionExpired")
   private let configuration: URLSessionConfiguration
   private lazy var session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
   init(configuration: URLSessionConfiguration = .ephemeral) {
@@ -26,28 +27,15 @@ final class CloudAPI: NSObject, URLSessionTaskDelegate {
                   completionHandler: @escaping (URLRequest?) -> Void) {
     completionHandler(nil)
   }
-  private struct StoredCookie: Codable {
-    let name: String
-    let value: String
-    let path: String
-    let expires: Date?
-  }
   func restore(_ data: Data) throws {
-    let values = try JSONDecoder().decode([StoredCookie].self, from: data)
-    cookies = values.compactMap { value in
-      var properties: [HTTPCookiePropertyKey: Any] = [
-        .name: value.name, .value: value.value, .path: value.path,
-        .domain: "foliobruma.com", .secure: "TRUE"]
-      if let expires = value.expires { properties[.expires] = expires }
-      return HTTPCookie(properties: properties)
+    guard let value = try? JSONDecoder().decode(String.self, from: data),
+      value.range(of: "^fs1_[a-f0-9]{64}$", options: .regularExpression) != nil else {
+      throw CloudFailure(message: "Sign in on the website to connect this version of the scanner.")
     }
+    token = value
   }
-  func credentials() throws -> Data {
-    try JSONEncoder().encode(cookies.map {
-      StoredCookie(name: $0.name, value: $0.value, path: $0.path, expires: $0.expiresDate)
-    })
-  }
-  func clear() { cookies = [] }
+  func credentials() throws -> Data { try JSONEncoder().encode(token) }
+  func clear() { token = nil }
   func request(_ path: String, method: String = "GET", body: Data? = nil,
                type: String = "application/json", query: [URLQueryItem] = []) async throws -> Data {
     var parts = URLComponents(url: Self.origin.appendingPathComponent(path), resolvingAgainstBaseURL: false)!
@@ -58,25 +46,17 @@ final class CloudAPI: NSObject, URLSessionTaskDelegate {
     request.setValue(Self.origin.absoluteString, forHTTPHeaderField: "Origin")
     request.setValue(type, forHTTPHeaderField: "Content-Type")
     request.setValue("application/json", forHTTPHeaderField: "Accept")
-    let valid = cookies.filter { ($0.expiresDate ?? .distantFuture) > Date() }
-    for (key, value) in HTTPCookie.requestHeaderFields(with: valid) { request.setValue(value, forHTTPHeaderField: key) }
+    if let token { request.setValue("Bearer " + token, forHTTPHeaderField: "Authorization") }
     let (data, response) = try await session.data(for: request)
     guard let http = response as? HTTPURLResponse else { throw CloudFailure(message: "The server response is invalid.") }
     if http.statusCode == 401 {
       clear()
+      NotificationCenter.default.post(name: Self.sessionExpired, object: self)
       throw CloudFailure(message: "Your session has expired. Sign in again in Settings.", status: 401)
     }
     guard (200..<300).contains(http.statusCode) else {
       // Do not display arbitrary HTML, server traces, or credentials in the interface.
       throw CloudFailure(message: "The server could not complete the request. Check your account, connection, and archive storage.", status: http.statusCode)
-    }
-    let headers = http.allHeaderFields.reduce(into: [String: String]()) { result, entry in
-      if let key = entry.key as? String, let value = entry.value as? String { result[key] = value }
-    }
-    for cookie in HTTPCookie.cookies(withResponseHeaderFields: headers, for: Self.origin)
-      where cookie.domain == "foliobruma.com" && cookie.isSecure {
-      cookies.removeAll { $0.name == cookie.name }
-      cookies.append(cookie)
     }
     return data
   }

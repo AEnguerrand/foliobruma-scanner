@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import AppKit
 
 struct CloudUser: Decodable { let id: String; let email: String }
 struct CloudOrganisation: Decodable, Identifiable { let id: String; let name: String }
@@ -20,7 +21,23 @@ struct CloudOrganisation: Decodable, Identifiable { let id: String; let name: St
   @Published var printLabel = UserDefaults.standard.bool(forKey: "cloudPrintLabel") {
     didSet { UserDefaults.standard.set(printLabel, forKey: "cloudPrintLabel") }
   }
+  @Published var pairingCode: String?
+  @Published var signInURL: URL?
+  private var signInTask: Task<Void, Never>?
+  private var expiration: AnyCancellable?
   private var restored = false
+  init() {
+    expiration = NotificationCenter.default.publisher(for: CloudAPI.sessionExpired, object: api)
+      .receive(on: DispatchQueue.main).sink { [weak self] _ in
+        self?.user = nil
+        self?.organisations = []
+        self?.failure = L10n.text("Your session has expired. Sign in again in Settings.")
+      }
+  }
+  func cancelSignIn() { signInTask?.cancel() }
+  func openSignInPage() {
+    if let signInURL { NSWorkspace.shared.open(signInURL) }
+  }
   var ready: Bool { user != nil && organisations.contains { $0.id == organisationID } }
   func restore() async {
     guard !restored, !working else { return }
@@ -33,19 +50,50 @@ struct CloudOrganisation: Decodable, Identifiable { let id: String; let name: St
       try await loadAccount()
     } catch { failure = error.localizedDescription }
   }
-  func signIn(email: String, password: String) async {
+  func connectOnWebsite() {
     guard !working else { return }
     working = true
     failure = nil
-    defer { working = false }
-    do {
-      try CloudKeychain.remove()
-      api.clear()
-      organisationID = ""
-      let body = try JSONSerialization.data(withJSONObject: ["email": email.trimmingCharacters(in: .whitespacesAndNewlines), "password": password])
-      _ = try await api.request("api/auth/sign-in/email", method: "POST", body: body)
-      try await loadAccount()
-    } catch { user = nil; organisations = []; api.clear(); failure = error.localizedDescription }
+    signInTask = Task {
+      defer { working = false; pairingCode = nil; signInURL = nil; signInTask = nil }
+      do {
+        let pairing = try CloudPairing.create()
+        let body = try JSONSerialization.data(withJSONObject: ["challenge": pairing.challenge])
+        let data = try await api.request("api/scanner/pair/start", method: "POST", body: body)
+        try Task.checkCancellation()
+        let ticket = try JSONDecoder().decode(CloudPairing.Ticket.self, from: data)
+        let url = try pairing.browserURL(ticket: ticket)
+        try CloudKeychain.remove()
+        api.clear()
+        try api.restore(JSONEncoder().encode(pairing.token))
+        user = nil
+        organisations = []
+        organisationID = ""
+        pairingCode = pairing.code
+        signInURL = url
+        guard NSWorkspace.shared.open(url) else { throw CloudFailure(message: "Could not open the browser. Try again.") }
+        struct Poll: Decodable { let user: CloudUser? }
+        while Date().timeIntervalSince1970 * 1000 < ticket.expires {
+          try Task.checkCancellation()
+          let response = try await api.request("api/scanner/pair/poll")
+          try Task.checkCancellation()
+          let result = try JSONDecoder().decode(Poll.self, from: response)
+          if result.user != nil {
+            try await loadAccount()
+            // Closing a pending connection must not retain its credentials.
+            if Task.isCancelled { try CloudKeychain.remove(); throw CancellationError() }
+            return
+          }
+          try await Task.sleep(for: .seconds(3))
+        }
+        throw CloudFailure(message: "The connection request expired. Start again.")
+      } catch {
+        api.clear()
+        user = nil
+        organisations = []
+        if !Task.isCancelled { failure = error.localizedDescription }
+      }
+    }
   }
   func loadAccount() async throws {
     struct Session: Decodable { let user: CloudUser }

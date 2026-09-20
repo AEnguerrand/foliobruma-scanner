@@ -53,7 +53,7 @@ enum CloudUploadTests {
     while !done && Date() < deadline { RunLoop.main.run(until: Date().addingTimeInterval(0.01)) }
     precondition(done, "Cloud test timed out")
     if let failure { throw failure }
-    print("PASS: isolated sign-in cookies; multipart retry; lost completion response; uncertain start guard; upload record recovery; private QR decoding")
+    print("PASS: browser pairing challenge, URL and expiry; isolated scanner credentials; multipart retry; lost completion response; uncertain start guard; upload record recovery; private QR decoding")
   }
   static func exercise() async throws {
     let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
@@ -79,12 +79,23 @@ enum CloudUploadTests {
     let configuration = URLSessionConfiguration.ephemeral
     configuration.protocolClasses = [CloudStub.self]
     let api = CloudAPI(configuration: configuration)
-    _ = try await api.request("api/auth/sign-in/email", method: "POST", body: Data("{}".utf8))
+    let pairing = try CloudPairing.create()
+    precondition(pairing.token.count == 68 && pairing.challenge.count == 64)
+    try api.restore(JSONEncoder().encode(pairing.token))
+    let ticket = CloudPairing.Ticket(challenge: pairing.challenge, expires: Date().timeIntervalSince1970 * 1000 + 300_000, signature: String(repeating: "a", count: 64))
+    let browserURL = try pairing.browserURL(ticket: ticket)
+    precondition(browserURL.host == "foliobruma.com" && browserURL.scheme == "https")
+    precondition(!browserURL.absoluteString.contains(pairing.token), "Browser URLs must not contain the device secret")
+    let wrong = CloudPairing.Ticket(challenge: String(repeating: "b", count: 64), expires: ticket.expires, signature: ticket.signature)
+    do { _ = try pairing.browserURL(ticket: wrong); preconditionFailure("Reject a mismatched pairing challenge") } catch { }
+    let expired = CloudPairing.Ticket(challenge: pairing.challenge, expires: 0, signature: ticket.signature)
+    do { _ = try pairing.browserURL(ticket: expired); preconditionFailure("Reject an expired pairing ticket") } catch { }
     let credentials = try api.credentials()
     api.clear()
     try api.restore(credentials)
     _ = try await api.request("api/organisations")
-    precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "Cookie")!.contains("test-only"))
+    precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "Cookie") == nil)
+    precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "Authorization") == "Bearer " + pairing.token)
     precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "Origin") == "https://foliobruma.com")
     let file = "upload-test.pdf"
     try Data(repeating: 42, count: 8 * 1024 * 1024 + 1024).write(to: folder.appendingPathComponent(file))
@@ -118,8 +129,8 @@ enum CloudUploadTests {
     catch { }
     let deniedRecord = try CloudUpload.load(in: folder)!
     precondition(!deniedRecord.started, "Explicit rejection must permit retry after sign-in")
-    let clearedCookies = try JSONSerialization.jsonObject(with: api.credentials()) as! [Any]
-    precondition(clearedCookies.isEmpty, "Expired credentials must be removed from memory")
+    let clearedToken = try JSONDecoder().decode(String?.self, from: api.credentials())
+    precondition(clearedToken == nil, "Expired credentials must be removed from memory")
     var document = ScanDocument()
     let fingerprint = try CloudUpload.fingerprint(document)
     document.metadata = ItemMetadata(webLink: upload.link!)

@@ -2,8 +2,6 @@ import SwiftUI
 
 struct CloudSettings: View {
   @ObservedObject private var account = CloudAccount.shared
-  @State private var email = ""
-  @State private var password = ""
   var body: some View {
     Section(L10n.text("Foliobruma account")) {
       if let user = account.user {
@@ -12,21 +10,29 @@ struct CloudSettings: View {
           Text(L10n.text("Select an archive")).tag("")
           ForEach(account.organisations) { archive in Text(archive.name).tag(archive.id) }
         }
+        .disabled(account.working)
         if account.organisations.isEmpty {
           Text(L10n.text("Create or join an archive on foliobruma.com, then sign in again."))
         }
-        Button(L10n.text("Sign out")) { Task { await account.signOut() } }
+        Button(L10n.text("Sign out")) { Task { await account.signOut() } }.disabled(account.working)
       } else {
-        TextField(L10n.text("Email"), text: $email).textContentType(.username)
-        SecureField(L10n.text("Password"), text: $password).textContentType(.password)
-        Button(L10n.text("Sign in")) {
-          let secret = password
-          password = ""
-          Task { await account.signIn(email: email, password: secret) }
-        }.disabled(email.isEmpty || password.isEmpty)
+        if let code = account.pairingCode {
+          Text(L10n.text("Waiting for website sign-in…"))
+          Text(code).font(.title2.monospaced()).textSelection(.enabled)
+          Text(L10n.text("Check this code on the website, then approve the connection."))
+          HStack {
+            Button(L10n.text("Open sign-in page"), action: account.openSignInPage)
+            Button(L10n.text("Cancel sign-in"), action: account.cancelSignIn)
+          }
+        } else {
+          Button(L10n.text("Connect on website"), action: account.connectOnWebsite)
+            .disabled(account.working)
+          Text(L10n.text("Your normal browser opens Foliobruma. Sign in there, then return to the scanner."))
+            .font(.caption).foregroundStyle(.secondary)
+        }
       }
-      Toggle(L10n.text("Upload when I finish an item"), isOn: $account.automatic)
-      Toggle(L10n.text("Print a label after upload"), isOn: $account.printLabel)
+      Toggle(L10n.text("Upload when I finish an item"), isOn: $account.automatic).disabled(account.working)
+      Toggle(L10n.text("Print a label after upload"), isOn: $account.printLabel).disabled(account.working)
       Text(L10n.text("Finish item uploads all saved pages as one PDF. Next letter also finishes the current letter. Both options are off by default."))
         .font(.caption).foregroundStyle(.secondary)
       Text(L10n.text("Scans stay on this Mac. Upload requires an account and an archive. Labels open a private PDF link; sign in on the reading device first."))
@@ -34,7 +40,7 @@ struct CloudSettings: View {
       Link(L10n.text("Open Foliobruma"), destination: CloudAPI.origin.appendingPathComponent("app/"))
       if account.working { ProgressView().controlSize(.small) }
       if let failure = account.failure { Text(failure).foregroundStyle(.red).textSelection(.enabled) }
-    }.disabled(account.working)
+    }
       .task { await account.restore() }
   }
 }

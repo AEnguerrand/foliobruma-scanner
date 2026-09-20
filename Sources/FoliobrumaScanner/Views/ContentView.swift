@@ -10,6 +10,8 @@ struct ContentView: View {
     VStack(spacing: 0) {
       DocumentToolbar(model: model, rename: $rename)
       Divider()
+      ConnectionBar(model: model)
+      Divider()
       if model.metadataWorkspace {
         ItemSummary(model: model)
       } else {

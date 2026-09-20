@@ -338,3 +338,25 @@
 "The pages changed during an incomplete upload. Clear its upload record before uploading the changed item." = "Les pages ont changé pendant un envoi incomplet. Effacez son suivi d’envoi avant d’envoyer le document modifié.";
 "Uploading PDF…" = "Envoi du PDF…";
 "Uploaded to Foliobruma" = "Envoyé vers Foliobruma";
+
+// Connection bar and browser sign-in.
+"Camera connected" = "Caméra connectée";
+"Camera not connected" = "Caméra non connectée";
+"Camera connection" = "Connexion de la caméra";
+"SaaS · Signed out" = "SaaS · Déconnecté";
+"SaaS · Signed in" = "SaaS · Connecté";
+"Connect to Foliobruma" = "Se connecter à Foliobruma";
+"Upload on finish" = "Envoi à la fin";
+"Upload off" = "Envoi désactivé";
+"Labels on" = "Étiquettes activées";
+"Labels off" = "Étiquettes désactivées";
+"Could not start sign-in. Try again." = "Impossible de démarrer la connexion. Réessayez.";
+"Sign in on the website to connect this version of the scanner." = "Connectez-vous sur le site pour utiliser cette version du scanner.";
+"Could not open the browser. Try again." = "Impossible d’ouvrir le navigateur. Réessayez.";
+"The connection request expired. Start again." = "La demande de connexion a expiré. Recommencez.";
+"Waiting for website sign-in…" = "En attente de la connexion sur le site…";
+"Check this code on the website, then approve the connection." = "Vérifiez ce code sur le site, puis autorisez la connexion.";
+"Open sign-in page" = "Ouvrir la page de connexion";
+"Cancel sign-in" = "Annuler la connexion";
+"Connect on website" = "Se connecter sur le site";
+"Your normal browser opens Foliobruma. Sign in there, then return to the scanner." = "Votre navigateur habituel ouvre Foliobruma. Connectez-vous sur le site, puis revenez au scanner.";

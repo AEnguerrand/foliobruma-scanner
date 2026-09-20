@@ -114,11 +114,27 @@ can be searched by title, reference, or batch name.
 
 ### Sign in, upload, and print
 
-Open **Settings → Foliobruma account** and sign in with your existing email and
-password. Select the destination archive. Create or join an archive on the
-website first if the list is empty. The app saves the session in macOS Keychain;
-it does not save your password. Sign out removes the local session and disables
-automatic upload. If server sign-out fails, the app reports that limit.
+The connection bar below the toolbar shows camera and SaaS status, the selected
+archive, and the upload and label options. Click the camera status to select,
+refresh, or connect a camera. Click the SaaS status to open the account controls.
+The same controls are in **Settings → Foliobruma account**.
+
+Select **Connect on website**. Your normal browser opens Foliobruma. Sign in on
+the website, compare its code with the code in the Mac app, then select
+**Connect this scanner**. Return to the app and select the destination archive.
+The app checks for approval every three seconds. Requests expire after ten
+minutes; **Cancel sign-in** stops waiting. Use **Open sign-in page** to reopen
+the request while it is pending.
+
+The app stores a separate, limited scanner credential in Keychain. It does not
+read browser cookies or ask for your password. Access expires after seven days.
+Use **Connected scanners → Disconnect** on the website to revoke it. Sign out
+in the app removes the local credential, revokes scanner access when reachable,
+and disables automatic upload. Website logout does not disconnect the scanner.
+Older password-based scanner sessions require a new website sign-in.
+
+This flow requires the matching SaaS pairing endpoints and database migration
+to be deployed. Until then, connection attempts fail without changing local scans.
 
 Enable **Upload when I finish an item** to send scans to the selected archive.
 Enable **Print a label after upload** to open the macOS print dialog after a
@@ -157,7 +173,8 @@ retry. It does not delete local scans or remote files.
 
 Without automatic upload, **Finish item** saves locally and needs no connection.
 PDF export remains available without signing in. Account and upload tests use a
-mock server. Real account sign-in, Keychain access, network uploads, and physical
+mock server, with separate local SaaS integration tests. Production browser sign-in,
+Keychain access, network uploads, and physical
 label printing require an end-to-end check on the target Mac.
 
 ### Compact QR labels

@@ -338,3 +338,25 @@
 "The pages changed during an incomplete upload. Clear its upload record before uploading the changed item." = "The pages changed during an incomplete upload. Clear its upload record before uploading the changed item.";
 "Uploading PDF…" = "Uploading PDF…";
 "Uploaded to Foliobruma" = "Uploaded to Foliobruma";
+
+// Connection bar and browser sign-in.
+"Camera connected" = "Camera connected";
+"Camera not connected" = "Camera not connected";
+"Camera connection" = "Camera connection";
+"SaaS · Signed out" = "SaaS · Signed out";
+"SaaS · Signed in" = "SaaS · Signed in";
+"Connect to Foliobruma" = "Connect to Foliobruma";
+"Upload on finish" = "Upload on finish";
+"Upload off" = "Upload off";
+"Labels on" = "Labels on";
+"Labels off" = "Labels off";
+"Could not start sign-in. Try again." = "Could not start sign-in. Try again.";
+"Sign in on the website to connect this version of the scanner." = "Sign in on the website to connect this version of the scanner.";
+"Could not open the browser. Try again." = "Could not open the browser. Try again.";
+"The connection request expired. Start again." = "The connection request expired. Start again.";
+"Waiting for website sign-in…" = "Waiting for website sign-in…";
+"Check this code on the website, then approve the connection." = "Check this code on the website, then approve the connection.";
+"Open sign-in page" = "Open sign-in page";
+"Cancel sign-in" = "Cancel sign-in";
+"Connect on website" = "Connect on website";
+"Your normal browser opens Foliobruma. Sign in there, then return to the scanner." = "Your normal browser opens Foliobruma. Sign in there, then return to the scanner.";
