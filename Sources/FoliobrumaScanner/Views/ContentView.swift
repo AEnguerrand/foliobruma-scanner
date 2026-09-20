@@ -5,6 +5,8 @@ struct ContentView: View {
   @State private var usbWindow: NSWindow?
   @State private var rename = false
   @State private var draftTitle = ""
+  @State private var browserNextAction: SessionBrowser.NextAction?
+  @State private var reviewRejectedAfterExport = false
   let gold = Color(red: 1, green: 0.74, blue: 0.27)
   var body: some View {
     VStack(spacing: 0) {
@@ -14,7 +16,7 @@ struct ContentView: View {
         ItemSummary(model: model)
       } else {
       HStack(spacing: 0) {
-        if model.reviewing { PageStrip(model: model, gold: gold).frame(width: 190) }
+        if model.reviewing { PageStrip(model: model).frame(width: 190) }
         VStack(spacing: 0) {
           if model.reviewing {
             PageReview(model: model)
@@ -28,7 +30,7 @@ struct ContentView: View {
       }
       Divider()
       SessionFooter(model: model)
-    }.background(Color(white: 0.10)).preferredColorScheme(.dark).tint(gold)
+    }.background(Color(nsColor: .windowBackgroundColor))
       .frame(minWidth: 900, minHeight: 640)
       .alert(
         "Scanner",
@@ -64,9 +66,22 @@ struct ContentView: View {
       .sheet(isPresented: $model.showNewItem) { ItemEditor(model: model, creating: true) }
       .sheet(isPresented: $model.showMetadata) { ItemEditor(model: model, creating: false) }
       .sheet(isPresented: $model.showLabel) { LabelEditor(model: model) }
-      .sheet(isPresented: $model.showSessions) { SessionBrowser(model: model) }
+      .sheet(isPresented: $model.showSessions, onDismiss: {
+        let action = browserNextAction
+        browserNextAction = nil
+        switch action {
+        case .openFolder: model.openSession()
+        case .newItem: model.prepareNewItem()
+        case nil: break
+        }
+      }) { SessionBrowser(model: model, nextAction: $browserNextAction) }
       .sheet(isPresented: $model.showRejected) { RejectedReview(model: model) }
-      .sheet(isPresented: $model.showExport) { ExportReview(model: model) }
+      .sheet(isPresented: $model.showExport, onDismiss: {
+        if reviewRejectedAfterExport {
+          reviewRejectedAfterExport = false
+          model.showRejected = true
+        }
+      }) { ExportReview(model: model, reviewRejectedAfterDismiss: $reviewRejectedAfterExport) }
       .sheet(isPresented: $model.showCrop) { CropEditor(model: model) }
       .sheet(isPresented: $model.showFraming) { FramingPreview(model: model) }
       .background(USBButtonWindow { usbWindow = $0 })

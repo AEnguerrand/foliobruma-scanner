@@ -13,6 +13,7 @@ struct LabelEditor: View {
   @State private var saved = false
   @State private var qr: NSImage?
   @State private var renderedLink = ""
+  @State private var generating = false
 
   private var link: String { custom ? customLink : itemLink }
   private var label: DocumentLabel { DocumentLabel(title: title, subtitle: subtitle, link: link) }
@@ -30,30 +31,42 @@ struct LabelEditor: View {
         ? "Custom labels are not saved with this item."
         : "Paste the existing permanent link from foliobruma.com. This app does not upload or publish items."))
         .font(.callout).foregroundStyle(.secondary)
-      TextField("https://foliobruma.com/d/…", text: custom ? $customLink : $itemLink)
-        .accessibilityLabel(L10n.text("HTTPS link"))
-      TextField(L10n.text("Label title"), text: $title)
-      TextField(L10n.text("Second line (optional)"), text: $subtitle)
+      Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 12) {
+        field("HTTPS link", text: custom ? $customLink : $itemLink)
+        field("Label title", text: $title)
+        field("Second line (optional)", text: $subtitle)
+      }
+      if !link.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+         let message = DocumentLabel.validationMessage(link) {
+        Label(L10n.text(message), systemImage: "exclamationmark.circle")
+          .font(.callout).foregroundStyle(.red).fixedSize(horizontal: false, vertical: true)
+      }
       Group {
         if ready, let qr {
           LabelPreview(label: label, qr: qr).id(label)
             .frame(width: DocumentLabel.size.width, height: DocumentLabel.size.height)
             .scaleEffect(2.4)
             .frame(width: DocumentLabel.size.width * 2.4, height: DocumentLabel.size.height * 2.4)
+            .accessibilityElement(children: .ignore)
             .accessibilityLabel(L10n.text("Label preview"))
-        } else if valid {
-          ProgressView().frame(maxWidth: .infinity, minHeight: 160)
+            .accessibilityValue([label.title, label.subtitle, label.printedLink]
+              .filter { !$0.isEmpty }.joined(separator: ", "))
+        } else if generating {
+          ProgressView(L10n.text("Preparing label…"))
+            .frame(maxWidth: .infinity, minHeight: 160)
         } else {
-          Text(L10n.text("Enter an HTTPS link of 100 bytes or fewer to preview the QR code."))
+          Text(L10n.text(failure != nil ? "Label preview unavailable" : "Enter a link to preview the label."))
             .foregroundStyle(.secondary).frame(maxWidth: .infinity, minHeight: 160)
         }
       }.frame(maxWidth: .infinity)
       Text(L10n.text("DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link."))
         .font(.caption).foregroundStyle(.secondary)
-      Text(L10n.text("Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone."))
-        .font(.caption).foregroundStyle(.secondary)
+      DisclosureGroup(L10n.text("Print setup")) {
+        Text(L10n.text("Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone."))
+          .font(.callout).foregroundStyle(.secondary)
+      }
       if let failure { Text(failure).foregroundStyle(.red) }
-      if saved { Text(L10n.text("Item link saved")).foregroundStyle(.secondary) }
+      if saved && !custom { Text(L10n.text("Item link saved")).foregroundStyle(.secondary) }
       HStack {
         Button(L10n.text("Done")) { dismiss() }.keyboardShortcut(.cancelAction)
         if !custom {
@@ -77,14 +90,26 @@ struct LabelEditor: View {
       .task(id: link) {
         qr = nil
         renderedLink = ""
+        generating = false
+        failure = nil
         guard valid else { return }
+        generating = true
         let snapshot = label
         let image = await Task.detached(priority: .userInitiated) { snapshot.qrImage() }.value
         guard !Task.isCancelled else { return }
+        generating = false
         qr = image
         renderedLink = snapshot.link
         if image == nil { failure = L10n.text("Could not create the QR code.") }
       }
+  }
+
+  private func field(_ name: String, text: Binding<String>) -> some View {
+    GridRow {
+      Text(L10n.text(name)).foregroundStyle(.secondary)
+      TextField("", text: text).accessibilityLabel(L10n.text(name))
+        .textFieldStyle(.roundedBorder)
+    }
   }
 
   private func saveLink() {

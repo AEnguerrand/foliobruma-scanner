@@ -13,8 +13,8 @@ struct ItemEditor: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 16) {
       Text(L10n.text(creating ? "New item" : "Item details")).font(.title2)
-      ScrollView {
-        Form {
+      Form {
+        Section(L10n.text("Document")) {
           if creating {
             Picker(L10n.text("Start with"), selection: $scanPages) {
               Text(L10n.text("Metadata only")).tag(false)
@@ -40,15 +40,17 @@ struct ItemEditor: View {
               }
             }
           }
+        }
+        Section(L10n.text("Description")) {
           TextField(L10n.text("Author or sender"), text: $details.author)
           TextField(L10n.text("Date or period"), text: $details.period)
+        }
+        Section(L10n.text("Filing")) {
           TextField(L10n.text("Physical location"), text: $details.location)
           TextField(L10n.text("Tags"), text: $details.tags)
           TextField(L10n.text("Notes"), text: $details.notes, axis: .vertical).lineLimit(3...6)
-        }.formStyle(.grouped)
-      }
-      Text(L10n.text("Saved on this Mac. No camera or account is required. Add scans later."))
-        .font(.caption).foregroundStyle(.secondary)
+        }
+      }.formStyle(.grouped)
       if let failure { Text(failure).foregroundStyle(.red) }
       HStack {
         Button(L10n.text("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)

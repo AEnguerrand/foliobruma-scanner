@@ -33,6 +33,15 @@ extension Scanner {
     autoCapture = false
     status = connected ? L10n.text("Capture paused · Ready when you are") : L10n.text("Select a camera to scan")
   }
+  func pageIndex(for text: String) -> Int? {
+    guard let number = Int(text.trimmingCharacters(in: .whitespacesAndNewlines)),
+      number > 0, number <= document.pages.count else { return nil }
+    return number - 1
+  }
+  func goToPage(_ text: String) {
+    guard !busy, let index = pageIndex(for: text) else { return }
+    beginReview(document.pages[index].id)
+  }
   func navigatePage(_ delta: Int) {
     guard !busy, let index = selectedIndex else { return }
     let next = index + delta

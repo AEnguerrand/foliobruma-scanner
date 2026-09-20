@@ -4,9 +4,7 @@ struct DocumentToolbar: View {
   @ObservedObject var model: Scanner
   @Binding var rename: Bool
   var body: some View {
-    HStack(spacing: 16) {
-      BrandIcon().frame(width: 34, height: 34)
-        .accessibilityHidden(true)
+    HStack(spacing: 12) {
       Button(action: model.browseSessions) { Label(L10n.text("Documents"), systemImage: "books.vertical") }
         .keyboardShortcut("o").disabled(model.busy)
       VStack(alignment: .leading, spacing: 3) {
@@ -19,13 +17,14 @@ struct DocumentToolbar: View {
           Button(L10n.text("Edit details…"), action: model.showItemMetadata)
           Button(L10n.text("Create label…"), action: model.showItemLabel)
           Button(L10n.text("Open session folder…"), action: model.openSession)
-        }.font(.headline).disabled(model.busy)
+        }.font(.headline).disabled(model.busy).help(model.document.displayTitle)
         Text(L10n.format("Pages: %ld · Local only", model.document.pages.count)).font(.caption).foregroundStyle(
           .secondary)
       }.frame(maxWidth: 240, alignment: .leading)
       Spacer()
       if model.document.metadata?.batchID != nil {
         Button(L10n.text("Next letter"), action: model.nextLetter).disabled(model.busy)
+          .help(L10n.text("Start another letter with the same batch details."))
       }
       Picker(
         L10n.text("Workspace"),
@@ -52,6 +51,7 @@ struct DocumentToolbar: View {
       }
       .help(L10n.text("Settings"))
       .accessibilityLabel(L10n.text("Settings"))
-    }.padding(16).background(Color(white: 0.14))
+    }.padding(.horizontal, 16).padding(.vertical, 12)
+      .background(Color(nsColor: .controlBackgroundColor))
   }
 }

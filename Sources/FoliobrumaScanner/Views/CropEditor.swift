@@ -3,6 +3,7 @@ import SwiftUI
 struct CropEditor: View {
   @ObservedObject var model: Scanner
   @State private var image: NSImage?
+  @State private var loading = true
   @State private var left = 0.0
   @State private var right = 1.0
   @State private var top = 1.0
@@ -26,10 +27,13 @@ struct CropEditor: View {
               .frame(width: (right - left) * width, height: (top - bottom) * height)
               .offset(x: left * width, y: (1 - top) * height)
           }.frame(width: geometry.size.width, height: geometry.size.height)
+        } else if loading {
+          ProgressView(L10n.text("Loading image…"))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
           Text(L10n.text("Original image unavailable")).frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-      }.background(.black)
+      }.background(.black).environment(\.colorScheme, .dark)
       Grid(alignment: .leading) {
         GridRow {
           Text(L10n.text("Left"))
@@ -69,11 +73,14 @@ struct CropEditor: View {
       if let error = model.error { Text(error).foregroundStyle(.red).font(.callout) }
     }.padding(22).frame(width: 740, height: 580).interactiveDismissDisabled(model.busy)
       .task {
-        guard let page = model.selectedPage else { return }
+        guard let page = model.selectedPage else { loading = false; return }
         let url = model.folder.appendingPathComponent(page.original)
         let data = await Task.detached(priority: .userInitiated) { try? Data(contentsOf: url) }
           .value
-        if !Task.isCancelled { image = data.flatMap { NSImage(data: $0) } }
+        if !Task.isCancelled {
+          image = data.flatMap { NSImage(data: $0) }
+          loading = false
+        }
       }
   }
 }
