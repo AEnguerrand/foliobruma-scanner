@@ -141,7 +141,7 @@ Older password-based scanner sessions require a new website sign-in.
 This flow requires the matching SaaS pairing endpoints and database migration
 to be deployed. Until then, connection attempts fail without changing local scans.
 
-Enable **Upload when I finish an item** to send scans to the selected archive.
+Enable **Upload automatically** to send scans to the selected archive.
 Enable **Print a label after upload** to open the macOS print dialog after a
 successful upload. Both options are off by default. Choose the printer and
 confirm printing in the dialog. With the label option off, no print dialog opens.
@@ -352,3 +352,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the source layout, checks, release st
 ## License
 
 [MIT](LICENSE). You can use, modify, and distribute the app, including for commercial use, under the license terms.
+
+The Foliobruma account panel groups sign-in and **After scanning** settings.
+Enable **Upload automatically** to make **Print a label after upload** available.
+The label option opens the print dialog only after a successful upload.

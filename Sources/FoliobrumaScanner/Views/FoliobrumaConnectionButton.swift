@@ -22,7 +22,7 @@ struct FoliobrumaConnectionButton: View {
     .accessibilityValue(L10n.text(account.user == nil ? "Signed out" : "Signed in"))
     .help(account.user?.email ?? L10n.text("Connect to Foliobruma"))
     .popover(isPresented: $showAccount, arrowEdge: .bottom) {
-      Form { CloudSettings() }.formStyle(.grouped).frame(width: 480, height: 500)
+      Form { CloudSettings() }.formStyle(.grouped).frame(width: 420, height: account.pairingCode != nil || account.user != nil ? 500 : 430)
     }
   }
 }
