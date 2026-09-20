@@ -362,3 +362,9 @@
 "Your normal browser opens Foliobruma. Sign in there, then return to the scanner." = "Votre navigateur habituel ouvre Foliobruma. Connectez-vous sur le site, puis revenez au scanner.";
 "Signed in" = "Connecté";
 "Signed out" = "Déconnecté";
+
+// Document overview
+"No scans yet" = "Aucune numérisation";
+"Add pages to this item when you are ready." = "Ajoutez des pages à cet élément quand vous le souhaitez.";
+"Scans are saved on this Mac." = "Les numérisations sont enregistrées sur ce Mac.";
+"Pages: %ld" = "Pages : %ld";

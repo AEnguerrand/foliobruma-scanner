@@ -14,12 +14,16 @@ struct SessionFooter: View {
           systemImage: "internaldrive"
         ).font(.caption).foregroundStyle(.secondary)
         Spacer()
-        Button(L10n.format("Rejected (%ld)", model.rejectedScans.count)) {
-          model.autoCapture = false
-          model.showRejected = true
-        }.disabled(model.busy || model.rejectedScans.isEmpty)
-        Button(L10n.text("Undo removal"), action: model.undo).keyboardShortcut("z")
-          .disabled(model.deleting == nil || model.busy)
+        if !model.rejectedScans.isEmpty {
+          Button(L10n.format("Rejected (%ld)", model.rejectedScans.count)) {
+            model.autoCapture = false
+            model.showRejected = true
+          }.disabled(model.busy || model.rejectedScans.isEmpty)
+        }
+        if model.deleting != nil {
+          Button(L10n.text("Undo removal"), action: model.undo).keyboardShortcut("z")
+            .disabled(model.deleting == nil || model.busy)
+        }
         Menu {
           Button(L10n.text("Originals and session")) { NSWorkspace.shared.open(model.folder) }
           if let pdf = model.lastPDF {
@@ -37,6 +41,6 @@ struct SessionFooter: View {
           .font(.caption).foregroundStyle(model.pdfIsCurrent ? .secondary : .primary)
         }
       }
-    }.padding(12)
+    }.controlSize(.small).padding(.horizontal, 20).padding(.vertical, 10)
   }
 }

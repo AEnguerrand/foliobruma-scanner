@@ -12,14 +12,14 @@ struct FoliobrumaConnectionButton: View {
         } else {
           Image(systemName: account.user == nil ? "person.crop.circle" : "person.crop.circle.badge.checkmark")
         }
-        VStack(alignment: .leading, spacing: 2) {
-          Text(verbatim: "Foliobruma")
-          Text(L10n.text(account.user == nil ? "Signed out" : "Signed in"))
-            .font(.caption2).foregroundStyle(.secondary)
-        }
+        Text(verbatim: "Foliobruma")
+        Image(systemName: "chevron.down").font(.caption2).foregroundStyle(.secondary)
       }
     }
+    .buttonStyle(.borderless)
+    .padding(.vertical, 6)
     .fixedSize()
+    .accessibilityValue(L10n.text(account.user == nil ? "Signed out" : "Signed in"))
     .help(account.user?.email ?? L10n.text("Connect to Foliobruma"))
     .popover(isPresented: $showAccount, arrowEdge: .bottom) {
       Form { CloudSettings() }.formStyle(.grouped).frame(width: 480, height: 500)

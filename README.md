@@ -76,6 +76,11 @@ the app to apply the change. The selection applies only to this app. Document
 names and session files do not change. This setting does not translate scanned
 text or add OCR.
 
+The top row contains Documents, the document title menu, Settings, and the
+Foliobruma account control. The second row contains Details, Scan, Review, and
+completion actions. In Details, use Add scans to start adding pages. Rejected
+scans and Undo removal appear in the footer only when available.
+
 ## Scan your first document
 
 1. Connect the scanner by USB. In **Scan setup**, select a **Camera** and click **Connect camera**. Use the refresh button if you connected the camera after opening the app.
