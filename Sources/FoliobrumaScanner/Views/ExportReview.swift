@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ExportReview: View {
   @ObservedObject var model: Scanner
+  @Binding var reviewRejectedAfterDismiss: Bool
   var body: some View {
     VStack(alignment: .leading, spacing: 18) {
       Text(L10n.text("Export PDF")).font(.title2)
@@ -14,8 +15,8 @@ struct ExportReview: View {
           L10n.format("Rejected photos excluded: %ld.", model.rejectedScans.count),
           systemImage: "exclamationmark.triangle")
         Button(L10n.text("Review rejected scans…")) {
+          reviewRejectedAfterDismiss = true
           model.showExport = false
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { model.showRejected = true }
         }
       }
       HStack {

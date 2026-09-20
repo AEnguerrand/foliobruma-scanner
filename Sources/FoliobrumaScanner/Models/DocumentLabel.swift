@@ -20,6 +20,18 @@ struct DocumentLabel: Hashable {
     return url
   }
 
+  static func validationMessage(_ text: String) -> String? {
+    guard validURL(text) == nil else { return nil }
+    let value = text.trimmingCharacters(in: .whitespacesAndNewlines)
+    if value.isEmpty { return "Enter a link to preview the label." }
+    let parts = URLComponents(string: value)
+    if value.utf8.count > 100 || (parts?.url?.absoluteString.utf8.count ?? 0) > 100 {
+      return "This link is too long for the label. Use a shorter link."
+    }
+    if parts?.scheme?.lowercased() != "https" { return "Use a link that starts with https://." }
+    return "Enter a complete link without spaces or sign-in details."
+  }
+
   func qrImage() -> NSImage? {
     guard let url = Self.validURL(link),
       let filter = CIFilter(name: "CIQRCodeGenerator") else { return nil }

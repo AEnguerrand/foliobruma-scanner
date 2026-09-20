@@ -1,13 +1,16 @@
 import SwiftUI
 
 struct SessionBrowser: View {
+  enum NextAction { case openFolder, newItem }
   @ObservedObject var model: Scanner
+  @Binding var nextAction: NextAction?
   @State private var search = ""
   var body: some View {
+    let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
     let matchingSessions = model.sessions.filter {
-      search.isEmpty || $0.title.localizedCaseInsensitiveContains(search)
-        || ($0.reference ?? "").localizedCaseInsensitiveContains(search)
-        || ($0.batchName ?? "").localizedCaseInsensitiveContains(search)
+      query.isEmpty || $0.title.localizedCaseInsensitiveContains(query)
+        || ($0.reference ?? "").localizedCaseInsensitiveContains(query)
+        || ($0.batchName ?? "").localizedCaseInsensitiveContains(query)
     }
     VStack(alignment: .leading, spacing: 16) {
       HStack {
@@ -15,50 +18,63 @@ struct SessionBrowser: View {
         Spacer()
         Button(L10n.text("Done")) { model.showSessions = false }.keyboardShortcut(.cancelAction)
       }
-      TextField(L10n.text("Find a document"), text: $search)
-      if model.loadingSessions {
-        ProgressView(L10n.text("Loading documents…"))
-      } else if model.sessions.isEmpty {
-        ContentUnavailableView(
-          L10n.text("No saved documents"), systemImage: "books.vertical",
-          description: Text(L10n.text("Create a document, or open a saved session folder.")))
-      } else if matchingSessions.isEmpty {
-        ContentUnavailableView(L10n.text("No matching documents"), systemImage: "magnifyingglass",
-          description: Text(L10n.text("Try another title, reference, or batch name.")))
-      } else {
-        List(matchingSessions) { item in
-          Button {
-            model.openSession(at: item.folder)
-          } label: {
-            HStack {
-              Image(systemName: "doc.text").font(.title2)
-              VStack(alignment: .leading, spacing: 5) {
-                Text(item.title).font(.headline)
-                if let reference = item.reference {
-                  Text([item.batchName ?? "", reference].filter { !$0.isEmpty }.joined(separator: " · "))
-                    .font(.caption).foregroundStyle(.secondary)
-                }
-                Text(
-                  L10n.format("Pages: %ld · %@", item.pageCount, item.modified.formatted(date: .abbreviated, time: .shortened))
-                )
-                .font(.caption).foregroundStyle(.secondary)
-              }
-              Spacer()
-              if item.folder.resolvingSymlinksInPath().path
-                == model.folder.resolvingSymlinksInPath().path
-              {
-                Text(L10n.text("Current")).foregroundStyle(.secondary)
-              }
-            }.padding(.vertical, 8).contentShape(Rectangle())
-          }.buttonStyle(.plain)
+      HStack {
+        TextField(L10n.text("Find a document"), text: $search)
+          .accessibilityLabel(L10n.text("Find a document"))
+        if !search.isEmpty {
+          Button { search = "" } label: { Image(systemName: "xmark.circle.fill") }
+            .buttonStyle(.plain).help(L10n.text("Clear search"))
+            .accessibilityLabel(L10n.text("Clear search"))
         }
       }
+      Group {
+        if model.loadingSessions {
+          ProgressView(L10n.text("Loading documents…"))
+        } else if model.sessions.isEmpty {
+          ContentUnavailableView(
+            L10n.text("No saved documents"), systemImage: "books.vertical",
+            description: Text(L10n.text("Create a document, or open a saved session folder.")))
+        } else if matchingSessions.isEmpty {
+          ContentUnavailableView(L10n.text("No matching documents"), systemImage: "magnifyingglass",
+            description: Text(L10n.text("Try another title, reference, or batch name.")))
+        } else {
+          List(matchingSessions) { item in
+            Button {
+              model.openSession(at: item.folder)
+            } label: {
+              HStack {
+                Image(systemName: "doc.text").font(.title2)
+                VStack(alignment: .leading, spacing: 5) {
+                  Text(item.title).font(.headline)
+                  if let reference = item.reference {
+                    Text([item.batchName ?? "", reference].filter { !$0.isEmpty }.joined(separator: " · "))
+                      .font(.caption).foregroundStyle(.secondary)
+                  }
+                  Text(
+                    L10n.format("Pages: %ld · %@", item.pageCount, item.modified.formatted(date: .abbreviated, time: .shortened))
+                  )
+                  .font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                if item.folder.resolvingSymlinksInPath().path
+                  == model.folder.resolvingSymlinksInPath().path
+                {
+                  Text(L10n.text("Current")).foregroundStyle(.secondary)
+                }
+              }.padding(.vertical, 8).contentShape(Rectangle())
+            }.buttonStyle(.plain)
+          }
+        }
+      }.frame(maxWidth: .infinity, maxHeight: .infinity)
       HStack {
-        Button(L10n.text("Open session folder…"), action: model.openSession)
+        Button(L10n.text("Open session folder…")) {
+          nextAction = .openFolder
+          model.showSessions = false
+        }
         Spacer()
         Button(L10n.text("New item…")) {
+          nextAction = .newItem
           model.showSessions = false
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { model.prepareNewItem() }
         }
         .buttonStyle(.borderedProminent)
       }

@@ -255,7 +255,7 @@
 "Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone." = "Sélectionnez la QL-600 et le papier 62 × 25 mm dans la fenêtre d’impression. Utilisez une échelle de 100 %. Testez une étiquette avec votre téléphone.";
 "Item link saved" = "Lien de l’élément enregistré";
 "Save item link" = "Enregistrer le lien";
-"Save label PDF…" = "Enregistrer l’étiquette PDF…";
+"Save label PDF…" = "Enregistrer le PDF…";
 "Print…" = "Imprimer…";
 "Could not create the QR code." = "Impossible de créer le code QR.";
 
@@ -310,3 +310,18 @@
 "Select a page in the sidebar." = "Sélectionnez une page dans le panneau latéral.";
 "No matching documents" = "Aucun document trouvé";
 "Try another title, reference, or batch name." = "Essayez un autre titre, une autre référence ou un autre nom de lot.";
+
+/* Form and review feedback */
+"Description" = "Description";
+"Filing" = "Classement";
+"Clear search" = "Effacer la recherche";
+"Enter a page from 1 to %ld." = "Saisissez une page entre 1 et %ld.";
+"Loading image…" = "Chargement de l’image…";
+"Preparing label…" = "Préparation de l’étiquette…";
+"Label preview unavailable" = "Aperçu de l’étiquette indisponible";
+"Enter a link to preview the label." = "Saisissez un lien pour voir l’étiquette.";
+"This link is too long for the label. Use a shorter link." = "Ce lien est trop long pour l’étiquette. Utilisez un lien plus court.";
+"Use a link that starts with https://." = "Utilisez un lien qui commence par https://.";
+"Enter a complete link without spaces or sign-in details." = "Saisissez un lien complet sans espaces ni identifiants de connexion.";
+
+"Zoom relative to the fitted page" = "Zoom par rapport à la page ajustée";

@@ -31,12 +31,12 @@ struct PageReview: View {
       }.padding(14)
       if let page = model.selectedPage {
         ZoomImage(url: model.folder.appendingPathComponent(page.file), rotation: page.rotation).id(
-          page.file)
+          page.id + page.file)
         ViewThatFits(in: .horizontal) {
           HStack {
             editActions(page)
             orderActions
-          }
+          }.fixedSize(horizontal: true, vertical: false)
           VStack {
             HStack { editActions(page) }
             HStack { orderActions }
@@ -98,10 +98,12 @@ struct ZoomImage: View {
   var rotation = 0
   @State private var image: NSImage?
   @State private var zoom = 1.0
+  @State private var loading = true
+  @State private var loadedURL: URL?
   var body: some View {
     VStack(spacing: 0) {
       GeometryReader { geometry in
-        if let image = image {
+        if let image = image, loadedURL == url {
           let turned = rotation % 180 != 0
           let size = image.size
           let width = max(1, turned ? size.height : size.width)
@@ -116,6 +118,9 @@ struct ZoomImage: View {
               .padding(16)
               .frame(minWidth: geometry.size.width, minHeight: geometry.size.height)
           }
+        } else if loading || loadedURL != url {
+          ProgressView(L10n.text("Loading image…"))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
           ContentUnavailableView(
             L10n.text("Image unavailable"), systemImage: "doc.questionmark",
@@ -126,14 +131,19 @@ struct ZoomImage: View {
         Button(L10n.text("Fit")) { zoom = 1 }.keyboardShortcut("0")
           .help(L10n.text("Fit image (⌘0)"))
         Slider(value: $zoom, in: 1...5).frame(width: 180).accessibilityLabel(L10n.text("Image zoom"))
-        Text(L10n.format("%ld%% of fit", Int(zoom * 100))).monospacedDigit().frame(width: 110)
+        Text(L10n.format("%ld%% of fit", Int(zoom * 100))).monospacedDigit()
+          .fixedSize().help(L10n.text("Zoom relative to the fitted page"))
         Spacer()
       }.padding(10)
     }.task(id: url) {
+      loading = true
+      image = nil
       let file = url
       let data = await Task.detached(priority: .userInitiated) { try? Data(contentsOf: file) }.value
       guard !Task.isCancelled else { return }
       image = data.flatMap { NSImage(data: $0) }
+      loadedURL = file
+      loading = false
       zoom = 1
     }
   }

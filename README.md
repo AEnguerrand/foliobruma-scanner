@@ -73,6 +73,17 @@ The footer shows rejected scans when photos need review. The Review view has an
 **Add scans** button when no page is selected. In Documents, an empty search
 result gives a prompt to try another title, reference, or batch name.
 
+Page-number input follows the selected page. An invalid number shows the valid
+range. Removing the selected page selects the next page, or the preceding page
+when the last page is removed. **Undo removal** restores and selects that page
+in Review. Original image files stay on disk.
+
+Document and export panels open the next dialog after the current panel closes.
+Document search ignores spaces at the start and end; use **Clear search** to
+show all results. Label fields keep their names visible after editing. An invalid
+link shows the problem beside the fields. Image and label previews show a loading
+state before they show an image or an error.
+
 ## Language
 
 The interface supports English and French. On first use, the app follows the
@@ -138,7 +149,7 @@ are limited to 100 UTF-8 bytes to keep the QR compact; long printed text is
 shortened, while the QR contains the full link. A short permanent link is best.
 
 The layout is **62 × 25 mm** for the **DK-22205** continuous roll, in black on
-white. Use **Save label PDF…** or **Print…**. In the macOS print dialog, select
+white. Use **Save PDF…** or **Print…**. In the macOS print dialog, select
 the Brother QL-600, the correct paper size, and 100% scale. Printing requires
 a working macOS printer queue and driver. Exporting the label PDF does not.
 The QR has a white border. Test a printed label with a phone before a batch;

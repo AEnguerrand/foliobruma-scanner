@@ -255,7 +255,7 @@
 "Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone." = "Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone.";
 "Item link saved" = "Item link saved";
 "Save item link" = "Save item link";
-"Save label PDF…" = "Save label PDF…";
+"Save label PDF…" = "Save PDF…";
 "Print…" = "Print…";
 "Could not create the QR code." = "Could not create the QR code.";
 
@@ -310,3 +310,18 @@
 "Select a page in the sidebar." = "Select a page in the sidebar.";
 "No matching documents" = "No matching documents";
 "Try another title, reference, or batch name." = "Try another title, reference, or batch name.";
+
+/* Form and review feedback */
+"Description" = "Description";
+"Filing" = "Filing";
+"Clear search" = "Clear search";
+"Enter a page from 1 to %ld." = "Enter a page from 1 to %ld.";
+"Loading image…" = "Loading image…";
+"Preparing label…" = "Preparing label…";
+"Label preview unavailable" = "Label preview unavailable";
+"Enter a link to preview the label." = "Enter a link to preview the label.";
+"This link is too long for the label. Use a shorter link." = "This link is too long for the label. Use a shorter link.";
+"Use a link that starts with https://." = "Use a link that starts with https://.";
+"Enter a complete link without spaces or sign-in details." = "Enter a complete link without spaces or sign-in details.";
+
+"Zoom relative to the fitted page" = "Zoom relative to the fitted page";

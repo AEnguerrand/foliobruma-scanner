@@ -17,7 +17,7 @@ struct DocumentToolbar: View {
           Button(L10n.text("Edit details…"), action: model.showItemMetadata)
           Button(L10n.text("Create label…"), action: model.showItemLabel)
           Button(L10n.text("Open session folder…"), action: model.openSession)
-        }.font(.headline).disabled(model.busy)
+        }.font(.headline).disabled(model.busy).help(model.document.displayTitle)
         Text(L10n.format("Pages: %ld · Local only", model.document.pages.count)).font(.caption).foregroundStyle(
           .secondary)
       }.frame(maxWidth: 240, alignment: .leading)

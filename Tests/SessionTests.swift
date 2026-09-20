@@ -373,7 +373,63 @@ import Vision
   precondition(printed.results?.first?.payloadStringValue == link, "QR must survive the PDF layout")
   print("PASS: metadata-only records; batch inheritance; multi-page letters; reference recovery; failed writes; HTTPS validation; QR decoding; 62 x 25 mm PDF")
  }
+ static func testReviewNavigation() throws {
+  let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: root) }
+  let scanner = Scanner(storageRoot: root)
+  let pages = (1...3).map { ScanPage(file: "Pages/\($0).jpg", original: "Originals/\($0).jpg") }
+  try scanner.commit(ScanDocument(pages: pages))
+  scanner.beginReview(pages[1].id)
+  for invalid in ["", "word", "1.5", "0", "-1", "4", String(Int.min), String(Int.max)] {
+    precondition(scanner.pageIndex(for: invalid) == nil)
+    scanner.goToPage(invalid)
+    precondition(scanner.selected == pages[1].id, "Invalid input must keep the current page")
+  }
+  scanner.goToPage(" 3 ")
+  precondition(scanner.selected == pages[2].id)
+  scanner.busy = true
+  scanner.goToPage("1")
+  precondition(scanner.selected == pages[2].id, "Do not change pages during a save")
+  scanner.busy = false
+  scanner.remove(pages[2])
+  precondition(scanner.selected == pages[1].id, "Removing the last page selects the preceding page")
+  scanner.undo()
+  precondition(scanner.selected == pages[2].id && scanner.document.pages.map(\.id) == pages.map(\.id))
+  scanner.beginReview(pages[1].id)
+  scanner.remove(pages[1])
+  precondition(scanner.selected == pages[2].id, "Removing the current page selects its successor")
+  scanner.undo()
+  precondition(scanner.selected == pages[1].id)
+  scanner.remove(pages[0])
+  precondition(scanner.selected == pages[1].id, "Removing a different page preserves the selection")
+  scanner.undo()
+  let savedFolder = scanner.folder
+  let blocker = root.appendingPathComponent("blocked")
+  try Data().write(to: blocker)
+  scanner.folder = blocker
+  let selected = scanner.selected
+  scanner.remove(pages[0])
+  precondition(scanner.selected == selected && scanner.document.pages.count == 3,
+    "A failed save must not change the selection or pages")
+  scanner.folder = savedFolder
+  scanner.beginReview(pages[0].id)
+  for page in pages { scanner.remove(page) }
+  precondition(scanner.selected == nil && scanner.document.pages.isEmpty)
+  scanner.goToPage("1")
+  precondition(scanner.selected == nil)
+  scanner.undo()
+  precondition(scanner.selected == pages[2].id && scanner.document.pages.count == 1)
+  precondition(DocumentLabel.validationMessage("https://example.com") == nil)
+  precondition(DocumentLabel.validationMessage("http://example.com") == "Use a link that starts with https://.")
+  precondition(DocumentLabel.validationMessage("") == "Enter a link to preview the label.")
+  precondition(DocumentLabel.validationMessage("https://example.com/" + String(repeating: "a", count: 100))
+    == "This link is too long for the label. Use a shorter link.")
+  precondition(DocumentLabel.validationMessage("https://user:password@example.com")
+    == "Enter a complete link without spaces or sign-in details.")
+  print("PASS: page input boundaries; adjacent selection; undo selection; failed-save selection; label validation feedback")
+ }
  static func main() throws {
+  try testReviewNavigation()
   try testCatalogAndLabels()
   try testPageMerge()
   testDuplicateDetail()

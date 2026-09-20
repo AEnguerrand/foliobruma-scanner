@@ -3,16 +3,20 @@ import SwiftUI
 
 struct PageStrip: View {
   @ObservedObject var model: Scanner
-  @State private var pageNumber = 1
+  @State private var pageNumber = "1"
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
       Text(L10n.text("Pages")).font(.headline).padding(.horizontal, 12)
       HStack {
-        TextField(L10n.text("Page"), value: $pageNumber, format: .number).frame(width: 65)
+        TextField(L10n.text("Page"), text: $pageNumber).frame(width: 65)
           .accessibilityLabel(L10n.text("Page number"))
           .onSubmit { jump() }
-        Button(L10n.text("Go"), action: jump)
+        Button(L10n.text("Go"), action: jump).disabled(model.pageIndex(for: pageNumber) == nil)
       }.padding(.horizontal, 12).disabled(model.document.pages.isEmpty)
+      if !model.document.pages.isEmpty && model.pageIndex(for: pageNumber) == nil {
+        Text(L10n.format("Enter a page from 1 to %ld.", model.document.pages.count))
+          .font(.caption).foregroundStyle(.secondary).padding(.horizontal, 12)
+      }
       ScrollViewReader { proxy in
         ScrollView {
           LazyVGrid(columns: [GridItem(.flexible())], spacing: 12) {
@@ -44,11 +48,14 @@ struct PageStrip: View {
         }.onAppear { if let id = model.selected { proxy.scrollTo(id, anchor: .center) } }
       }
     }.padding(.top, 14).background(Color(nsColor: .controlBackgroundColor)).disabled(model.busy)
+      .onChange(of: model.selectedIndex) { syncPageNumber() }
+      .onChange(of: model.selected) { syncPageNumber() }
+      .onAppear { syncPageNumber() }
   }
-  private func jump() {
-    guard model.document.pages.indices.contains(pageNumber - 1) else { return }
-    model.beginReview(model.document.pages[pageNumber - 1].id)
+  private func syncPageNumber() {
+    pageNumber = model.selectedIndex.map { String($0 + 1) } ?? ""
   }
+  private func jump() { model.goToPage(pageNumber) }
 }
 
 struct PageThumbnail: View {
