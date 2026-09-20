@@ -9,7 +9,7 @@ extension Scanner {
     showExport = false
     let panel = NSSavePanel()
     panel.allowedContentTypes = [.pdf]
-    panel.nameFieldStringValue = document.title + ".pdf"
+    panel.nameFieldStringValue = document.displayTitle + ".pdf"
     panel.canCreateDirectories = true
     guard panel.runModal() == .OK, let destination = panel.url else { return }
     writePDF(to: destination)

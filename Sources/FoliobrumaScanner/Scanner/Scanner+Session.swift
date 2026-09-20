@@ -57,30 +57,33 @@ extension Scanner {
     guard !busy else { return }
     autoCapture = false
     do {
-      try persist()
-      let nextFolder = root.appendingPathComponent("Sessions/" + UUID().uuidString)
-      try FileManager.default.createDirectory(
-        at: nextFolder.appendingPathComponent("Originals"), withIntermediateDirectories: true)
-      try FileManager.default.createDirectory(
-        at: nextFolder.appendingPathComponent("Pages"), withIntermediateDirectories: true)
-      let next = ScanDocument()
-      try JSONEncoder().encode(next).write(
-        to: nextFolder.appendingPathComponent("session.json"), options: .atomic)
-      folder = nextFolder
-      document = next
-      resetWorkspace()
-      sessionSaved = true
-      selected = nil
-      lastPDF = nil
-      deleting = nil
-      duplicateWarning = false
-      duplicateFeedback.reset()
-      qualityWarning = nil
-      rejectedURL = nil
-      if tracksActiveSession { UserDefaults.standard.set(folder.path, forKey: "activeSession") }
-      seedRecentPages()
+      try createDocument(ScanDocument())
       status = L10n.text("New document · Previous session kept on disk")
     } catch { self.error = error.localizedDescription }
+  }
+  // Change the active record only after its manifest has been written.
+  func createDocument(_ next: ScanDocument) throws {
+    try persist()
+    let nextFolder = root.appendingPathComponent("Sessions/" + UUID().uuidString)
+    try FileManager.default.createDirectory(
+      at: nextFolder.appendingPathComponent("Originals"), withIntermediateDirectories: true)
+    try FileManager.default.createDirectory(
+      at: nextFolder.appendingPathComponent("Pages"), withIntermediateDirectories: true)
+    try JSONEncoder().encode(next).write(
+      to: nextFolder.appendingPathComponent("session.json"), options: .atomic)
+    folder = nextFolder
+    document = next
+    resetWorkspace()
+    sessionSaved = true
+    selected = nil
+    lastPDF = nil
+    deleting = nil
+    duplicateWarning = false
+    duplicateFeedback.reset()
+    qualityWarning = nil
+    rejectedURL = nil
+    if tracksActiveSession { UserDefaults.standard.set(folder.path, forKey: "activeSession") }
+    seedRecentPages()
   }
   func openSession() {
     guard !busy else { return }

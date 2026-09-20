@@ -56,6 +56,10 @@ final class Scanner: NSObject, ObservableObject {
   @Published var sessionSaved = false
   @Published var exportProgress: Double?
   @Published var reviewing = false
+  @Published var showNewItem = false
+  @Published var showMetadata = false
+  @Published var showLabel = false
+  @Published var metadataWorkspace = false
   @Published var showSessions = false
   @Published var showRejected = false
   @Published var showExport = false

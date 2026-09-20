@@ -6,7 +6,7 @@ extension Scanner: AVCapturePhotoCaptureDelegate {
   func capture() { capture(automatic: false) }
   func capture(automatic: Bool) {
     guard connected, !busy, !reviewing, !showRejected, !showFraming, !showCrop, !showExport,
-      !showSessions, !automatic || autoCapture
+      !showSessions, !showNewItem, !showMetadata, !showLabel, !metadataWorkspace, !automatic || autoCapture
     else {
       if automatic {
         queue.async {

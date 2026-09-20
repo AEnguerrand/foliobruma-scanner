@@ -5,7 +5,7 @@ struct ExportReview: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 18) {
       Text(L10n.text("Export PDF")).font(.title2)
-      Text(model.document.title).font(.headline)
+      Text(model.document.displayTitle).font(.headline)
       Label(L10n.format("Pages in document order: %ld", model.document.pages.count), systemImage: "doc.on.doc")
       Text(L10n.text("Rotations and crops are included. This PDF contains images, without searchable text."))
         .foregroundStyle(.secondary)
