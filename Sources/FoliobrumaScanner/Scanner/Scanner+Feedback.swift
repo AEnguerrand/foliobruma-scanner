@@ -16,7 +16,7 @@ extension Scanner {
     }
   }
   func showDuplicate() {
-    status = "Already scanned · Turn the page"
+    status = L10n.text("Already scanned · Turn the page")
     duplicateWarning = true
     if duplicateFeedback.notify(), soundEnabled, tracksActiveSession {
       NSSound(named: "Tink")?.play()
@@ -26,6 +26,14 @@ extension Scanner {
     duplicateWarning = false
     duplicateFeedback.reset()
     captureSaved = true
+    if tracksActiveSession, let window = NSApp?.mainWindow {
+      NSAccessibility.post(
+        element: window, notification: .announcementRequested,
+        userInfo: [
+          .announcement: L10n.text("Page saved. Turn the page."),
+          .priority: NSAccessibilityPriorityLevel.high.rawValue,
+        ])
+    }
     let id = UUID()
     feedbackID = id
     if soundEnabled && tracksActiveSession { NSSound(named: "Glass")?.play() }

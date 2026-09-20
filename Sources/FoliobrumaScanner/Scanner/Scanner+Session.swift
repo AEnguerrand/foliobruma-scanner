@@ -12,12 +12,15 @@ extension Scanner {
     let u = folder.appendingPathComponent("session.json")
     if FileManager.default.fileExists(atPath: u.path) {
       document = try JSONDecoder().decode(ScanDocument.self, from: Data(contentsOf: u))
+      sessionSaved = true
     }
   }
   func commit(_ next: ScanDocument) throws {
     try JSONEncoder().encode(next).write(
       to: folder.appendingPathComponent("session.json"), options: .atomic)
     document = next
+    sessionSaved = true
+    pdfIsCurrent = false
   }
   func persist() throws { try commit(document) }
   func image(_ p: ScanPage) -> NSImage? {
@@ -37,7 +40,7 @@ extension Scanner {
       try commit(next)
       deleting = (page, index)
       selected = nil
-      status = "Page removed · Undo available"
+      status = L10n.text("Page removed · Undo available")
     } catch { self.error = error.localizedDescription }
   }
   func undo() {
@@ -47,7 +50,7 @@ extension Scanner {
     do {
       try commit(next)
       deleting = nil
-      status = "Page restored"
+      status = L10n.text("Page restored")
     } catch { self.error = error.localizedDescription }
   }
   func newDocument() {
@@ -65,6 +68,8 @@ extension Scanner {
         to: nextFolder.appendingPathComponent("session.json"), options: .atomic)
       folder = nextFolder
       document = next
+      resetWorkspace()
+      sessionSaved = true
       selected = nil
       lastPDF = nil
       deleting = nil
@@ -74,7 +79,7 @@ extension Scanner {
       rejectedURL = nil
       if tracksActiveSession { UserDefaults.standard.set(folder.path, forKey: "activeSession") }
       seedRecentPages()
-      status = "New document · Previous session kept on disk"
+      status = L10n.text("New document · Previous session kept on disk")
     } catch { self.error = error.localizedDescription }
   }
   func openSession() {
@@ -84,22 +89,9 @@ extension Scanner {
     panel.canChooseDirectories = true
     panel.canChooseFiles = false
     panel.directoryURL = root.appendingPathComponent("Sessions")
-    panel.message = "Choose a Foliobruma session folder."
+    panel.message = L10n.text("Choose a Foliobruma session folder.")
     if panel.runModal() == .OK, let u = panel.url {
-      do {
-        let restored = try JSONDecoder().decode(
-          ScanDocument.self, from: Data(contentsOf: u.appendingPathComponent("session.json")))
-        folder = u
-        document = restored
-        selected = nil
-        deleting = nil
-        lastPDF = nil
-        qualityWarning = nil
-        rejectedURL = nil
-        UserDefaults.standard.set(u.path, forKey: "activeSession")
-        status = "Session restored"
-        seedRecentPages()
-      } catch { self.error = "This folder does not contain a valid Foliobruma session." }
+      openSession(at: u)
     }
   }
 }

@@ -7,22 +7,22 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
   func connect() {
     guard !busy else { return }
     autoCapture = false
-    status = "Requesting camera access…"
+    status = L10n.text("Requesting camera access…")
     AVCaptureDevice.requestAccess(for: .video) { allowed in
       guard allowed else {
         DispatchQueue.main.async {
           self.error =
-            "Camera access is off. Enable Foliobruma Scanner in System Settings → Privacy & Security → Camera."
+            L10n.text("Camera access is off. Enable Foliobruma Scanner in System Settings → Privacy & Security → Camera.")
         }
         return
       }
-      self.report("Opening scanner…")
+      self.report(L10n.text("Opening scanner…"))
       self.queue.async { self.configure() }
     }
   }
   func configure() {
     guard let device = devices.first(where: { $0.uniqueID == deviceID }) else {
-      report("Select a camera first")
+      report(L10n.text("Select a camera first"))
       return
     }
     session.stopRunning()
@@ -34,7 +34,7 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
       guard session.canAddInput(next) else {
         throw NSError(
           domain: "Scanner", code: 1,
-          userInfo: [NSLocalizedDescriptionKey: "This camera cannot be opened."])
+          userInfo: [NSLocalizedDescriptionKey: L10n.text("This camera cannot be opened.")])
       }
       session.addInput(next)
       input = next
@@ -87,7 +87,7 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
       DispatchQueue.main.async {
         self.connected = true
         self.resolution = "\(dims.width) × \(dims.height)"
-        self.status = "Ready to capture"
+        self.status = L10n.text("Ready to capture")
         self.quad = nil
       }
     } catch {
@@ -144,7 +144,7 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
       }
     }
     guard autoEnabled, !captureInFlight else {
-      display("Ready to capture")
+      display(L10n.text("Ready to capture"))
       return
     }
     if let held = heldFrame {
@@ -158,8 +158,11 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
       heldPreflightWarning = nil
       gate.reset()
     }
+    if moving || detected == nil {
+      DispatchQueue.main.async { self.duplicateWarning = false }
+    }
     let warning =
-      detected == nil && !moving ? "Page edges not found · Place the page inside the view" : nil
+      detected == nil && !moving ? L10n.text("Page edges not found · Place the page inside the view") : nil
     DispatchQueue.main.async { self.updatePreflight(warning) }
     guard
       gate.ready(
@@ -167,29 +170,28 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
     else {
       display(
         detected == nil
-          ? "Looking for page edges…"
-          : (moving ? "Hold the page still…" : "Checking the next page…"))
+          ? L10n.text("Looking for page edges…")
+          : (moving ? L10n.text("Hold the page still…") : L10n.text("Checking the next page…")))
       return
     }
     do {
       let hands = try CaptureCheck.hasHands(image, context: context)
       guard !hands else {
         heldFrame = bytes
-        heldPreflightWarning = "Hand in view · Move your hands away"
-        DispatchQueue.main.async { self.updatePreflight("Hand in view · Move your hands away") }
-        heldReason = "Move your hands away…"
+        heldPreflightWarning = L10n.text("Hand in view · Move your hands away")
+        DispatchQueue.main.async { self.updatePreflight(L10n.text("Hand in view · Move your hands away")) }
+        heldReason = L10n.text("Move your hands away…")
         gate.reset()
         display(heldReason)
         return
       }
-      guard let print = try CaptureCheck.fingerprint(image) else {
+      guard let print = CaptureCheck.fingerprint(image, context: context) else {
         gate.reset()
-        display("Could not check the page · Try Capture")
+        display(L10n.text("Could not check the page · Try Capture"))
         return
       }
-      if CaptureCheck.duplicate(print, of: recentPrints) {
-        heldFrame = bytes
-        heldReason = "Page already saved · Turn the page"
+      if CaptureCheck.duplicate(print, of: recentPrints + recentPreviewPrints) {
+        heldReason = L10n.text("Page already saved · Turn the page")
         gate.reset()
         display(heldReason)
         DispatchQueue.main.async { self.showDuplicate() }
@@ -197,9 +199,10 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
       }
     } catch {
       gate.reset()
-      display("Could not check the page · Try Capture")
+      display(L10n.text("Could not check the page · Try Capture"))
       return
     }
+    DispatchQueue.main.async { self.duplicateWarning = false }
     gate.captured(at: Date.timeIntervalSinceReferenceDate)
     captureInFlight = true
     DispatchQueue.main.async {
@@ -225,9 +228,11 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
       self.gate = AutoCaptureGate()
       self.previous = nil
       self.heldFrame = nil
+      self.recentPreviewPrints = []
+      self.capturePreviewPrint = nil
       self.recentPrints = names.compactMap { name in
         guard let image = CIImage(contentsOf: base.appendingPathComponent(name)) else { return nil }
-        return try? CaptureCheck.fingerprint(image)
+        return CaptureCheck.fingerprint(image, context: self.context)
       }
     }
   }

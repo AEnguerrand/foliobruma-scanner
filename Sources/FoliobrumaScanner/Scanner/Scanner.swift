@@ -10,7 +10,7 @@ final class Scanner: NSObject, ObservableObject {
   @Published var devices: [AVCaptureDevice] = []
   @Published var deviceID = ""
   @Published var connected = false
-  @Published var status = "Connect your scanner to begin"
+  @Published var status = L10n.text("Connect your scanner to begin")
   @Published var error: String? {
     didSet {
       if error != nil {
@@ -52,6 +52,22 @@ final class Scanner: NSObject, ObservableObject {
   @Published var resolution = ""
   @Published var divider = 0.5
   @Published var lastPDF: URL?
+  @Published var pdfIsCurrent = false
+  @Published var sessionSaved = false
+  @Published var exportProgress: Double?
+  @Published var reviewing = false
+  @Published var showSessions = false
+  @Published var showRejected = false
+  @Published var showExport = false
+  @Published var showCrop = false
+  @Published var showFraming = false
+  @Published var framingImages: [NSImage] = []
+  @Published var sessions: [SavedSession] = []
+  @Published var loadingSessions = false
+  @Published var replacementID: String?
+  var keptRejection: String?
+  var captureReplacementID: String?
+  var pendingReview = false
   let session = AVCaptureSession()
   let queue = DispatchQueue(label: "foliobruma.camera")
   let context = CIContext(options: [.cacheIntermediates: false])
@@ -67,7 +83,9 @@ final class Scanner: NSObject, ObservableObject {
   var heldReason = ""
   var heldPreflightWarning: String?
   var gate = AutoCaptureGate()
-  var recentPrints: [VNFeaturePrintObservation] = []
+  var recentPrints: [CaptureCheck.Fingerprint] = []
+  var recentPreviewPrints: [CaptureCheck.Fingerprint] = []
+  var capturePreviewPrint: CaptureCheck.Fingerprint?
 
   var captureOptions: (quad: Quad?, split: Bool, divider: Double, automatic: Bool)?
   @Published var deleting: (page: ScanPage, index: Int)?
@@ -96,6 +114,7 @@ final class Scanner: NSObject, ObservableObject {
           position: .unspecified
         ).devices
     }
+    loadLegacyRejections()
     seedRecentPages()
     deviceID =
       devices.first(where: { $0.localizedName.localizedCaseInsensitiveContains("IRIS") })?.uniqueID

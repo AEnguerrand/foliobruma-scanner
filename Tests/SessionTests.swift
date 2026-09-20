@@ -1,8 +1,201 @@
 import Foundation
 import CoreImage
+import AppKit
+import PDFKit
 
 @main struct SessionTests {
+ static func readData(_ url: URL) -> Data { try! Data(contentsOf: url) }
+ static func waitForWork(_ scanner: Scanner) {
+  let deadline = Date().addingTimeInterval(10)
+  while scanner.busy && Date() < deadline { RunLoop.main.run(until: Date().addingTimeInterval(0.01)) }
+  precondition(!scanner.busy, "Background operation timed out")
+ }
+ static func testLocalization() throws {
+  let resources = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+    .appendingPathComponent("Resources")
+  func table(_ language: String, _ name: String = "Localizable") throws -> [String: String] {
+    let data = try Data(contentsOf: resources.appendingPathComponent("\(language).lproj/\(name).strings"))
+    return try PropertyListSerialization.propertyList(from: data, format: nil) as! [String: String]
+  }
+  let english = try table("en")
+  let french = try table("fr")
+  precondition(Set(english.keys) == Set(french.keys), "Both languages need the same keys")
+  let placeholders = try NSRegularExpression(pattern: "%(?:ld|@|%)")
+  func tokens(_ value: String) -> [String] {
+    placeholders.matches(in: value, range: NSRange(value.startIndex..., in: value)).map {
+      String(value[Range($0.range, in: value)!])
+    }.sorted()
+  }
+  for (key, value) in english {
+    precondition(!french[key]!.isEmpty, "A translation must not be empty")
+    precondition(tokens(value) == tokens(french[key]!), "Format mismatch: \(key)")
+  }
+  let en = Bundle(url: resources.appendingPathComponent("en.lproj"))!
+  let fr = Bundle(url: resources.appendingPathComponent("fr.lproj"))!
+  precondition(L10n.text("Capture page", bundle: en) == "Capture page")
+  precondition(L10n.text("Capture page", bundle: fr) == "Capturer la page")
+  precondition(L10n.text("Unknown legacy reason", bundle: fr) == "Unknown legacy reason")
+  precondition(L10n.text("Too dark · Add light and rescan", bundle: fr).hasPrefix("Image trop sombre"))
+  let progress = String(format: L10n.text("Page %ld of %ld", bundle: fr), 2, 12)
+  precondition(progress == "Page 2 sur 12")
+  let percent = String(format: L10n.text("Spine position · %ld%%", bundle: fr), 50)
+  precondition(percent == "Position de la reliure · 50 %")
+  for language in ["en", "fr"] {
+    let permission = try table(language, "InfoPlist")
+    precondition(permission["NSCameraUsageDescription"]?.isEmpty == false)
+  }
+  precondition(Bundle.preferredLocalizations(from: ["en", "fr"], forPreferences: ["fr-CA", "en"]).first == "fr")
+  precondition(Bundle.preferredLocalizations(from: ["en", "fr"], forPreferences: ["de"]).first == "en")
+  let suite = "foliobruma-localization-test-" + UUID().uuidString
+  let defaults = UserDefaults(suiteName: suite)!
+  defer { defaults.removePersistentDomain(forName: suite) }
+  for language in ["fr", "en"] {
+    L10n.setLanguage(language, defaults: defaults)
+    precondition(defaults.string(forKey: "appLanguage") == language)
+    precondition(defaults.stringArray(forKey: "AppleLanguages") == [language])
+  }
+  L10n.setLanguage("system", defaults: defaults)
+  precondition(defaults.persistentDomain(forName: suite)?["AppleLanguages"] == nil)
+  L10n.setLanguage("unsupported", defaults: defaults)
+  precondition(defaults.string(forKey: "appLanguage") == "system")
+  let saved = Data(#"{"title":"Mon livre","pages":[]}"#.utf8)
+  let decoded = try JSONDecoder().decode(ScanDocument.self, from: saved)
+  precondition(decoded.title == "Mon livre")
+  print("PASS: English and French resources; formats; fallback; language preference; saved names")
+ }
+ static func testDuplicateDetail() {
+  let context = CIContext(options: [.cacheIntermediates: false])
+  let bounds = CGRect(x: 0, y: 0, width: 1024, height: 1024)
+  let paper = CIImage(color: CIColor(red: 0.9, green: 0.9, blue: 0.9)).cropped(to: bounds)
+  func page(_ variant: Int) -> CIImage {
+    var image = paper
+    // Two columns with the same layout, but different word lengths on the right.
+    for column in 0..<2 {
+      for row in 0..<30 {
+        for word in 0..<5 {
+          let width = 30 + ((row * 7 + word * 11 + (column == 1 ? variant * 17 : 0)) % 35)
+          let rect = CGRect(x: 60 + column * 490 + word * 80, y: 80 + row * 28,
+                            width: width, height: 7)
+          image = CIImage(color: CIColor(red: 0.1, green: 0.1, blue: 0.1))
+            .cropped(to: rect).composited(over: image)
+        }
+      }
+    }
+    return image
+  }
+  let first = page(0)
+  let saved = CaptureCheck.fingerprint(first, context: context)!
+  precondition(CaptureCheck.duplicate(saved, of: [saved]), "An unchanged page must match")
+  let next = CaptureCheck.fingerprint(page(1), context: context)!
+  precondition(!CaptureCheck.duplicate(next, of: [saved]),
+               "Different text in one side of a spread must not be a duplicate")
+  let smaller = first.transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5))
+  precondition(CaptureCheck.duplicate(CaptureCheck.fingerprint(smaller, context: context)!, of: [saved]),
+               "Preview and photo sizes must match when their detail is unchanged")
+  let translated = first.transformed(by: CGAffineTransform(translationX: 40, y: 60))
+  precondition(CaptureCheck.duplicate(CaptureCheck.fingerprint(translated, context: context)!, of: [saved]),
+               "Image extent origins must not change a fingerprint")
+  let noisy = CaptureCheck.Fingerprint(pixels: saved.pixels.enumerated().map {
+    UInt8(clamping: Int($0.element) + 6 + ($0.offset % 3) - 1)
+  }, aspect: saved.aspect)
+  precondition(CaptureCheck.duplicate(noisy, of: [saved]), "Small exposure changes and noise must pass")
+  let blank = CaptureCheck.fingerprint(paper, context: context)!
+  precondition(!CaptureCheck.duplicate(blank, of: [saved]), "Blank paper must differ from text")
+  precondition(!CaptureCheck.duplicate(saved, of: []), "An empty history must not block capture")
+  precondition(CaptureCheck.duplicate(saved, of: [next, blank, saved]), "Check all recent captures")
+  print("PASS: duplicate image detail; changed text in a spread; preview size; exposure and noise")
+ }
+ static func testPageMerge() throws {
+  let root = FileManager.default.temporaryDirectory.appendingPathComponent("merge-test-" + UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: root) }
+  let scanner = Scanner(storageRoot: root)
+  let context = CIContext()
+  let bounds = CGRect(x: 0, y: 0, width: 80, height: 40)
+  let red = CIImage(color: CIColor(red: 1, green: 0, blue: 0)).cropped(to: bounds)
+  let green = CIImage(color: CIColor(red: 0, green: 1, blue: 0))
+    .cropped(to: CGRect(x: 40, y: 0, width: 40, height: 40)).composited(over: red)
+  let blue = CIImage(color: CIColor(red: 0, green: 0, blue: 1)).cropped(to: bounds)
+  var pages: [ScanPage] = []
+  for (i, image) in [green, blue, red].enumerated() {
+   let file = "Pages/test-\(i).png"
+   let original = "Originals/test-\(i).png"
+   let data = context.pngRepresentation(of: image, format: .RGBA8, colorSpace: CGColorSpaceCreateDeviceRGB())!
+   try data.write(to: scanner.folder.appendingPathComponent(file))
+   try data.write(to: scanner.folder.appendingPathComponent(original))
+   pages.append(ScanPage(file: file, original: original, rotation: i == 0 ? 90 : 0))
+  }
+  var document = ScanDocument(); document.pages = pages
+  try scanner.commit(document)
+  let sourceBytes = pages.map { readData(scanner.folder.appendingPathComponent($0.file)) }
+  scanner.beginReview(pages[2].id)
+  precondition(!scanner.canMergeWithNextPage)
+  scanner.mergeWithNextPage()
+  precondition(scanner.document.pages.count == 3)
+  scanner.beginReview(pages[0].id)
+  scanner.busy = true
+  scanner.mergeWithNextPage()
+  precondition(scanner.document.pages.count == 3)
+  scanner.busy = false
+  scanner.pdfIsCurrent = true
+  scanner.mergeWithNextPage(); waitForWork(scanner)
+  precondition(scanner.error == nil)
+  precondition(scanner.document.pages.count == 2 && scanner.document.pages[1].id == pages[2].id)
+  let merged = scanner.document.pages[0]
+  precondition(scanner.selected == merged.id && merged.rotation == 0 && !scanner.pdfIsCurrent)
+  precondition(merged.mergedSources?.map(\.id) == Array(pages.prefix(2)).map(\.id))
+  let output = CIImage(contentsOf: scanner.folder.appendingPathComponent(merged.file))!
+  precondition(output.extent.width == 200 && output.extent.height == 80)
+  func pixel(_ x: Int, _ y: Int) -> [UInt8] {
+   var result = [UInt8](repeating: 0, count: 4)
+   context.render(output, toBitmap: &result, rowBytes: 4,
+     bounds: CGRect(x: x, y: y, width: 1, height: 1), format: .RGBA8,
+     colorSpace: CGColorSpaceCreateDeviceRGB())
+   return result
+  }
+  precondition(pixel(10, 60)[0] > 240, "Clockwise rotation must put red at the top")
+  precondition(pixel(10, 20)[1] > 240, "Clockwise rotation must put green at the bottom")
+  precondition(pixel(100, 40)[2] > 240, "The second page must be on the right")
+  for (i, page) in pages.enumerated() {
+   precondition(readData(scanner.folder.appendingPathComponent(page.file)) == sourceBytes[i])
+   precondition(readData(scanner.folder.appendingPathComponent(page.original)) == sourceBytes[i])
+  }
+  try scanner.restore()
+  precondition(scanner.document.pages[0].mergedSources?.count == 2)
+  let pdfURL = root.appendingPathComponent("merged.pdf")
+  scanner.writePDF(to: pdfURL); waitForWork(scanner)
+  let pdf = PDFDocument(url: pdfURL)!
+  precondition(pdf.pageCount == 2)
+  let pdfBounds = pdf.page(at: 0)!.bounds(for: .mediaBox)
+  precondition(abs(pdfBounds.width / pdfBounds.height - 2.5) < 0.01)
+  scanner.cropSelectedPage(to: CGRect(x: 0, y: 0, width: 0.5, height: 1))
+  waitForWork(scanner)
+  precondition(scanner.error == nil && scanner.document.pages[0].original == merged.file)
+  let crop = CIImage(contentsOf: scanner.folder.appendingPathComponent(scanner.document.pages[0].file))!
+  precondition(crop.extent.width == 100 && crop.extent.height == 80)
+
+  // An image failure must leave both the saved manifest and the document unchanged.
+  try scanner.commit(document)
+  scanner.beginReview(pages[0].id)
+  let manifestURL = scanner.folder.appendingPathComponent("session.json")
+  let manifest = readData(manifestURL)
+  try FileManager.default.removeItem(at: scanner.folder.appendingPathComponent(pages[1].file))
+  scanner.mergeWithNextPage(); waitForWork(scanner)
+  precondition(scanner.error != nil && scanner.document.pages.map(\.id) == pages.map(\.id))
+  precondition(readData(manifestURL) == manifest)
+  try sourceBytes[1].write(to: scanner.folder.appendingPathComponent(pages[1].file))
+
+  // Fail the manifest write after the merged image has been written.
+  try FileManager.default.removeItem(at: manifestURL)
+  try FileManager.default.createDirectory(at: manifestURL, withIntermediateDirectories: false)
+  scanner.mergeWithNextPage(); waitForWork(scanner)
+  precondition(scanner.error != nil && scanner.document.pages.map(\.id) == pages.map(\.id))
+  precondition(scanner.selected == pages[0].id)
+  print("PASS: page merge order, rotation, pixels, source preservation, reload, PDF, crop, and failed-write recovery")
+ }
  static func main() throws {
+  try testPageMerge()
+  testDuplicateDetail()
+  try testLocalization()
   let root=FileManager.default.temporaryDirectory.appendingPathComponent("sovenelia-test-"+UUID().uuidString)
   defer {try? FileManager.default.removeItem(at:root)}
   let scanner=Scanner(storageRoot:root)
@@ -83,6 +276,102 @@ import CoreImage
   while scanner.busy && Date()<keepDeadline {RunLoop.main.run(until:Date().addingTimeInterval(0.01))}
   precondition(scanner.document.pages.count==1,"Keep anyway must save the rejected photo")
   precondition(scanner.qualityWarning==nil)
+  // New workflow operations must preserve order and recover after failed writes.
+  let workflow = Scanner(storageRoot: root.appendingPathComponent("workflow"))
+  var reviewDoc = ScanDocument(); reviewDoc.pages = pages
+  try workflow.commit(reviewDoc)
+  workflow.autoCapture = true
+  workflow.beginReview(pages[1].id)
+  precondition(!workflow.autoCapture && workflow.reviewing && workflow.selected == pages[1].id)
+  workflow.connected = true
+  workflow.capture(automatic: true)
+  precondition(!workflow.busy && workflow.selected == pages[1].id, "A queued automatic capture must not interrupt review")
+  workflow.movePage(-1)
+  precondition(workflow.document.pages.map(\.id) == [pages[1].id, pages[0].id, pages[2].id])
+  workflow.navigatePage(1)
+  precondition(workflow.selected == pages[0].id)
+  workflow.replaceSelectedPage()
+  precondition(workflow.replacementID == pages[0].id && !workflow.autoCapture && !workflow.reviewing)
+  let replacement = ScanPage(file: "Pages/replacement.jpg", original: "Originals/replacement.jpg")
+  try workflow.applyCapture([replacement], replacing: pages[0].id, resolving: nil)
+  precondition(workflow.document.pages[1].id == pages[0].id && workflow.document.pages[1].file == replacement.file)
+  let replacementManifest = try Data(contentsOf: workflow.folder.appendingPathComponent("session.json"))
+  do {
+    try workflow.applyCapture([replacement, replacement], replacing: pages[0].id, resolving: nil)
+    preconditionFailure("A split must not replace a single page")
+  } catch {}
+  precondition(readData(workflow.folder.appendingPathComponent("session.json")) == replacementManifest)
+  workflow.pdfIsCurrent = true
+  workflow.rotate(workflow.document.pages[0])
+  precondition(!workflow.pdfIsCurrent, "Page edits must mark the PDF as old")
+  let validFolder = workflow.folder
+  workflow.folder = blocker
+  let beforeFailure = workflow.document.pages.map(\.file)
+  do {
+    try workflow.applyCapture([replacement], replacing: pages[2].id, resolving: nil)
+    preconditionFailure("Replacement must report a failed save")
+  } catch {}
+  precondition(workflow.document.pages.map(\.file) == beforeFailure)
+  workflow.folder = validFolder; workflow.error = nil
+  let old = try JSONDecoder().decode(ScanDocument.self, from: Data("{\"title\":\"Old session\",\"pages\":[]}".utf8))
+  precondition(old.title == "Old session" && old.rejected == nil, "Old session files must still decode")
+
+  // Reject metadata must survive reload, and keeping it must resolve the entry.
+  let rejectedScanner = Scanner(storageRoot: root.appendingPathComponent("rejected-workflow"))
+  rejectedScanner.captureOptions = (Quad.full, false, 0.4, false)
+  rejectedScanner.busy = true
+  rejectedScanner.process(black, originalData: nil)
+  waitForWork(rejectedScanner)
+  precondition(rejectedScanner.rejectedScans.count == 1 && !rejectedScanner.autoCapture)
+  let rejection = rejectedScanner.rejectedScans[0]
+  try rejectedScanner.restore()
+  precondition(rejectedScanner.rejectedScans[0].divider == 0.4)
+  rejectedScanner.reviewRejected(rejection)
+  rejectedScanner.keepRejected(); waitForWork(rejectedScanner)
+  precondition(rejectedScanner.document.pages.count == 1 && rejectedScanner.rejectedScans.isEmpty)
+  precondition(FileManager.default.fileExists(atPath: rejectedScanner.folder.appendingPathComponent(rejection.file).path))
+  rejectedScanner.loadLegacyRejections()
+  precondition(rejectedScanner.rejectedScans.isEmpty, "Kept photos must not reappear during recovery")
+  let cropPage = rejectedScanner.document.pages[0]
+  let originalURL = rejectedScanner.folder.appendingPathComponent(cropPage.original)
+  let originalBytes = try Data(contentsOf: originalURL)
+  rejectedScanner.showRejected = false
+  rejectedScanner.beginReview(cropPage.id)
+  rejectedScanner.cropSelectedPage(to: CGRect(x: 0.25, y: 0.25, width: 0.5, height: 0.5))
+  waitForWork(rejectedScanner)
+  precondition(rejectedScanner.error == nil)
+  precondition(rejectedScanner.document.pages[0].id == cropPage.id && rejectedScanner.document.pages[0].file != cropPage.file)
+  let cropped = CIImage(contentsOf: rejectedScanner.folder.appendingPathComponent(rejectedScanner.document.pages[0].file))!
+  precondition(cropped.extent.width == 320 && cropped.extent.height == 240)
+  precondition(readData(originalURL) == originalBytes, "Crop must preserve the original")
+  precondition(FileManager.default.fileExists(atPath: rejectedScanner.folder.appendingPathComponent(cropPage.file).path))
+  let cropManifest = try Data(contentsOf: rejectedScanner.folder.appendingPathComponent("session.json"))
+  rejectedScanner.cropSelectedPage(to: CGRect(x: -0.1, y: 0, width: 1, height: 1))
+  precondition(!rejectedScanner.busy)
+  precondition(readData(rejectedScanner.folder.appendingPathComponent("session.json")) == cropManifest)
+  rejectedScanner.openSession(at: blocker)
+  precondition(rejectedScanner.document.pages[0].id == cropPage.id, "Invalid session open must preserve the document")
+  rejectedScanner.error = nil
+  rejectedScanner.browseSessions()
+  let listDeadline = Date().addingTimeInterval(5)
+  while rejectedScanner.loadingSessions && Date() < listDeadline { RunLoop.main.run(until: Date().addingTimeInterval(0.01)) }
+  precondition(rejectedScanner.sessions.contains { $0.folder.resolvingSymlinksInPath().path == rejectedScanner.folder.resolvingSymlinksInPath().path && $0.pageCount == 1 }, "Session listing: \(rejectedScanner.sessions.map { ($0.folder.path, $0.pageCount) }) active: \(rejectedScanner.folder.path)")
+  rejectedScanner.showSessions = false
+  let exportURL = root.appendingPathComponent("test.pdf")
+  rejectedScanner.rotate(rejectedScanner.document.pages[0])
+  rejectedScanner.writePDF(to: exportURL); waitForWork(rejectedScanner)
+  precondition(rejectedScanner.error == nil && rejectedScanner.pdfIsCurrent)
+  let pdf = PDFDocument(url: exportURL)!
+  precondition(pdf.pageCount == 1 && pdf.page(at: 0)?.rotation == 90)
+  let pdfBytes = try Data(contentsOf: exportURL)
+  var missingDoc = rejectedScanner.document
+  missingDoc.pages.append(ScanPage(file: "Pages/missing.jpg", original: "Originals/missing.jpg"))
+  try rejectedScanner.commit(missingDoc)
+  rejectedScanner.writePDF(to: exportURL); waitForWork(rejectedScanner)
+  precondition(rejectedScanner.error != nil && !rejectedScanner.pdfIsCurrent)
+  precondition(readData(exportURL) == pdfBytes, "Failed export must keep the previous PDF")
+  print("PASS: PDF page count and rotation; failed export preserves prior PDF; resolved rejection recovery")
+  print("PASS: review capture exclusion; page navigation and order; replacement identity and rollback; old session decoding; rejected-photo recovery; non-destructive crop; document browser")
   let still=[UInt8](repeating:128,count:64*48*4)
   var arm=still
   for y in 8..<16 {for x in 8..<16 {arm[(y*64+x)*4]=200}}

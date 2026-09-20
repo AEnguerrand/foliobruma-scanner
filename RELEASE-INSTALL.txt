@@ -1,0 +1,37 @@
+Foliobruma Scanner for Apple Silicon Macs
+Requires macOS 14 or later. Intel Macs are not supported.
+
+INSTALL
+1. Download and open the .dmg file.
+2. Drag Foliobruma Scanner to Applications.
+3. Eject the disk image. Open the app from Applications.
+4. Allow camera access when macOS asks.
+
+For the ZIP download, unzip it and move the app to Applications.
+Command Line Tools and Xcode are not required to use the downloaded app.
+
+FIRST OPEN
+This app has no Apple Developer ID signature and is not notarized.
+It uses an ad-hoc signature so that it can run on Apple Silicon.
+macOS can block it on first open.
+If you trust this download, first try to open the app. Then open System
+Settings > Privacy & Security, find the blocked app, and select Open Anyway.
+Confirm Open when asked. A managed Mac can prevent this exception.
+Do not turn off system security controls.
+Apple guidance: https://support.apple.com/en-us/102445
+
+UPDATE
+Quit the app, then replace the old app in Applications with the new app.
+Saved sessions remain in:
+~/Library/Application Support/Sovenelia Scanner/Sessions/
+Back up this folder to protect your original captures and session data.
+There are no automatic updates.
+
+CHECK DOWNLOADS (optional)
+Download SHA256SUMS.txt and all four files it lists into the same folder.
+In Terminal, go to that folder and run:
+shasum -a 256 -c SHA256SUMS.txt
+Checksums detect changed files. They do not verify the publisher's identity.
+
+Source and reports: https://github.com/AEnguerrand/foliobruma-scanner
+License: MIT. See LICENSE.txt in the disk image or release downloads.

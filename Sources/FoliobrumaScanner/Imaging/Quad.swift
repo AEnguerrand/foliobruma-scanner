@@ -1,6 +1,6 @@
 import CoreGraphics
 
-struct Quad {
+struct Quad: Codable {
   var tl: CGPoint
   var tr: CGPoint
   var br: CGPoint

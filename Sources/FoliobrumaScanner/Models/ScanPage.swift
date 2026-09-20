@@ -5,4 +5,6 @@ struct ScanPage: Codable, Identifiable {
   var file: String
   var original: String
   var rotation: Int = 0
+  // Keep the source records when two pages become one. Older sessions omit this field.
+  var mergedSources: [ScanPage]?
 }

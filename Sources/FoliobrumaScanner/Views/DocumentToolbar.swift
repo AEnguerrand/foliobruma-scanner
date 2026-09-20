@@ -1,29 +1,47 @@
-import AppKit
 import SwiftUI
 
 struct DocumentToolbar: View {
   @ObservedObject var model: Scanner
   @Binding var rename: Bool
   var body: some View {
-    HStack(spacing: 22) {
-      Label("Foliobruma Scanner", systemImage: "camera").font(.headline)
+    HStack(spacing: 16) {
+      BrandIcon().frame(width: 34, height: 34)
+        .accessibilityHidden(true)
+      Button(action: model.browseSessions) { Label(L10n.text("Documents"), systemImage: "books.vertical") }
+        .keyboardShortcut("o").disabled(model.busy)
+      VStack(alignment: .leading, spacing: 3) {
+        Menu(model.document.title) {
+          Button(L10n.text("Rename document…")) {
+            model.autoCapture = false
+            rename = true
+          }
+          Button(L10n.text("New document"), action: model.newDocument).keyboardShortcut("n")
+          Button(L10n.text("Open session folder…"), action: model.openSession)
+        }.font(.headline).disabled(model.busy)
+        Text(L10n.format("Pages: %ld · Local only", model.document.pages.count)).font(.caption).foregroundStyle(
+          .secondary)
+      }.frame(maxWidth: 240, alignment: .leading)
       Spacer()
-      Menu(model.document.title) {
-        Button("Rename document…") { rename = true }
-        Button("New document", action: model.newDocument)
-        Button("Open saved session…", action: model.openSession)
-      }.frame(maxWidth: 210)
-      Picker("Mode", selection: $model.book) {
-        Label("Book", systemImage: "book").tag(true)
-        Label("Letters", systemImage: "envelope").tag(false)
-      }.pickerStyle(.segmented).frame(width: 200)
-      Picker("Camera", selection: $model.deviceID) {
-        ForEach(model.devices, id: \.uniqueID) { Text($0.localizedName).tag($0.uniqueID) }
-      }.labelsHidden().frame(width: 220).onChange(of: model.deviceID) {
-        if model.connected { model.connect() }
+      Picker(
+        L10n.text("Workspace"),
+        selection: Binding(
+          get: { model.reviewing },
+          set: {
+            if $0 { model.beginReview() } else { model.showCamera() }
+          })
+      ) {
+        Text(L10n.text("Scan")).tag(false)
+        Text(L10n.text("Review")).tag(true)
+      }.pickerStyle(.segmented).labelsHidden().frame(minWidth: 210).disabled(model.busy)
+      Button(action: model.prepareExport) {
+        Label(L10n.text("Export PDF"), systemImage: "square.and.arrow.up")
       }
-      Button(action: model.exportPDF) { Label("Save PDF", systemImage: "doc") }.disabled(
-        model.document.pages.isEmpty || model.busy)
-    }.padding(18).background(Color(white: 0.13))
+      .keyboardShortcut("e").disabled(model.document.pages.isEmpty || model.busy)
+      SettingsLink {
+        Image(systemName: "gearshape")
+      }
+      .help(L10n.text("Settings"))
+      .accessibilityLabel(L10n.text("Settings"))
+    }.padding(16).background(Color(white: 0.14))
   }
 }

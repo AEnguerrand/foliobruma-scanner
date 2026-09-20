@@ -5,5 +5,6 @@ build/
 *.jpeg
 *.png
 
-# Approved public README logo. Keep private scan images excluded.
+# Approved public brand assets only. Keep private scan images excluded.
+!/Resources/Brand/AppIcon.png
 !/Resources/Brand/README-logo.png

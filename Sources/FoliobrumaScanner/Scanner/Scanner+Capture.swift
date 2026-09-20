@@ -5,7 +5,9 @@ import CoreImage
 extension Scanner: AVCapturePhotoCaptureDelegate {
   func capture() { capture(automatic: false) }
   func capture(automatic: Bool) {
-    guard connected, !busy else {
+    guard connected, !busy, !reviewing, !showRejected, !showFraming, !showCrop, !showExport,
+      !showSessions, !automatic || autoCapture
+    else {
       if automatic {
         queue.async {
           self.captureInFlight = false
@@ -21,7 +23,7 @@ extension Scanner: AVCapturePhotoCaptureDelegate {
           self.gate.reset()
         }
       }
-      status = "No page edges found. Turn off Auto crop to capture the full frame."
+      status = L10n.text("No page edges found. Turn off Auto crop to capture the full frame.")
       return
     }
     updatePreflight(nil)
@@ -31,10 +33,17 @@ extension Scanner: AVCapturePhotoCaptureDelegate {
     duplicateWarning = false
     qualityWarning = nil
     rejectedURL = nil
-    status = "Capturing… Hold still"
-    captureOptions = (autoCrop ? quad : nil, book && split, divider, automatic)
+    status = L10n.text("Capturing… Hold still")
+    captureReplacementID = replacementID
+    keptRejection = nil
+    captureOptions = (
+      autoCrop ? quad : nil, replacementID == nil && book && split, divider, automatic
+    )
     queue.async {
       self.captureInFlight = true
+      self.capturePreviewPrint = self.latest.flatMap {
+        CaptureCheck.fingerprint($0, context: self.context)
+      }
       self.gate.captured(at: Date.timeIntervalSinceReferenceDate)
       if self.session.outputs.contains(self.photoOutput),
         !self.photoOutput.availablePhotoCodecTypes.isEmpty
@@ -50,7 +59,7 @@ extension Scanner: AVCapturePhotoCaptureDelegate {
         self.captureInFlight = false
         DispatchQueue.main.async {
           self.busy = false
-          self.error = "The camera has not delivered an image yet."
+          self.error = L10n.text("The camera has not delivered an image yet.")
         }
       }
     }
@@ -68,7 +77,7 @@ extension Scanner: AVCapturePhotoCaptureDelegate {
           self.captureInFlight = false
           DispatchQueue.main.async {
             self.busy = false
-            self.error = error?.localizedDescription ?? "Capture failed"
+            self.error = error?.localizedDescription ?? L10n.text("Capture failed")
           }
         }
       }

@@ -8,21 +8,7 @@ struct ScanPreview: View {
     GeometryReader { g in
       ZStack {
         Color.black
-        if let id = model.selected, let page = model.document.pages.first(where: { $0.id == id }),
-          let image = model.image(page)
-        {
-          Image(nsImage: image).resizable().scaledToFit().rotationEffect(
-            .degrees(Double(page.rotation))
-          ).padding(25)
-          VStack {
-            Spacer()
-            HStack {
-              Button("Rotate") { model.rotate(page) }
-              Button("Remove") { model.remove(page) }
-              Button("Back to camera") { model.selected = nil }
-            }.padding().background(.ultraThinMaterial).cornerRadius(10).padding()
-          }
-        } else {
+        Group {
           CameraView(session: model.session)
           if model.connected, model.autoCrop, let q = model.quad {
             let ratio = dimensionsRatio(model.resolution)
@@ -35,7 +21,7 @@ struct ScanPreview: View {
               p.move(to: a[0])
               for v in a.dropFirst() { p.addLine(to: v) }
               p.closeSubpath()
-              if model.book && model.split {
+              if model.book && model.split && model.replacementID == nil {
                 let t = model.divider
                 p.move(
                   to: CGPoint(
@@ -47,26 +33,41 @@ struct ScanPreview: View {
                     y: oy + (1 - (q.bl.y + (q.br.y - q.bl.y) * t)) * h))
               }
             }.stroke(gold, lineWidth: 2).allowsHitTesting(false)
+            if model.book && model.split && model.replacementID == nil {
+              let middleX =
+                (q.tl.x + q.bl.x) / 2 + ((q.tr.x + q.br.x - q.tl.x - q.bl.x) / 2) * model.divider
+              let middleY = (q.tl.y + q.bl.y + q.tr.y + q.br.y) / 4
+              Image(systemName: "arrow.left.and.right.circle.fill").font(.title).foregroundStyle(
+                gold
+              )
+              .position(x: ox + middleX * w, y: oy + (1 - middleY) * h)
+              .gesture(
+                DragGesture(coordinateSpace: .named("cameraPreview")).onChanged { value in
+                  guard !model.busy, !model.autoCapture else { return }
+                  let left = (q.tl.x + q.bl.x) / 2
+                  let span = (q.tr.x + q.br.x) / 2 - left
+                  if span > 0 {
+                    model.divider = min(0.7, max(0.3, ((value.location.x - ox) / w - left) / span))
+                  }
+                }
+              )
+              .accessibilityLabel(
+                L10n.text("Spine handle. Use the Spine position slider for keyboard adjustment."))
+            }
           }
           if !model.connected {
             VStack(spacing: 20) {
-              Image(systemName: "camera").font(.system(size: 48)).foregroundColor(gold)
-              Text("Your archive starts here").font(.title2)
-              Text("Connect your scanner and place a page under the camera.").foregroundColor(
+              BrandIcon().frame(width: 96, height: 96)
+                .accessibilityHidden(true)
+              Text(
+                model.document.pages.isEmpty ? L10n.text("Scan your first page") : L10n.text("Add pages to this document")
+              ).font(.title2)
+              Text(L10n.text("Select a camera in Scan setup, then connect it.")).foregroundColor(
                 .secondary)
-              Button("Connect scanner", action: model.connect).buttonStyle(.borderedProminent)
+              Button(L10n.text("Connect camera"), action: model.connect).buttonStyle(.borderedProminent)
+                .disabled(model.devices.isEmpty || model.busy)
             }
           }
-        }
-        if let reason = model.qualityWarning {
-          VStack(spacing: 12) {
-            Label("Rescan needed", systemImage: "exclamationmark.triangle.fill").font(.title.bold())
-            Text(reason).font(.headline)
-            Text("This photo is kept separately and is not in your PDF.").font(.callout)
-            Button("Keep this scan anyway", action: model.keepRejected).disabled(model.busy)
-          }.foregroundColor(.white).padding(24).background(
-            Color(red: 0.48, green: 0.10, blue: 0.08).opacity(0.96)
-          ).cornerRadius(16)
         }
         if let warning = model.preflightWarning, model.qualityWarning == nil {
           VStack {
@@ -77,8 +78,8 @@ struct ScanPreview: View {
         }
         if model.duplicateWarning && model.qualityWarning == nil && model.preflightWarning == nil {
           VStack(spacing: 12) {
-            Label("Already scanned", systemImage: "doc.on.doc.fill").font(.title.bold())
-            Text("Turn the page. No extra copy was saved.").font(.headline)
+            Label(L10n.text("Already scanned"), systemImage: "doc.on.doc.fill").font(.title.bold())
+            Text(L10n.text("Turn the page. No extra copy was saved.")).font(.headline)
           }.foregroundColor(.black).padding(24).background(gold.opacity(0.96)).cornerRadius(16)
             .allowsHitTesting(false)
         }
@@ -86,7 +87,7 @@ struct ScanPreview: View {
           Rectangle().stroke(Color.green, lineWidth: 8).allowsHitTesting(false)
           VStack(spacing: 12) {
             Image(systemName: "checkmark.circle.fill").font(.system(size: 60))
-            Text("Saved — turn the page").font(.title.bold())
+            Text(L10n.text("Saved — turn the page")).font(.title.bold())
           }.foregroundColor(.white).padding(28).background(
             Color(red: 0.08, green: 0.32, blue: 0.18).opacity(0.96)
           ).cornerRadius(18).allowsHitTesting(false)
@@ -96,7 +97,7 @@ struct ScanPreview: View {
             .cornerRadius(8).padding(.top, 16)
           Spacer()
         }.allowsHitTesting(false)
-      }
+      }.coordinateSpace(name: "cameraPreview")
     }.frame(minHeight: 280)
   }
   func dimensionsRatio(_ text: String) -> Double {

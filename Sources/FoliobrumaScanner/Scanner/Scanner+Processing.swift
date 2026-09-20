@@ -3,10 +3,11 @@ import CoreImage
 
 extension Scanner {
   func process(_ source: CIImage, originalData: Data?, overrideQuality: Bool = false) {
-    report("Checking scan quality…")
+    report(L10n.text("Checking scan quality…"))
     let options = captureOptions ?? (nil, false, 0.5, false)
     do {
-      let print = try? CaptureCheck.fingerprint(source)
+      let print = CaptureCheck.fingerprint(source, context: context)
+      let previewPrint = overrideQuality ? nil : capturePreviewPrint
       if !overrideQuality {
         if try CaptureCheck.hasHands(source, context: context) {
           try rejectCapture(
@@ -22,8 +23,7 @@ extension Scanner {
           if CaptureCheck.duplicate(print, of: recentPrints) {
             captureInFlight = false
             gate.reset()
-            heldFrame = previous
-            heldReason = "Page already saved · Turn the page"
+            heldReason = L10n.text("Page already saved · Turn the page")
             DispatchQueue.main.async {
               self.busy = false
               self.showDuplicate()
@@ -80,7 +80,7 @@ extension Scanner {
         guard let cg = context.createCGImage(output, from: area) else {
           throw NSError(
             domain: "Scanner", code: 2,
-            userInfo: [NSLocalizedDescriptionKey: "Image processing failed"])
+            userInfo: [NSLocalizedDescriptionKey: L10n.text("Image processing failed")])
         }
         let rep = NSBitmapImageRep(cgImage: cg)
         guard let jpeg = rep.representation(using: .jpeg, properties: [.compressionFactor: 0.96])
@@ -90,30 +90,40 @@ extension Scanner {
         results.append(ScanPage(file: file, original: original))
       }
       DispatchQueue.main.async {
-        var next = self.document
-        next.pages += results
+        let replacement = self.captureReplacementID
         var saved = false
         do {
-          try self.commit(next)
+          try self.applyCapture(results, replacing: replacement, resolving: self.keptRejection)
+          self.keptRejection = nil
+          self.replacementID = nil
+          self.qualityWarning = nil
+          self.rejectedURL = nil
           saved = true
           self.status =
-            "\(results.count) \(results.count==1 ? "page":"pages") saved · Turn the page"
+            L10n.format(
+              results.count == 1 ? "One page saved · Turn the page" : "%ld pages saved · Turn the page",
+              results.count)
           self.confirmCapture()
           if let print = print {
             self.queue.async {
               self.recentPrints.append(print)
               self.recentPrints = Array(self.recentPrints.suffix(4))
+              if let previewPrint = previewPrint {
+                self.recentPreviewPrints.append(previewPrint)
+                self.recentPreviewPrints = Array(self.recentPreviewPrints.suffix(4))
+              }
             }
           }
-        } catch { self.error = "Could not save session: \(error.localizedDescription)" }
-        let committed = saved
+        } catch { self.error = L10n.format("Could not save session: %@", error.localizedDescription) }
         self.queue.async {
           self.captureInFlight = false
           self.gate.reset()
-          self.heldFrame = committed ? self.previous : nil
-          self.heldReason = "Page already saved · Turn the page"
+          self.heldFrame = nil
+          self.heldReason = L10n.text("Page already saved · Turn the page")
         }
         self.busy = false
+        if saved, let replacement = replacement { self.beginReview(replacement) }
+        self.finishPendingReview()
         self.resolution = "\(Int(source.extent.width)) × \(Int(source.extent.height))"
       }
     } catch {
@@ -121,6 +131,7 @@ extension Scanner {
       DispatchQueue.main.async {
         self.busy = false
         self.error = error.localizedDescription
+        self.finishPendingReview()
       }
     }
   }
@@ -137,22 +148,39 @@ extension Scanner {
     captureInFlight = false
     gate.reset()
     heldFrame = previous
-    heldReason = "Rescan · " + reason
+    heldReason = L10n.format("Rescan · %@", L10n.text(reason))
     DispatchQueue.main.async {
       self.busy = false
+      self.autoCapture = false
+      let options = self.captureOptions ?? (nil, false, 0.5, false)
+      var next = self.document
+      var rejected = next.rejected ?? []
+      rejected.append(
+        RejectedScan(
+          file: "Rejected/" + url.lastPathComponent, reason: reason,
+          quad: options.quad, split: options.split, divider: options.divider,
+          replacementID: self.captureReplacementID))
+      next.rejected = rejected
+      do { try self.commit(next) } catch {
+        self.document.rejected = rejected
+        self.sessionSaved = false
+        self.error =
+          L10n.format("The rejected photo is saved, but its session record could not be saved: %@", error.localizedDescription)
+      }
+      self.showRejected = true
       self.captureSaved = false
       self.duplicateWarning = false
-      self.qualityWarning = reason
+      self.qualityWarning = L10n.text(reason)
       self.rejectedURL = url
-      self.status = "Rescan needed"
+      self.status = L10n.text("Rescan needed")
       if self.soundEnabled && self.tracksActiveSession { NSSound(named: "Basso")?.play() }
     }
   }
   func keepRejected() {
     guard !busy, let url = rejectedURL else { return }
+    autoCapture = false
     busy = true
-    qualityWarning = nil
-    rejectedURL = nil
+    keptRejection = "Rejected/" + url.lastPathComponent
     queue.async {
       self.captureInFlight = true
       do {
@@ -164,6 +192,7 @@ extension Scanner {
         DispatchQueue.main.async {
           self.busy = false
           self.error = error.localizedDescription
+          self.finishPendingReview()
         }
       }
     }

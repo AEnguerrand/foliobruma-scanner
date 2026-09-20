@@ -7,21 +7,48 @@ enum CaptureCheck {
     image.transformed(
       by: CGAffineTransform(scaleX: 640 / image.extent.width, y: 640 / image.extent.width))
   }
-  static func fingerprint(_ image: CIImage) throws -> VNFeaturePrintObservation? {
-    let r = VNGenerateImageFeaturePrintRequest()
-    r.revision = VNGenerateImageFeaturePrintRequestRevision2
-    try VNImageRequestHandler(ciImage: reduced(image), options: [:]).perform([r])
-    return r.results?.first
+  // Keep page detail. A general image feature print can match different text pages.
+  struct Fingerprint {
+    let pixels: [UInt8]
+    let aspect: Double
   }
-  static func duplicate(_ print: VNFeaturePrintObservation, of recent: [VNFeaturePrintObservation])
-    -> Bool
-  {
+  static func fingerprint(_ image: CIImage, context: CIContext) -> Fingerprint? {
+    let extent = image.extent
+    guard extent.width > 0, extent.height > 0, !extent.isInfinite else { return nil }
+    let frame = image.transformed(
+      by: CGAffineTransform(translationX: -extent.minX, y: -extent.minY)
+    ).transformed(by: CGAffineTransform(scaleX: 512 / extent.width, y: 512 / extent.height))
+    var pixels = [UInt8](repeating: 0, count: 512 * 512)
+    context.render(
+      frame, toBitmap: &pixels, rowBytes: 512,
+      bounds: CGRect(x: 0, y: 0, width: 512, height: 512),
+      format: .L8, colorSpace: CGColorSpaceCreateDeviceGray())
+    return Fingerprint(pixels: pixels, aspect: Double(extent.width / extent.height))
+  }
+  static func duplicate(_ print: Fingerprint, of recent: [Fingerprint]) -> Bool {
     recent.contains { other in
-      var distance: Float = 1
-      do {
-        try print.computeDistance(&distance, to: other)
-        return distance < 0.18
-      } catch { return false }
+      guard print.pixels.count == 512 * 512, other.pixels.count == print.pixels.count,
+        abs(print.aspect - other.aspect) < 0.01 else { return false }
+      // Allow a small uniform exposure change, but require detail to match in every tile.
+      let offset = zip(print.pixels, other.pixels).reduce(0.0) {
+        $0 + Double($1.0) - Double($1.1)
+      } / Double(print.pixels.count)
+      guard abs(offset) <= 12 else { return false }
+      for by in stride(from: 0, to: 512, by: 32) {
+        for bx in stride(from: 0, to: 512, by: 32) {
+          var changed = 0
+          for y in by..<by + 32 {
+            for x in bx..<bx + 32 {
+              let i = y * 512 + x
+              if abs(Double(print.pixels[i]) - Double(other.pixels[i]) - offset) > 18 {
+                changed += 1
+              }
+            }
+          }
+          if changed > 20 { return false }
+        }
+      }
+      return true
     }
   }
   static func hasHands(_ image: CIImage, context: CIContext) throws -> Bool {
