@@ -535,3 +535,5 @@
 "Save the server URL and restart before setting its Access token." = "Save the server URL and restart before setting its Access token.";
 "Access token removed." = "Access token removed.";
 "Access token saved in Keychain for the current server." = "Access token saved in Keychain for the current server.";
+
+"Could not find photo edges · Try again" = "Could not find photo edges · Try again";

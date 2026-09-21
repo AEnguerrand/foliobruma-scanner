@@ -115,30 +115,11 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
       format: .RGBA8, colorSpace: CGColorSpaceCreateDeviceRGB())
     let moving = previous.map { CaptureCheck.motion(bytes, $0) } ?? true
     previous = bytes
-    var detected: Quad? = PaperDetector.detect(image, context: context, book: self.book)
-    let request = VNDetectRectanglesRequest()
-    request.maximumObservations = 8
-    request.minimumConfidence = 0.65
-    request.minimumAspectRatio = 0.25
-    request.maximumAspectRatio = 1
-    request.minimumSize = 0.18
-    request.quadratureTolerance = 35
-    do {
-      let reduced = image.transformed(
-        by: CGAffineTransform(scaleX: 1000 / image.extent.width, y: 1000 / image.extent.width))
-      try VNImageRequestHandler(ciImage: reduced, options: [:]).perform([request])
-      if let r = request.results?.max(by: {
-        $0.boundingBox.width * $0.boundingBox.height < $1.boundingBox.width * $1.boundingBox.height
-      }) {
-        let area = r.boundingBox.width * r.boundingBox.height
-        let maskArea = detected.map { abs(($0.tr.x - $0.tl.x) * ($0.tl.y - $0.bl.y)) } ?? 0
-        if area >= maskArea * 0.85 {
-          detected = Quad(tl: r.topLeft, tr: r.topRight, br: r.bottomRight, bl: r.bottomLeft)
-        }
-      }
-    } catch {}
+    let detected = PaperDetector.page(image, context: context, book: self.book)?.padded()
+    let deliveredResolution = "\(Int(image.extent.width)) × \(Int(image.extent.height))"
     func display(_ message: String) {
       DispatchQueue.main.async {
+        self.resolution = deliveredResolution
         if self.autoCrop { self.quad = detected }
         if self.autoCapture && !self.busy { self.status = message }
       }
@@ -190,7 +171,9 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
         display(L10n.text("Could not check the page · Try Capture"))
         return
       }
-      if CaptureCheck.duplicate(print, of: recentPrints + recentPreviewPrints) {
+      let pagePrint = CaptureCheck.pageFingerprint(image, context: context, book: self.book)
+      if CaptureCheck.duplicate(print, of: recentPrints + recentPreviewPrints)
+        || pagePrint.map({ CaptureCheck.pageDuplicate($0, of: recentPagePrints) }) == true {
         heldReason = L10n.text("Page already saved · Turn the page")
         gate.reset()
         display(heldReason)
@@ -230,6 +213,11 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
       self.heldFrame = nil
       self.recentPreviewPrints = []
       self.capturePreviewPrint = nil
+      self.capturePreviewImage = nil
+      self.recentPagePrints = names.compactMap { name in
+        guard let image = CIImage(contentsOf: base.appendingPathComponent(name)) else { return nil }
+        return CaptureCheck.pageFingerprint(image, context: self.context, book: self.book)
+      }
       self.recentPrints = names.compactMap { name in
         guard let image = CIImage(contentsOf: base.appendingPathComponent(name)) else { return nil }
         return CaptureCheck.fingerprint(image, context: self.context)

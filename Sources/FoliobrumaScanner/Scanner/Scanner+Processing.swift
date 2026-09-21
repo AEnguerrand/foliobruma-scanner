@@ -2,11 +2,28 @@ import AppKit
 import CoreImage
 
 extension Scanner {
-  func process(_ source: CIImage, originalData: Data?, overrideQuality: Bool = false) {
+  func process(_ photo: CIImage, originalData photoData: Data?, overrideQuality: Bool = false) {
+    let preview = overrideQuality ? nil : capturePreviewImage
+    let usePreview = preview.map { CaptureCheck.preferPreview(photo: photo.extent.size, preview: $0.extent.size) } ?? false
+    let source = usePreview ? preview! : photo
+    let originalData = usePreview ? nil : photoData
+    capturePreviewImage = nil
     report(L10n.text("Checking scan quality…"))
-    let options = captureOptions ?? (nil, false, 0.5, false)
+    var options = captureOptions ?? (nil, false, 0.5, false)
     do {
+      // Still-photo framing can differ from the video preview (for example 16:9 vs 4:3).
+      // Never apply preview coordinates to a different photo field of view.
+      if options.quad != nil && !overrideQuality {
+        guard let actual = PaperDetector.page(source, context: context, book: options.split) else {
+          captureOptions = (nil, options.split, options.divider, options.automatic)
+          try rejectCapture("Could not find photo edges · Try again", source: source, data: originalData)
+          return
+        }
+        options.quad = actual.padded()
+        captureOptions = options
+      }
       let print = CaptureCheck.fingerprint(source, context: context)
+      let pagePrint = CaptureCheck.pageFingerprint(source, context: context, book: options.split)
       let previewPrint = overrideQuality ? nil : capturePreviewPrint
       if !overrideQuality {
         if try CaptureCheck.hasHands(source, context: context) {
@@ -20,7 +37,8 @@ extension Scanner {
               "Could not check this scan · Try again", source: source, data: originalData)
             return
           }
-          if CaptureCheck.duplicate(print, of: recentPrints) {
+          if CaptureCheck.duplicate(print, of: recentPrints)
+            || pagePrint.map({ CaptureCheck.pageDuplicate($0, of: recentPagePrints) }) == true {
             captureInFlight = false
             gate.reset()
             heldReason = L10n.text("Page already saved · Turn the page")
@@ -48,17 +66,7 @@ extension Scanner {
           of: source, colorSpace: CGColorSpaceCreateDeviceRGB(), options: [:])!
       var output = source
       if let q = options.quad {
-        func v(_ p: CGPoint) -> CIVector {
-          CIVector(
-            x: source.extent.minX + p.x * source.extent.width,
-            y: source.extent.minY + p.y * source.extent.height)
-        }
-        output = source.applyingFilter(
-          "CIPerspectiveCorrection",
-          parameters: [
-            "inputTopLeft": v(q.tl), "inputTopRight": v(q.tr), "inputBottomRight": v(q.br),
-            "inputBottomLeft": v(q.bl),
-          ])
+        output = PaperDetector.crop(source, to: q)
       }
       if !overrideQuality, let reason = PageQuality.measure(output, context: context).reason {
         try rejectCapture(reason, source: source, data: originalData)
@@ -107,6 +115,10 @@ extension Scanner {
           self.confirmCapture()
           if let print = print {
             self.queue.async {
+              if let pagePrint {
+                self.recentPagePrints.append(pagePrint)
+                self.recentPagePrints = Array(self.recentPagePrints.suffix(4))
+              }
               self.recentPrints.append(print)
               self.recentPrints = Array(self.recentPrints.suffix(4))
               if let previewPrint = previewPrint {

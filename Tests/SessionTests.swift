@@ -137,6 +137,8 @@ import Vision
   print("PASS: English and French resources; formats; fallback; language preference; saved names")
  }
  static func testDuplicateDetail() {
+  precondition(CaptureCheck.preferPreview(photo: CGSize(width: 1920, height: 1080), preview: CGSize(width: 4160, height: 3120)), "Do not crop a 4:3 camera view into a 16:9 still")
+  precondition(!CaptureCheck.preferPreview(photo: CGSize(width: 4160, height: 3120), preview: CGSize(width: 1920, height: 1440)), "Keep a higher resolution photo when framing agrees")
   let context = CIContext(options: [.cacheIntermediates: false])
   let bounds = CGRect(x: 0, y: 0, width: 1024, height: 1024)
   let paper = CIImage(color: CIColor(red: 0.9, green: 0.9, blue: 0.9)).cropped(to: bounds)
@@ -160,6 +162,7 @@ import Vision
   let saved = CaptureCheck.fingerprint(first, context: context)!
   precondition(CaptureCheck.duplicate(saved, of: [saved]), "An unchanged page must match")
   let next = CaptureCheck.fingerprint(page(1), context: context)!
+  precondition(!CaptureCheck.pageDuplicate(next, of: [saved]), "Paper matching must preserve changed text in a spread")
   precondition(!CaptureCheck.duplicate(next, of: [saved]),
                "Different text in one side of a spread must not be a duplicate")
   let smaller = first.transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5))
@@ -176,6 +179,45 @@ import Vision
   precondition(!CaptureCheck.duplicate(blank, of: [saved]), "Blank paper must differ from text")
   precondition(!CaptureCheck.duplicate(saved, of: []), "An empty history must not block capture")
   precondition(CaptureCheck.duplicate(saved, of: [next, blank, saved]), "Check all recent captures")
+  let brighter = CaptureCheck.Fingerprint(pixels: saved.pixels.map { UInt8(clamping: Int($0) + 24) }, aspect: saved.aspect)
+  precondition(CaptureCheck.pageDuplicate(brighter, of: [saved]), "Lighting alone must not count as a page turn")
+  let desk = CIImage(color: .black).cropped(to: CGRect(x: 0, y: 0, width: 1920, height: 1080))
+  let onDesk = first.transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.75))
+    .transformed(by: CGAffineTransform(translationX: 600, y: 140)).composited(over: desk)
+  let backgroundChange = CIImage(color: CIColor(red: 0.6, green: 0.3, blue: 0.2))
+    .cropped(to: CGRect(x: 1400, y: 200, width: 450, height: 600)).composited(over: onDesk)
+  let paperPrint = CaptureCheck.pageFingerprint(onDesk, context: context, book: false)!
+  let changedDeskPrint = CaptureCheck.pageFingerprint(backgroundChange, context: context, book: false)!
+  precondition(CaptureCheck.pageDuplicate(changedDeskPrint, of: [paperPrint]), "Background movement must not count as a page turn")
+  let changedText = page(1).transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.75))
+    .transformed(by: CGAffineTransform(translationX: 600, y: 140)).composited(over: desk)
+  precondition(!CaptureCheck.pageDuplicate(CaptureCheck.pageFingerprint(changedText, context: context, book: false)!, of: [paperPrint]), "Smoothed paper matching must keep changed text distinct")
+  var noisyPixels = [UInt8](repeating: 0, count: 1024 * 1024)
+  context.render(first, toBitmap: &noisyPixels, rowBytes: 1024, bounds: bounds,
+                 format: .L8, colorSpace: CGColorSpaceCreateDeviceGray())
+  let cleanImage = CIImage(bitmapData: Data(noisyPixels), bytesPerRow: 1024, size: bounds.size,
+                          format: .L8, colorSpace: CGColorSpaceCreateDeviceGray())
+  let smoothSaved = CaptureCheck.fingerprint(cleanImage, context: context, smooth: true)!
+  let shadedPixels = noisyPixels.enumerated().map { UInt8(clamping: Int($0.element) - 10 - ($0.offset / 1024) / 32) }
+  let shadedImage = CIImage(bitmapData: Data(shadedPixels), bytesPerRow: 1024, size: bounds.size,
+                           format: .L8, colorSpace: CGColorSpaceCreateDeviceGray())
+  precondition(CaptureCheck.pageDuplicate(CaptureCheck.fingerprint(shadedImage, context: context, smooth: true)!, of: [smoothSaved]), "Uneven light on unchanged paper must not create a duplicate")
+
+  for i in noisyPixels.indices { noisyPixels[i] = UInt8(clamping: Int(noisyPixels[i]) + (i * 17 % 41) - 20) }
+  let noisyImage = CIImage(bitmapData: Data(noisyPixels), bytesPerRow: 1024, size: bounds.size,
+                          format: .L8, colorSpace: CGColorSpaceCreateDeviceGray())
+  precondition(CaptureCheck.pageDuplicate(CaptureCheck.fingerprint(noisyImage, context: context, smooth: true)!, of: [smoothSaved]), "Sensor noise must not create a second paper capture")
+  let shifted = first.transformed(by: CGAffineTransform(a: 1.006, b: 0.002, c: -0.003, d: 0.997, tx: 3, ty: -2))
+    .composited(over: paper).cropped(to: bounds)
+  precondition(CaptureCheck.pageDuplicate(CaptureCheck.fingerprint(shifted, context: context, smooth: true)!,
+    of: [CaptureCheck.fingerprint(first, context: context, smooth: true)!]), "Small page alignment changes must not create duplicates")
+  let q = PaperDetector.page(onDesk, context: context, book: false)!.padded()
+  precondition(q.bounds.contains(CGRect(x: 600.0/1920, y: 140.0/1080, width: 512.0/1920, height: 768.0/1080)), "Auto crop must keep the outer paper edges")
+  let tallFrame = CIImage(color: .black).cropped(to: CGRect(x: 0, y: 0, width: 1920, height: 1440))
+  let tallPhoto = first.transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.75))
+    .transformed(by: CGAffineTransform(translationX: 600, y: 320)).composited(over: tallFrame)
+  let photoQuad = PaperDetector.page(tallPhoto, context: context, book: false)!.padded()
+  precondition(photoQuad.bounds.contains(CGRect(x: 600.0/1920, y: 320.0/1440, width: 512.0/1920, height: 768.0/1440)), "Photo framing needs its own crop coordinates")
   print("PASS: duplicate image detail; changed text in a spread; preview size; exposure and noise")
  }
  static func testPageMerge() throws {

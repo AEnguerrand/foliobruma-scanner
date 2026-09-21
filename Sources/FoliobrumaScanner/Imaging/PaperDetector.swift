@@ -1,7 +1,40 @@
 import CoreImage
+import Vision
 
 // Segmentation complements rectangle detection for ring binders and rounded pages.
 enum PaperDetector {
+  // Use the same edge selection on preview and full-resolution photos.
+  static func page(_ image: CIImage, context: CIContext, book: Bool) -> Quad? {
+    let mask = detect(image, context: context, book: book)
+    let request = VNDetectRectanglesRequest()
+    request.maximumObservations = 8
+    request.minimumConfidence = 0.7
+    request.minimumAspectRatio = 0.25
+    request.maximumAspectRatio = 1
+    request.minimumSize = 0.18
+    request.quadratureTolerance = 25
+    let reduced = image.transformed(by: CGAffineTransform(scaleX: 1000 / image.extent.width, y: 1000 / image.extent.width))
+    try? VNImageRequestHandler(ciImage: reduced, options: [:]).perform([request])
+    let rectangle = request.results?.max { $0.boundingBox.width * $0.boundingBox.height < $1.boundingBox.width * $1.boundingBox.height }
+      .map { Quad(tl: $0.topLeft, tr: $0.topRight, br: $0.bottomRight, bl: $0.bottomLeft) }
+    guard let mask else { return rectangle }
+    guard let rectangle else { return mask }
+    // Do not replace a paper mask with an inner text rectangle or an inward trapezoid.
+    let tolerance: CGFloat = 0.01
+    let covers = rectangle.bounds.insetBy(dx: -tolerance, dy: -tolerance).contains(mask.bounds)
+    return covers && rectangle.area >= mask.area * 0.97 ? rectangle : mask
+  }
+
+  static func crop(_ image: CIImage, to q: Quad) -> CIImage {
+    func v(_ p: CGPoint) -> CIVector {
+      CIVector(x: image.extent.minX + p.x * image.extent.width,
+               y: image.extent.minY + p.y * image.extent.height)
+    }
+    return image.applyingFilter("CIPerspectiveCorrection", parameters: [
+      "inputTopLeft": v(q.tl), "inputTopRight": v(q.tr),
+      "inputBottomRight": v(q.br), "inputBottomLeft": v(q.bl)])
+  }
+
   static func detect(_ image: CIImage, context: CIContext, book: Bool) -> Quad? {
     let w = 256
     let h = max(1, Int(256 * image.extent.height / image.extent.width))
