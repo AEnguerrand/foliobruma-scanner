@@ -2,12 +2,10 @@ import AppKit
 
 extension Scanner {
   var isSheetBatch: Bool { document.metadata?.sheetBatch == true }
-  var sheetIsFull: Bool { isSheetBatch && document.pages.count >= 2 }
   var sheetCapturePrompt: String {
     switch document.pages.count {
     case 0: return L10n.text("Place the front of the next sheet under the camera.")
-    case 1: return L10n.text("Front saved · Turn over, or press Finish sheet")
-    default: return L10n.text("Both sides saved · Press Finish sheet")
+    default: return L10n.format("%ld captures saved · Show the next side or panel, or press Finish sheet", document.pages.count)
     }
   }
 

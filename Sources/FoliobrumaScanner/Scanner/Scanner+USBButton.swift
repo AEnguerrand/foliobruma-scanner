@@ -8,7 +8,7 @@ extension Scanner {
     case .capture:
       capture()
     case .autoCapture:
-      guard connected, !reviewing, !metadataWorkspace, !sheetIsFull, replacementID == nil else { return }
+      guard connected, !reviewing, !metadataWorkspace, replacementID == nil else { return }
       autoCapture.toggle()
       status = autoCapture ? L10n.text("Waiting for a clear, still page") : L10n.text("Capture paused")
     case .finishSheet:

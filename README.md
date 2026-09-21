@@ -17,7 +17,7 @@ Foliobruma is a free, open-source document camera app. Place a page under the ca
 - **Page review:** browse a page sidebar, zoom, rotate, reorder, merge two pages, crop from the original, replace a page, or undo the last removal.
 - **Saved sessions:** browse documents by name, page count, and edit date. Original images stay on your Mac.
 - **PDF export:** save the pages in the current document to a local PDF.
-- **Sheet batches:** scan one or two sides per sheet, finish with a USB button, and group related sheets later in Review.
+- **Sheet batches:** scan all sides or folded panels per sheet, finish with a USB button, and group related sheets later in Review.
 - **Metadata records and letter batches:** save details without a scan. Use automatic references and shared batch details.
 - **QR labels:** preview, export, and print a compact label with an existing HTTPS link. QR codes are generated on your Mac.
 
@@ -143,7 +143,8 @@ can be searched by title, reference, or batch name.
 For an unsorted box of letters and papers, open **New item…** and enable
 **Start a sheet batch**. Enter a batch name and physical location, such as a
 folio number. Each physical sheet gets its own reference, session, PDF upload,
-and label. The first capture is the front; the second capture is the back.
+and label. Capture each side or folded panel in reading order. A folded sheet
+can contain more than two captures, with one PDF and one label for the sheet.
 Related sheets do not need to be together during scanning.
 
 1. In **Foliobruma**, select an archive and enable **Upload automatically** and
@@ -153,10 +154,12 @@ Related sheets do not need to be together during scanning.
    button. The existing **Next document** and **Next letter** button actions also
    finish the sheet when a sheet batch is open.
 3. Connect the camera and start automatic capture. Place the front under the
-   camera. Wait for **Front saved**. Turn the sheet over if it has a back to scan.
+   camera. Wait for the saved signal. Turn or unfold the sheet to show the next
+   side or panel. Repeat until all required content is saved.
 4. After the last saved side, press the USB button or click **Finish sheet**.
-   A single-sided sheet needs only one capture. After two sides, capture pauses
-   until you finish. A third side cannot be added to the same sheet. Replacement
+   A single-sided sheet needs only one capture. Capture continues after two
+   sides, so folded sheets can have three, four, or more captures. Finish the
+   current sheet before you place a different sheet under the camera. Replacement
    remains available in Review. Resolve rejected photos before finishing.
 5. The app saves the sheet, uploads its PDF when enabled, and submits its label
    when enabled. In the Foliobruma menu, select **Brother QL-600 · USB** as the
@@ -180,13 +183,13 @@ Session options are saved and copied to the next sheet or letter in the batch.
 A new, unrelated session starts with automatic upload and printing off.
 
 In **Review → Group sheets…**, select sheets from any batch and give the group
-a letter or document name. Select a sheet to inspect its front and back. Use
+a letter or document name. Select a sheet to inspect its saved sides and panels. Use
 **Reading order** to move or unlink sheets, then select **Save group**. A sheet
 can belong to one group. To move it to another group, unlink it and save first.
 An empty group is removed on save. Sheet references, individual PDF links,
-images, and session folders do not change. To swap front and back, use the
+images, and session folders do not change. To change the reading order, use the
 normal page order controls in Review. Image merging is disabled for sheet
-batches so the two sides remain separate.
+batches so the saved sides and panels remain separate pages.
 
 Groups are saved only on this Mac in `sheet-groups.json`, beside the `Sessions`
 folder. Include this file in backups. Group changes do not create a combined

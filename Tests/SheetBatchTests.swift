@@ -42,32 +42,32 @@ extension SessionTests {
 
   try scanner.applyCapture([front], replacing: nil, resolving: nil)
   try scanner.applyCapture([back], replacing: nil, resolving: nil)
-  precondition(scanner.sheetIsFull && !scanner.autoCapture, "Two sides pause capture until explicit completion")
+  precondition(scanner.autoCapture, "Two captures must not stop a folded sheet")
   let both = scanner.folder
-  let fullBytes = readData(both.appendingPathComponent("session.json"))
-  do { try scanner.applyCapture([back], replacing: nil, resolving: nil); preconditionFailure("Do not append a third side") }
-  catch { }
-  precondition(readData(both.appendingPathComponent("session.json")) == fullBytes)
-  scanner.performUSBAction(.autoCapture)
-  scanner.capture()
-  precondition(!scanner.autoCapture && !scanner.busy, "A full sheet cannot restart or capture a third side")
+  let third = ScanPage(file: "Pages/third.jpg", original: "Originals/third.jpg")
+  let fourth = ScanPage(file: "Pages/fourth.jpg", original: "Originals/fourth.jpg")
+  try scanner.applyCapture([third], replacing: nil, resolving: nil)
+  precondition(scanner.autoCapture && scanner.document.pages.count == 3)
   scanner.beginReview()
-  precondition(!scanner.canMergeWithNextPage, "Front and back must remain separate pages")
+  precondition(!scanner.canMergeWithNextPage, "Sheet panels must remain separate pages")
   try scanner.applyCapture([ScanPage(file: "Pages/replacement.jpg", original: "Originals/replacement.jpg")],
     replacing: front.id, resolving: nil)
-  precondition(scanner.document.pages.count == 2 && scanner.document.pages[0].id == front.id)
+  precondition(scanner.document.pages.count == 3 && scanner.document.pages[0].id == front.id)
   scanner.remove(scanner.document.pages[1])
-  try scanner.applyCapture([back], replacing: nil, resolving: nil)
+  try scanner.applyCapture([fourth], replacing: nil, resolving: nil)
   scanner.undo()
-  precondition(scanner.error != nil && scanner.document.pages.count == 2,
-    "Undo must not add a third side after a new capture fills the sheet")
-  scanner.error = nil
+  let expected = [front.id, back.id, third.id, fourth.id]
+  precondition(scanner.error == nil && scanner.document.pages.map(\.id) == expected,
+    "Undo must restore a panel in reading order after a later capture")
   scanner.showCamera()
-  scanner.performUSBAction(.nextDocument)
+  scanner.autoCapture = false
+  scanner.performUSBAction(.autoCapture)
+  precondition(scanner.autoCapture, "A sheet with four panels can resume automatic capture")
+  scanner.performUSBAction(.finishSheet)
   waitForWork(scanner)
   precondition(scanner.error == nil && scanner.folder != both && scanner.autoCapture)
   let savedBoth = try JSONDecoder().decode(ScanDocument.self, from: readData(both.appendingPathComponent("session.json")))
-  precondition(savedBoth.pages.map(\.id) == [front.id, back.id])
+  precondition(savedBoth.pages.map(\.id) == expected)
 
   try scanner.applyCapture([front], replacing: nil, resolving: nil)
   let pending = RejectedScan(file: "Rejected/test.jpg", reason: "Test", quad: nil, split: false, divider: 0.5)
@@ -92,8 +92,8 @@ extension SessionTests {
   scanner.root = root
   scanner.error = nil
   scanner.openSession(at: both)
-  precondition(scanner.isSheetBatch && scanner.sheetIsFull && !scanner.autoCapture)
-  print("PASS: one- and two-sided sheets; USB completion; side limit; duplicate history; replacement; rejected and modal guards; failed-write recovery; reload")
+  precondition(scanner.isSheetBatch && scanner.document.pages.map(\.id) == expected && !scanner.autoCapture)
+  print("PASS: single-sided and folded four-panel sheets; USB completion; capture after two sides; undo and reading order; duplicate history; replacement; rejected and modal guards; failed-write recovery; reload")
  }
 
  static func testSheetGroups() throws {
