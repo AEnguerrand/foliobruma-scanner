@@ -38,12 +38,18 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
       }
       session.addInput(next)
       input = next
-      if session.canSetSessionPreset(.photo) {
+      if device.deviceType == .external, session.canSetSessionPreset(.hd4K3840x2160) {
+        session.sessionPreset = .hd4K3840x2160
+      } else if session.canSetSessionPreset(.photo) {
         session.sessionPreset = .photo
       } else {
         session.sessionPreset = .high
       }
-      if !session.outputs.contains(photoOutput), session.canAddOutput(photoOutput) {
+      // Still-photo output can force external document cameras back to 1080p.
+      // Keep their native video frames as the capture source instead.
+      if device.deviceType == .external {
+        if session.outputs.contains(photoOutput) { session.removeOutput(photoOutput) }
+      } else if !session.outputs.contains(photoOutput), session.canAddOutput(photoOutput) {
         session.addOutput(photoOutput)
       }
       if !session.outputs.contains(videoOutput), session.canAddOutput(videoOutput) {
@@ -61,7 +67,18 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
         return Int(x.width) * Int(x.height) < Int(y.width) * Int(y.height)
       }) {
         device.activeFormat = best
-        if let dims = best.supportedMaxPhotoDimensions.max(by: {
+        let fps = best.videoSupportedFrameRateRanges.first?.maxFrameRate ?? 8
+        device.activeVideoMinFrameDuration = CMTime(value: 1, timescale: Int32(fps.rounded()))
+        device.activeVideoMaxFrameDuration = device.activeVideoMinFrameDuration
+        let videoDimensions = CMVideoFormatDescriptionGetDimensions(best.formatDescription)
+        // macOS can retain preset-sized output buffers after activeFormat changes.
+        // Request the native size explicitly so saved video frames are not 1080p proxies.
+        videoOutput.videoSettings = [
+          kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+          kCVPixelBufferWidthKey as String: Int(videoDimensions.width),
+          kCVPixelBufferHeightKey as String: Int(videoDimensions.height)
+        ]
+        if session.outputs.contains(photoOutput), let dims = best.supportedMaxPhotoDimensions.max(by: {
           Int($0.width) * Int($0.height) < Int($1.width) * Int($1.height)
         }) {
           photoOutput.maxPhotoDimensions = dims
@@ -71,18 +88,6 @@ extension Scanner: AVCaptureVideoDataOutputSampleBufferDelegate {
       session.commitConfiguration()
       configurationOpen = false
       session.startRunning()
-      try device.lockForConfiguration()
-      if let best = device.formats.max(by: { a, b in
-        let x = CMVideoFormatDescriptionGetDimensions(a.formatDescription)
-        let y = CMVideoFormatDescriptionGetDimensions(b.formatDescription)
-        return Int(x.width) * Int(x.height) < Int(y.width) * Int(y.height)
-      }) {
-        device.activeFormat = best
-        let fps = best.videoSupportedFrameRateRanges.first?.maxFrameRate ?? 8
-        device.activeVideoMinFrameDuration = CMTime(value: 1, timescale: Int32(fps.rounded()))
-        device.activeVideoMaxFrameDuration = device.activeVideoMinFrameDuration
-      }
-      device.unlockForConfiguration()
       let dims = CMVideoFormatDescriptionGetDimensions(device.activeFormat.formatDescription)
       DispatchQueue.main.async {
         self.connected = true
