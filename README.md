@@ -500,7 +500,12 @@ A hand, label, or lighting change outside the paper should not count as a page
 turn. Paper comparison reduces camera noise and aligns small position changes.
 Similar pages, or a page with only a small new note, can need manual capture;
 detection is approximate.
-The crop outline follows the dimensions of the delivered camera frames.
+External document cameras use video frames at the selected format’s full size,
+without a still-photo output that can force a lower stream resolution. The
+IRIScan Desk 6 Pro was verified at 4160 × 3120 (8 fps). Built-in cameras retain
+the still-photo output.
+The resolution shown in Scan setup and the crop outline use the dimensions of
+the frames actually received.
 The scanner uses the full-resolution camera frame when the still-photo output
 has less detail or a different aspect ratio, so it does not cut off the preview.
 Auto crop finds edges again on the captured photo because the photo and preview
