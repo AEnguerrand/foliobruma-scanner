@@ -411,3 +411,97 @@
 "Enter a complete link without spaces or sign-in details." = "Saisissez un lien complet sans espaces ni identifiants de connexion.";
 
 "Zoom relative to the fitted page" = "Zoom par rapport à la page ajustée";
+
+/* Sheet batches and deferred grouping */
+"Sheet" = "Feuille";
+"Start a sheet batch" = "Commencer un lot de feuilles";
+"One label per physical sheet. Scan the front and optional back, then press Finish sheet. Group related sheets later in Review." = "Une étiquette par feuille physique. Numérisez le recto et, si nécessaire, le verso, puis appuyez sur Terminer la feuille. Regroupez les feuilles plus tard dans Révision.";
+"Finish sheet copies the batch name, location, and tags to the next sheet." = "Terminer la feuille copie le nom du lot, le rangement et les étiquettes vers la feuille suivante.";
+"Finish sheet" = "Terminer la feuille";
+"USB button action: Finish sheet. The next sheet starts automatic capture after completion." = "Action du bouton USB : Terminer la feuille. La capture automatique reprend pour la feuille suivante.";
+"Keep the front and back of one sheet in this item. Use Finish sheet before scanning another sheet." = "Conservez le recto et le verso de la même feuille dans cet élément. Utilisez Terminer la feuille avant de numériser une autre feuille.";
+"This sheet already has two sides. Finish the sheet before scanning another." = "Cette feuille a déjà deux faces. Terminez-la avant de numériser une autre feuille.";
+"Place the front of the next sheet under the camera." = "Placez le recto de la feuille suivante sous la caméra.";
+"Front saved · Turn over, or press Finish sheet" = "Recto enregistré · Retournez la feuille ou appuyez sur Terminer la feuille";
+"Both sides saved · Press Finish sheet" = "Deux faces enregistrées · Appuyez sur Terminer la feuille";
+"The label print result is unknown. Check the printer, then use Create label to print it if needed. Use Confirm label handled to continue." = "Le résultat de l’impression est inconnu. Vérifiez l’imprimante, puis utilisez Créer une étiquette si nécessaire. Utilisez Confirmer l’étiquette pour continuer.";
+"Label printing stopped. Check the printer, then press Finish sheet to retry. The sheet is still open." = "L’impression de l’étiquette est arrêtée. Vérifiez l’imprimante, puis appuyez sur Terminer la feuille pour réessayer. La feuille reste ouverte.";
+"Confirm label handled?" = "Confirmer l’étiquette ?";
+"Check that this sheet has its correct label. This clears an unknown print result without sending another print job." = "Vérifiez que cette feuille porte la bonne étiquette. Cela valide le résultat inconnu sans lancer une nouvelle impression.";
+"Confirm label handled" = "Confirmer l’étiquette";
+"Reset batch printer" = "Réinitialiser l’imprimante du lot";
+"Group sheets…" = "Regrouper les feuilles…";
+"Group sheets" = "Regrouper les feuilles";
+"Link sheets into a letter or document. Labels and scans stay unchanged. Groups are saved on this Mac only." = "Associez des feuilles à une lettre ou à un document. Les étiquettes et les scans restent inchangés. Les groupes sont enregistrés uniquement sur ce Mac.";
+"Choose group" = "Choisir un groupe";
+"New group" = "Nouveau groupe";
+"Group name" = "Nom du groupe";
+"Select sheet" = "Sélectionner la feuille";
+"In another group" = "Dans un autre groupe";
+"Reading order" = "Ordre de lecture";
+"Unlink sheet" = "Dissocier la feuille";
+"Unlinking keeps the sheet and its scans. An empty group is removed when you save." = "La dissociation conserve la feuille et ses scans. Un groupe vide est supprimé lors de l’enregistrement.";
+"Side" = "Face";
+"Front" = "Recto";
+"Back" = "Verso";
+"Select a sheet to view its scans." = "Sélectionnez une feuille pour afficher ses scans.";
+"Save group" = "Enregistrer le groupe";
+"Sheet unavailable" = "Feuille indisponible";
+"Enter a group name and select each sheet only once." = "Saisissez un nom de groupe et sélectionnez chaque feuille une seule fois.";
+"Groups changed in another window. Close and reopen Group sheets before saving." = "Les groupes ont changé dans une autre fenêtre. Fermez et rouvrez Regrouper les feuilles avant d’enregistrer.";
+"A selected sheet belongs to another group. Remove it from that group first." = "Une feuille sélectionnée appartient à un autre groupe. Retirez-la de ce groupe au préalable.";
+"Upload one PDF when you select Finish item, Next letter, or Finish sheet." = "Envoyez un PDF avec Terminer l’élément, Lettre suivante ou Terminer la feuille.";
+"Print after upload. Sheet batches reuse the first label’s printer settings during this app run." = "Imprimez après l’envoi. Les lots de feuilles réutilisent les réglages de la première étiquette jusqu’à la fermeture de l’application.";
+"Remove a side before restoring this side. A sheet can have only two sides." = "Retirez une face avant de restaurer celle-ci. Une feuille ne peut avoir que deux faces.";
+
+"Print a label when finished" = "Imprimer une étiquette à la fin";
+
+"Label printer" = "Imprimante d’étiquettes";
+
+"Select a label printer" = "Sélectionner une imprimante d’étiquettes";
+
+"Refresh printers" = "Actualiser les imprimantes";
+
+"Unavailable" = "Indisponible";
+
+"This session" = "Cette session";
+
+"One 62 × 25 mm label per finished sheet or book. Use a DK-22205 roll. Printing starts after upload, without a print dialog." = "Une étiquette de 62 × 25 mm par feuille ou livre terminé. Utilisez un rouleau DK-22205. L’impression commence après l’envoi, sans boîte de dialogue.";
+
+"These settings are saved with this session and copied to the next sheet or letter in this batch." = "Ces réglages sont enregistrés dans cette session et copiés vers la feuille ou lettre suivante du lot.";
+
+"Set automatic upload and label printing for each session in the Foliobruma menu." = "Réglez l’envoi automatique et l’impression des étiquettes pour chaque session dans le menu Foliobruma.";
+
+"Print with QL-600" = "Imprimer avec la QL-600";
+
+"QL-600 confirmed label printed" = "La QL-600 a confirmé l’impression";
+
+"Select an available label printer in the Foliobruma session settings. The item is still open." = "Sélectionnez une imprimante disponible dans les réglages de session Foliobruma. Le document reste ouvert.";
+
+"Could not render the label." = "Impossible de générer l’étiquette.";
+
+"The label dimensions are invalid." = "Les dimensions de l’étiquette sont incorrectes.";
+
+"Could not read the label pixels." = "Impossible de lire les pixels de l’étiquette.";
+
+"Label printing stopped. Check the printer, then finish the item again to retry. The item is still open." = "L’impression s’est arrêtée. Vérifiez l’imprimante, puis terminez à nouveau le document pour réessayer. Le document reste ouvert.";
+
+"Reserving permanent label…" = "Réservation du lien permanent…";
+
+"The server returned an invalid permanent label." = "Le serveur a renvoyé une étiquette permanente incorrecte.";
+
+"This label belongs to another PDF. Check it on the website." = "Cette étiquette appartient à un autre PDF. Vérifiez-la sur le site.";
+
+"Finish the upload before attaching its permanent label." = "Terminez l’envoi avant d’associer l’étiquette permanente.";
+
+"The label changed on the website. Check it before attaching this PDF." = "L’étiquette a été modifiée sur le site. Vérifiez-la avant d’associer ce PDF.";
+
+"The server did not confirm the permanent label link." = "Le serveur n’a pas confirmé le lien permanent.";
+
+"An uploaded item uses its permanent SaaS link. You can also paste an existing HTTPS link." = "Un document envoyé utilise son lien SaaS permanent. Vous pouvez aussi coller un lien HTTPS existant.";
+
+"Use Print with QL-600 for direct USB printing. No driver is needed. Load a DK-22205 roll. Test one label with your phone." = "Utilisez Imprimer avec la QL-600 pour une impression USB directe sans pilote. Chargez un rouleau DK-22205. Testez une étiquette avec votre téléphone.";
+
+"This item already has a permanent label. Replace its PDF on the website to keep the same label." = "Ce document a déjà une étiquette permanente. Remplacez son PDF sur le site pour conserver cette étiquette.";
+
+"Label sent to printer" = "Étiquette envoyée à l’imprimante";

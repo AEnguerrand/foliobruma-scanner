@@ -3,7 +3,7 @@ import CoreImage
 
 extension Scanner {
   var canMergeWithNextPage: Bool {
-    guard reviewing, !busy, let index = selectedIndex else { return false }
+    guard reviewing, !busy, !isSheetBatch, let index = selectedIndex else { return false }
     return document.pages.indices.contains(index + 1)
   }
 

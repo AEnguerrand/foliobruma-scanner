@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct CloudSettings: View {
-  var showAutomation = true
   @ObservedObject private var account = CloudAccount.shared
 
   var body: some View {
@@ -58,20 +57,9 @@ struct CloudSettings: View {
             .font(.caption).foregroundStyle(.secondary)
         }
       }
-      if showAutomation {
-      VStack(alignment: .leading, spacing: 5) {
-        Toggle(L10n.text("Upload automatically"), isOn: $account.automatic)
-        Text(L10n.text("Upload one PDF when you select Finish item or Next letter."))
-          .font(.caption).foregroundStyle(.secondary)
-      }.disabled(account.working)
-      VStack(alignment: .leading, spacing: 5) {
-        Toggle(L10n.text("Print a label after upload"), isOn: $account.printLabel)
-        Text(L10n.text("Open the print dialog after a successful upload."))
-          .font(.caption).foregroundStyle(.secondary)
-      }.disabled(account.working || !account.automatic)
-      }
+
     } header: {
-      Text(L10n.text(showAutomation ? "After scanning" : "Upload destination"))
+      Text(L10n.text("Upload destination"))
     } footer: {
       Text(L10n.text("Scans stay on this Mac. Upload needs an account and an archive. Label links require website sign-in."))
         .font(.caption).foregroundStyle(.secondary)

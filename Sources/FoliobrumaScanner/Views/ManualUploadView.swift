@@ -3,6 +3,7 @@ import SwiftUI
 struct ManualUploadView: View {
   @ObservedObject var model: Scanner
   @ObservedObject private var account = CloudAccount.shared
+  @State private var printLabel = false
   @Environment(\.dismiss) private var dismiss
 
   var body: some View {
@@ -15,9 +16,10 @@ struct ManualUploadView: View {
       }.padding(20)
       Divider()
       Form {
-        CloudSettings(showAutomation: false)
+        CloudSettings()
+        SessionFinishSettings(model: model, showAutomation: false)
         Section {
-          Toggle(L10n.text("Print a label after upload"), isOn: $account.printLabel)
+          Toggle(L10n.text("Print a label after upload"), isOn: $printLabel)
             .disabled(account.working)
         }
       }.formStyle(.grouped)
@@ -26,12 +28,13 @@ struct ManualUploadView: View {
         Button(L10n.text("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)
         Spacer()
         Button(L10n.text("Upload now")) {
-          model.finishItem(uploadRequested: true)
+          model.finishItem(uploadRequested: true, printRequested: printLabel)
           dismiss()
         }
         .buttonStyle(.borderedProminent)
         .disabled(!account.ready || account.working || model.busy || model.document.pages.isEmpty)
       }.padding(20)
-    }.frame(width: 480, height: 610)
+    }.frame(width: 480, height: 720)
+      .onAppear { printLabel = model.printOnFinish }
   }
 }

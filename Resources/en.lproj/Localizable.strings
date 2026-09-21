@@ -411,3 +411,97 @@
 "Enter a complete link without spaces or sign-in details." = "Enter a complete link without spaces or sign-in details.";
 
 "Zoom relative to the fitted page" = "Zoom relative to the fitted page";
+
+/* Sheet batches and deferred grouping */
+"Sheet" = "Sheet";
+"Start a sheet batch" = "Start a sheet batch";
+"One label per physical sheet. Scan the front and optional back, then press Finish sheet. Group related sheets later in Review." = "One label per physical sheet. Scan the front and optional back, then press Finish sheet. Group related sheets later in Review.";
+"Finish sheet copies the batch name, location, and tags to the next sheet." = "Finish sheet copies the batch name, location, and tags to the next sheet.";
+"Finish sheet" = "Finish sheet";
+"USB button action: Finish sheet. The next sheet starts automatic capture after completion." = "USB button action: Finish sheet. The next sheet starts automatic capture after completion.";
+"Keep the front and back of one sheet in this item. Use Finish sheet before scanning another sheet." = "Keep the front and back of one sheet in this item. Use Finish sheet before scanning another sheet.";
+"This sheet already has two sides. Finish the sheet before scanning another." = "This sheet already has two sides. Finish the sheet before scanning another.";
+"Place the front of the next sheet under the camera." = "Place the front of the next sheet under the camera.";
+"Front saved · Turn over, or press Finish sheet" = "Front saved · Turn over, or press Finish sheet";
+"Both sides saved · Press Finish sheet" = "Both sides saved · Press Finish sheet";
+"The label print result is unknown. Check the printer, then use Create label to print it if needed. Use Confirm label handled to continue." = "The label print result is unknown. Check the printer, then use Create label to print it if needed. Use Confirm label handled to continue.";
+"Label printing stopped. Check the printer, then press Finish sheet to retry. The sheet is still open." = "Label printing stopped. Check the printer, then press Finish sheet to retry. The sheet is still open.";
+"Confirm label handled?" = "Confirm label handled?";
+"Check that this sheet has its correct label. This clears an unknown print result without sending another print job." = "Check that this sheet has its correct label. This clears an unknown print result without sending another print job.";
+"Confirm label handled" = "Confirm label handled";
+"Reset batch printer" = "Reset batch printer";
+"Group sheets…" = "Group sheets…";
+"Group sheets" = "Group sheets";
+"Link sheets into a letter or document. Labels and scans stay unchanged. Groups are saved on this Mac only." = "Link sheets into a letter or document. Labels and scans stay unchanged. Groups are saved on this Mac only.";
+"Choose group" = "Choose group";
+"New group" = "New group";
+"Group name" = "Group name";
+"Select sheet" = "Select sheet";
+"In another group" = "In another group";
+"Reading order" = "Reading order";
+"Unlink sheet" = "Unlink sheet";
+"Unlinking keeps the sheet and its scans. An empty group is removed when you save." = "Unlinking keeps the sheet and its scans. An empty group is removed when you save.";
+"Side" = "Side";
+"Front" = "Front";
+"Back" = "Back";
+"Select a sheet to view its scans." = "Select a sheet to view its scans.";
+"Save group" = "Save group";
+"Sheet unavailable" = "Sheet unavailable";
+"Enter a group name and select each sheet only once." = "Enter a group name and select each sheet only once.";
+"Groups changed in another window. Close and reopen Group sheets before saving." = "Groups changed in another window. Close and reopen Group sheets before saving.";
+"A selected sheet belongs to another group. Remove it from that group first." = "A selected sheet belongs to another group. Remove it from that group first.";
+"Upload one PDF when you select Finish item, Next letter, or Finish sheet." = "Upload one PDF when you select Finish item, Next letter, or Finish sheet.";
+"Print after upload. Sheet batches reuse the first label’s printer settings during this app run." = "Print after upload. Sheet batches reuse the first label’s printer settings during this app run.";
+"Remove a side before restoring this side. A sheet can have only two sides." = "Remove a side before restoring this side. A sheet can have only two sides.";
+
+"Print a label when finished" = "Print a label when finished";
+
+"Label printer" = "Label printer";
+
+"Select a label printer" = "Select a label printer";
+
+"Refresh printers" = "Refresh printers";
+
+"Unavailable" = "Unavailable";
+
+"This session" = "This session";
+
+"One 62 × 25 mm label per finished sheet or book. Use a DK-22205 roll. Printing starts after upload, without a print dialog." = "One 62 × 25 mm label per finished sheet or book. Use a DK-22205 roll. Printing starts after upload, without a print dialog.";
+
+"These settings are saved with this session and copied to the next sheet or letter in this batch." = "These settings are saved with this session and copied to the next sheet or letter in this batch.";
+
+"Set automatic upload and label printing for each session in the Foliobruma menu." = "Set automatic upload and label printing for each session in the Foliobruma menu.";
+
+"Print with QL-600" = "Print with QL-600";
+
+"QL-600 confirmed label printed" = "QL-600 confirmed label printed";
+
+"Select an available label printer in the Foliobruma session settings. The item is still open." = "Select an available label printer in the Foliobruma session settings. The item is still open.";
+
+"Could not render the label." = "Could not render the label.";
+
+"The label dimensions are invalid." = "The label dimensions are invalid.";
+
+"Could not read the label pixels." = "Could not read the label pixels.";
+
+"Label printing stopped. Check the printer, then finish the item again to retry. The item is still open." = "Label printing stopped. Check the printer, then finish the item again to retry. The item is still open.";
+
+"Reserving permanent label…" = "Reserving permanent label…";
+
+"The server returned an invalid permanent label." = "The server returned an invalid permanent label.";
+
+"This label belongs to another PDF. Check it on the website." = "This label belongs to another PDF. Check it on the website.";
+
+"Finish the upload before attaching its permanent label." = "Finish the upload before attaching its permanent label.";
+
+"The label changed on the website. Check it before attaching this PDF." = "The label changed on the website. Check it before attaching this PDF.";
+
+"The server did not confirm the permanent label link." = "The server did not confirm the permanent label link.";
+
+"An uploaded item uses its permanent SaaS link. You can also paste an existing HTTPS link." = "An uploaded item uses its permanent SaaS link. You can also paste an existing HTTPS link.";
+
+"Use Print with QL-600 for direct USB printing. No driver is needed. Load a DK-22205 roll. Test one label with your phone." = "Use Print with QL-600 for direct USB printing. No driver is needed. Load a DK-22205 roll. Test one label with your phone.";
+
+"This item already has a permanent label. Replace its PDF on the website to keep the same label." = "This item already has a permanent label. Replace its PDF on the website to keep the same label.";
+
+"Label sent to printer" = "Label sent to printer";

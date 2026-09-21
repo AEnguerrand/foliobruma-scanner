@@ -2,6 +2,7 @@ import Foundation
 import Darwin
 
 struct ItemMetadata: Codable, Equatable {
+  var sheetBatch: Bool?
   var reference: String
   var batchID: String?
   var batchName: String
@@ -15,7 +16,8 @@ struct ItemMetadata: Codable, Equatable {
 
   init(reference: String = "", batchID: String? = nil, batchName: String = "",
        kind: String = "Document", author: String = "", period: String = "",
-       location: String = "", tags: String = "", notes: String = "", webLink: String = "") {
+       location: String = "", tags: String = "", notes: String = "", webLink: String = "", sheetBatch: Bool? = nil) {
+    self.sheetBatch = sheetBatch
     self.reference = reference
     self.batchID = batchID
     self.batchName = batchName
@@ -29,8 +31,8 @@ struct ItemMetadata: Codable, Equatable {
   }
 
   var nextLetter: ItemMetadata {
-    ItemMetadata(batchID: batchID, batchName: batchName, kind: "Letter",
-                 location: location, tags: tags)
+    ItemMetadata(batchID: batchID, batchName: batchName, kind: sheetBatch == true ? "Sheet" : "Letter",
+                 location: location, tags: tags, sheetBatch: sheetBatch)
   }
 }
 

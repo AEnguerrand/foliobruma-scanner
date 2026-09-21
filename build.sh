@@ -15,12 +15,15 @@ for SIZE in 16 32 128 256 512; do
 done
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 cp Resources/Brand/AppIcon.png "$APP/Contents/Resources/ScannerIcon.png"
+mkdir -p build
+xcrun clang -isysroot "$SDK_PATH" -target arm64-apple-macosx14.0 -O2 -c Sources/PrinterUSB/QL600USB.c -o build/QL600USB.o
 xcrun swiftc \
   -sdk "$SDK_PATH" \
   -target arm64-apple-macosx14.0 \
   -parse-as-library -swift-version 5 \
   -O -framework SwiftUI -framework AppKit -framework AVFoundation \
   -framework Vision -framework PDFKit -framework CoreImage \
+  -framework IOKit -import-objc-header Sources/PrinterUSB/QL600USB.h build/QL600USB.o \
   "${SOURCES[@]}" -o "$APP/Contents/MacOS/FoliobrumaScanner"
 cp -R Resources/*.lproj "$APP/Contents/Resources/"
 cp Resources/Info.plist "$APP/Contents/Info.plist"

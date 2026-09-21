@@ -7,7 +7,7 @@ extension Scanner {
     showNewItem = true
   }
 
-  func createItem(title: String, metadata: ItemMetadata, scanPages: Bool) throws {
+  func createItem(title: String, metadata: ItemMetadata, scanPages: Bool, preserveCaptureHistory: Bool = false, automation: SessionAutomation? = nil) throws {
     guard !busy else { return }
     autoCapture = false
     var details = metadata
@@ -15,7 +15,8 @@ extension Scanner {
     var next = ScanDocument()
     next.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
     next.metadata = details
-    try createDocument(next)
+    next.automation = automation
+    try createDocument(next, preserveCaptureHistory: preserveCaptureHistory)
     metadataWorkspace = !scanPages
     if details.batchID != nil { book = false; split = false }
     status = L10n.text("Item saved on this Mac")
@@ -27,6 +28,7 @@ extension Scanner {
     if let current = document.metadata {
       details.reference = current.reference
       details.batchID = current.batchID
+      details.sheetBatch = current.sheetBatch
     } else {
       details.reference = try ItemReference.reserve(in: root, letter: false)
     }
@@ -40,8 +42,9 @@ extension Scanner {
   }
 
   func nextLetter() {
+    if isSheetBatch { finishSheet(); return }
     guard !busy, document.metadata?.batchID != nil else { return }
-    if tracksActiveSession, UserDefaults.standard.bool(forKey: "cloudAutomatic"), !document.pages.isEmpty {
+    if tracksActiveSession, uploadOnFinish, !document.pages.isEmpty {
       finishItem(nextLetter: true)
     } else { createNextLetter() }
   }
@@ -50,7 +53,7 @@ extension Scanner {
     guard !busy, let details = document.metadata, details.batchID != nil else { return }
     let scanPages = !metadataWorkspace
     do {
-      try createItem(title: "", metadata: details.nextLetter, scanPages: scanPages)
+      try createItem(title: "", metadata: details.nextLetter, scanPages: scanPages, automation: document.automation)
     } catch { self.error = error.localizedDescription }
   }
 

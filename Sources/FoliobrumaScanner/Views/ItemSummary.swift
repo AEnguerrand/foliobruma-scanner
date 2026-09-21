@@ -52,7 +52,9 @@ struct ItemSummary: View {
         }.buttonStyle(.borderless)
         if model.document.metadata?.batchID != nil {
           Divider()
-          Text(L10n.text("Keep all pages of one letter in this item. Use Next letter only when you start another letter."))
+          Text(L10n.text(model.isSheetBatch
+            ? "Keep the front and back of one sheet in this item. Use Finish sheet before scanning another sheet."
+            : "Keep all pages of one letter in this item. Use Next letter only when you start another letter."))
             .font(.callout).foregroundStyle(.secondary)
         }
       }.padding(40).frame(maxWidth: 840, alignment: .leading).frame(maxWidth: .infinity)

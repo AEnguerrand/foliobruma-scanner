@@ -429,6 +429,11 @@ import Vision
   print("PASS: page input boundaries; adjacent selection; undo selection; failed-save selection; label validation feedback")
  }
  static func main() throws {
+  try testSheetBatches()
+  try testSheetGroups()
+  try testSheetLabelRetry()
+  try testQL600Labels()
+  try PermanentLabelTests.run()
   try CloudUploadTests.run()
   try testReviewNavigation()
   try testCatalogAndLabels()

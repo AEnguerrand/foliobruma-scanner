@@ -30,7 +30,7 @@ extension Scanner {
       NSAccessibility.post(
         element: window, notification: .announcementRequested,
         userInfo: [
-          .announcement: L10n.text("Page saved. Turn the page."),
+          .announcement: self.isSheetBatch ? self.sheetCapturePrompt : L10n.text("Page saved. Turn the page."),
           .priority: NSAccessibilityPriorityLevel.high.rawValue,
         ])
     }

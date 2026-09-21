@@ -64,6 +64,7 @@ final class Scanner: NSObject, ObservableObject {
   @Published var showRejected = false
   @Published var showExport = false
   @Published var showCrop = false
+  @Published var showSheetGroups = false
   @Published var showFraming = false
   @Published var framingImages: [NSImage] = []
   @Published var sessions: [SavedSession] = []
@@ -110,6 +111,7 @@ final class Scanner: NSObject, ObservableObject {
     do {
       try prepareFolder()
       try restore()
+      if document.metadata?.sheetBatch == true { book = false; split = false }
     } catch { self.error = error.localizedDescription }
     if storageRoot == nil {
       devices =

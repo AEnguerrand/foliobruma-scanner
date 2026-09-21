@@ -103,6 +103,7 @@ extension Scanner {
             L10n.format(
               results.count == 1 ? "One page saved · Turn the page" : "%ld pages saved · Turn the page",
               results.count)
+          if self.isSheetBatch { self.status = self.sheetCapturePrompt }
           self.confirmCapture()
           if let print = print {
             self.queue.async {

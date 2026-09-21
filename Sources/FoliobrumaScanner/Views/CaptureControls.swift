@@ -5,6 +5,11 @@ struct CaptureControls: View {
   var body: some View {
     if !model.reviewing {
       VStack(spacing: 10) {
+        if model.isSheetBatch {
+          Text(model.sheetCapturePrompt).font(.headline)
+          Text(L10n.text("USB button action: Finish sheet. The next sheet starts automatic capture after completion."))
+            .font(.caption).foregroundStyle(.secondary)
+        }
         if model.replacementID != nil {
           HStack {
             Label(
@@ -28,7 +33,7 @@ struct CaptureControls: View {
                 model.autoCapture ? L10n.text("Pause auto capture") : L10n.text("Start auto capture"),
                 systemImage: model.autoCapture ? "pause.fill" : "play.fill")
             }.buttonStyle(.borderedProminent).controlSize(.large)
-              .disabled(!model.connected || (model.busy && !model.autoCapture))
+              .disabled(!model.connected || model.sheetIsFull || (model.busy && !model.autoCapture))
           }
           Button(action: model.capture) {
             Label(
@@ -37,7 +42,7 @@ struct CaptureControls: View {
                 : (model.replacementID == nil ? L10n.text("Capture page") : L10n.text("Capture replacement")),
               systemImage: "camera.fill")
           }.keyboardShortcut(.space, modifiers: []).controlSize(.large)
-            .disabled(!model.connected || model.busy)
+            .disabled(!model.connected || model.busy || (model.sheetIsFull && model.replacementID == nil))
         }
       }.padding(16)
     }
@@ -72,7 +77,7 @@ struct CaptureSettings: View {
         Picker(L10n.text("Document type"), selection: $model.book) {
           Text(L10n.text("Book")).tag(true)
           Text(L10n.text("Single page")).tag(false)
-        }.pickerStyle(.segmented).labelsHidden()
+        }.pickerStyle(.segmented).labelsHidden().disabled(model.isSheetBatch)
         if model.book {
           Toggle(L10n.text("Split into two pages"), isOn: $model.split).disabled(model.replacementID != nil)
         }

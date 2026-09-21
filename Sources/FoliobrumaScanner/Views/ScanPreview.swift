@@ -109,7 +109,7 @@ struct ScanPreview: View {
       Rectangle().stroke(Color.green, lineWidth: 8).allowsHitTesting(false)
       VStack(spacing: 12) {
         Image(systemName: "checkmark.circle.fill").font(.system(size: 60))
-        Text(L10n.text("Saved — turn the page")).font(.title.bold())
+        Text(model.isSheetBatch ? model.sheetCapturePrompt : L10n.text("Saved — turn the page")).font(.title.bold())
       }.foregroundColor(.white).padding(28).background(
         Color(red: 0.08, green: 0.32, blue: 0.18).opacity(0.96)
       ).cornerRadius(18).allowsHitTesting(false)

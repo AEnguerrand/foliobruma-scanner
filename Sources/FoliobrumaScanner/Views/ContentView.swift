@@ -94,6 +94,7 @@ struct ContentView: View {
         }
       }) { ExportReview(model: model, reviewRejectedAfterDismiss: $reviewRejectedAfterExport) }
       .sheet(isPresented: $model.showCrop) { CropEditor(model: model) }
+      .sheet(isPresented: $model.showSheetGroups) { SheetGroupEditor(model: model) }
       .sheet(isPresented: $model.showFraming) { FramingPreview(model: model) }
       .background(USBButtonWindow { usbWindow = $0 })
       .onReceive(USBButton.shared.actions) { action in
