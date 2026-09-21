@@ -50,7 +50,7 @@ struct DocumentLabel: Hashable {
   }
 
   var permanentCode: String? {
-    guard let url = Self.validURL(link), url.host == "foliobruma.com", url.path.hasPrefix("/d/") else { return nil }
+    guard let url = Self.validURL(link), url.path.hasPrefix("/d/") else { return nil }
     let code = String(url.path.dropFirst(3))
     return code.range(of: "^[A-Za-z0-9_-]{16}$", options: .regularExpression) != nil ? code : nil
   }

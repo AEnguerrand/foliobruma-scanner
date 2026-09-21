@@ -7,13 +7,13 @@ struct CloudOrganisation: Decodable, Identifiable { let id: String; let name: St
 
 @MainActor final class CloudAccount: ObservableObject {
   static let shared = CloudAccount()
-  let api = CloudAPI()
+  let api = CloudAPI(origin: CloudEnvironment.activeOrigin)
   @Published var user: CloudUser?
   @Published var organisations: [CloudOrganisation] = []
   @Published var working = false
   @Published var failure: String?
-  @Published var organisationID = UserDefaults.standard.string(forKey: "cloudOrganisation") ?? "" {
-    didSet { UserDefaults.standard.set(organisationID, forKey: "cloudOrganisation") }
+  @Published var organisationID = UserDefaults.standard.string(forKey: CloudEnvironment.archiveKey(for: CloudEnvironment.activeOrigin)) ?? "" {
+    didSet { UserDefaults.standard.set(organisationID, forKey: CloudEnvironment.archiveKey(for: api.baseURL)) }
   }
   @Published var automatic = UserDefaults.standard.bool(forKey: "cloudAutomatic") {
     didSet { UserDefaults.standard.set(automatic, forKey: "cloudAutomatic") }
@@ -45,7 +45,9 @@ struct CloudOrganisation: Decodable, Identifiable { let id: String; let name: St
     working = true
     defer { working = false }
     do {
-      guard let data = try CloudKeychain.read() else { return }
+      let origin = api.baseURL
+      api.access = try await Task.detached { try CloudAccess.read(origin) }.value
+      guard let data = try await Task.detached(operation: { try CloudKeychain.read(origin: origin) }).value else { return }
       try api.restore(data)
       try await loadAccount()
     } catch { failure = error.localizedDescription }
@@ -62,8 +64,8 @@ struct CloudOrganisation: Decodable, Identifiable { let id: String; let name: St
         let data = try await api.request("api/scanner/pair/start", method: "POST", body: body)
         try Task.checkCancellation()
         let ticket = try JSONDecoder().decode(CloudPairing.Ticket.self, from: data)
-        let url = try pairing.browserURL(ticket: ticket)
-        try CloudKeychain.remove()
+        let url = try pairing.browserURL(ticket: ticket, origin: api.baseURL)
+        try CloudKeychain.remove(origin: api.baseURL)
         api.clear()
         try api.restore(JSONEncoder().encode(pairing.token))
         user = nil
@@ -81,7 +83,7 @@ struct CloudOrganisation: Decodable, Identifiable { let id: String; let name: St
           if result.user != nil {
             try await loadAccount()
             // Closing a pending connection must not retain its credentials.
-            if Task.isCancelled { try CloudKeychain.remove(); throw CancellationError() }
+            if Task.isCancelled { try CloudKeychain.remove(origin: api.baseURL); throw CancellationError() }
             return
           }
           try await Task.sleep(for: .seconds(3))
@@ -103,7 +105,7 @@ struct CloudOrganisation: Decodable, Identifiable { let id: String; let name: St
       throw CloudFailure(message: "Your session has expired. Sign in again in Settings.")
     }
     let archives = try JSONDecoder().decode(Archives.self, from: await api.request("api/organisations"))
-    try CloudKeychain.save(api.credentials())
+    try CloudKeychain.save(api.credentials(), origin: api.baseURL)
     user = session.user
     organisations = archives.organisations
     if !organisations.contains(where: { $0.id == organisationID }) { organisationID = "" }
@@ -113,7 +115,7 @@ struct CloudOrganisation: Decodable, Identifiable { let id: String; let name: St
     working = true
     defer { working = false }
     do {
-      try CloudKeychain.remove()
+      try CloudKeychain.remove(origin: api.baseURL)
       automatic = false
       user = nil
       organisations = []

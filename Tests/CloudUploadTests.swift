@@ -79,10 +79,43 @@ enum CloudUploadTests {
     let configuration = URLSessionConfiguration.ephemeral
     configuration.protocolClasses = [CloudStub.self]
     let api = CloudAPI(configuration: configuration)
+    let staging = URL(string: "https://staging.foliobruma.com")!
+    precondition(CloudEnvironment.normalizedOrigin(" HTTPS://STAGING.FOLIOBRUMA.COM:443/ ") == staging)
+    for invalid in ["http://example.com", "https://user:secret@example.com", "https://example.com/path", "https://example.com?x=1", "https://example.com#fragment", "https://example.com:0"] {
+      precondition(CloudEnvironment.normalizedOrigin(invalid) == nil)
+    }
+    precondition(CloudEnvironment.accountKey(for: CloudAPI.origin) == "session")
+    precondition(CloudEnvironment.accountKey(for: staging) != CloudEnvironment.accountKey(for: CloudAPI.origin))
+    precondition(CloudEnvironment.archiveKey(for: staging) != CloudEnvironment.archiveKey(for: CloudAPI.origin))
+    let stagingAPI = CloudAPI(configuration: configuration, origin: staging)
+    let access = CloudAccess(clientID: "test.access", clientSecret: "synthetic-test-secret")
+    try access.validate()
+    do { try CloudAccess(clientID: "test", clientSecret: "bad\nvalue").validate(); preconditionFailure("Reject header injection") } catch { }
+    stagingAPI.access = access
+    _ = try await stagingAPI.request("api/organisations")
+    precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "CF-Access-Client-Id") == access.clientID)
+    precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "CF-Access-Client-Secret") == access.clientSecret)
+    api.access = access
+    _ = try await api.request("api/organisations")
+    precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "CF-Access-Client-Secret") == nil, "Never send developer Access tokens to production")
+    _ = try await stagingAPI.request("api/organisations")
+    precondition(CloudStub.requests.last!.url!.host == staging.host)
+    precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "Origin") == staging.absoluteString)
+    precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "Authorization") == nil)
+    var legacy = CloudUpload(fingerprint: "legacy", userID: "user", organisationID: CloudStub.id, file: "absent.pdf", name: "test.pdf")
+    legacy.complete = true
+    let beforeServerGuard = CloudStub.requests.count
+    do { try await legacy.send(api: stagingAPI, folder: folder) { _ in }; preconditionFailure("Reject cross-server retries") } catch { }
+    precondition(CloudStub.requests.count == beforeServerGuard)
+    legacy.serverOrigin = "https://["
+    legacy.documentID = CloudStub.id
+    precondition(legacy.link == nil, "Malformed saved origins must not crash or fall back to production")
     let pairing = try CloudPairing.create()
     precondition(pairing.token.count == 68 && pairing.challenge.count == 64)
     try api.restore(JSONEncoder().encode(pairing.token))
     let ticket = CloudPairing.Ticket(challenge: pairing.challenge, expires: Date().timeIntervalSince1970 * 1000 + 300_000, signature: String(repeating: "a", count: 64))
+    let stagingPairURL = try pairing.browserURL(ticket: ticket, origin: staging)
+    precondition(stagingPairURL.host == staging.host)
     let browserURL = try pairing.browserURL(ticket: ticket)
     precondition(browserURL.host == "foliobruma.com" && browserURL.scheme == "https")
     precondition(!browserURL.absoluteString.contains(pairing.token), "Browser URLs must not contain the device secret")

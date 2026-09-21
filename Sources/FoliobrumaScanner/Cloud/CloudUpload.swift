@@ -9,6 +9,7 @@ struct CloudUpload: Codable {
   var userID: String
   var organisationID: String
   var documentID: String?
+  var serverOrigin: String?
   var labelRequestID: String?
   var permanentLabel: PermanentLabel?
   var started = false
@@ -22,8 +23,14 @@ struct CloudUpload: Codable {
   var path: String { "api/organisations/\(organisationID)/documents" }
   var link: String? {
     if let permanentLabel { return permanentLabel.url }
-    guard complete, let documentID else { return nil }
-    return CloudAPI.origin.appendingPathComponent(path + "/" + documentID).absoluteString
+    guard complete, let documentID, let origin else { return nil }
+    return origin.appendingPathComponent(path + "/" + documentID).absoluteString
+  }
+  var origin: URL? { CloudEnvironment.normalizedOrigin(serverOrigin ?? CloudAPI.origin.absoluteString) }
+  func requireServer(_ api: CloudAPI) throws {
+    guard (serverOrigin ?? CloudAPI.origin.absoluteString) == api.baseURL.absoluteString else {
+      throw CloudFailure(message: "This upload belongs to another server. Switch back to its server before continuing.")
+    }
   }
   static func fingerprint(_ document: ScanDocument) throws -> String {
     var copy = document
@@ -93,6 +100,7 @@ struct CloudUpload: Codable {
   }
   // Parts and completion are idempotent on the server. Reuse the exact PDF on retry.
   mutating func send(api: CloudAPI, folder: URL, progress: @escaping (Double) async -> Void) async throws {
+    try requireServer(api)
     if complete { return }
     let handle = try FileHandle(forReadingFrom: folder.appendingPathComponent(file))
     defer { try? handle.close() }

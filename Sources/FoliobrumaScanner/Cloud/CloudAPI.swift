@@ -9,12 +9,15 @@ struct CloudFailure: LocalizedError {
 
 // A separate scanner credential never reads or stores browser cookies.
 final class CloudAPI: NSObject, URLSessionTaskDelegate {
-  static let origin = URL(string: "https://foliobruma.com")!
+  static let origin = CloudEnvironment.production
+  let baseURL: URL
   private var token: String?
+  var access: CloudAccess?
   static let sessionExpired = Notification.Name("FoliobrumaScannerSessionExpired")
   private let configuration: URLSessionConfiguration
   private lazy var session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
-  init(configuration: URLSessionConfiguration = .ephemeral) {
+  init(configuration: URLSessionConfiguration = .ephemeral, origin: URL = CloudAPI.origin) {
+    self.baseURL = origin
     self.configuration = configuration
     configuration.httpCookieStorage = nil
     configuration.httpShouldSetCookies = false
@@ -38,18 +41,27 @@ final class CloudAPI: NSObject, URLSessionTaskDelegate {
   func clear() { token = nil }
   func request(_ path: String, method: String = "GET", body: Data? = nil,
                type: String = "application/json", query: [URLQueryItem] = [], revision: Int? = nil) async throws -> Data {
-    var parts = URLComponents(url: Self.origin.appendingPathComponent(path), resolvingAgainstBaseURL: false)!
+    guard baseURL.host != "invalid.invalid" else { throw CloudFailure(message: "Set a valid HTTPS server URL in developer settings, then restart the app.") }
+    var parts = URLComponents(url: baseURL.appendingPathComponent(path), resolvingAgainstBaseURL: false)!
     parts.queryItems = query.isEmpty ? nil : query
     var request = URLRequest(url: parts.url!)
     request.httpMethod = method
     request.httpBody = body
-    request.setValue(Self.origin.absoluteString, forHTTPHeaderField: "Origin")
+    request.setValue(baseURL.absoluteString, forHTTPHeaderField: "Origin")
     request.setValue(type, forHTTPHeaderField: "Content-Type")
     request.setValue("application/json", forHTTPHeaderField: "Accept")
+    if baseURL != CloudEnvironment.production, let access {
+      try access.validate()
+      request.setValue(access.clientID, forHTTPHeaderField: "CF-Access-Client-Id")
+      request.setValue(access.clientSecret, forHTTPHeaderField: "CF-Access-Client-Secret")
+    }
     if let revision { request.setValue("\"\(revision)\"", forHTTPHeaderField: "If-Match") }
     if let token { request.setValue("Bearer " + token, forHTTPHeaderField: "Authorization") }
     let (data, response) = try await session.data(for: request)
     guard let http = response as? HTTPURLResponse else { throw CloudFailure(message: "The server response is invalid.") }
+    if (300..<400).contains(http.statusCode) {
+      throw CloudFailure(message: "The server requires a browser redirect. Check its access policy for native scanner clients.", status: http.statusCode)
+    }
     if http.statusCode == 401 {
       clear()
       NotificationCenter.default.post(name: Self.sessionExpired, object: self)
@@ -64,13 +76,13 @@ final class CloudAPI: NSObject, URLSessionTaskDelegate {
 }
 
 enum CloudKeychain {
-  static var query: [String: Any] {
+  static func query(for origin: URL = CloudAPI.origin) -> [String: Any] {
     [kSecClass as String: kSecClassGenericPassword,
      kSecAttrService as String: "org.sovenelia.scanner.foliobruma",
-     kSecAttrAccount as String: "session"]
+     kSecAttrAccount as String: CloudEnvironment.accountKey(for: origin)]
   }
-  static func read() throws -> Data? {
-    var values = query
+  static func read(origin: URL = CloudAPI.origin) throws -> Data? {
+    var values = query(for: origin)
     values[kSecReturnData as String] = true
     var item: CFTypeRef?
     let status = SecItemCopyMatching(values as CFDictionary, &item)
@@ -78,19 +90,19 @@ enum CloudKeychain {
     guard status == errSecSuccess else { throw CloudFailure(message: "Could not read the session from Keychain.") }
     return item as? Data
   }
-  static func save(_ data: Data) throws {
+  static func save(_ data: Data, origin: URL = CloudAPI.origin) throws {
     let attributes = [kSecValueData as String: data]
-    let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
+    let status = SecItemUpdate(query(for: origin) as CFDictionary, attributes as CFDictionary)
     if status == errSecItemNotFound {
-      var values = query.merging(attributes) { _, new in new }
+      var values = query(for: origin).merging(attributes) { _, new in new }
       values[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
       guard SecItemAdd(values as CFDictionary, nil) == errSecSuccess else {
         throw CloudFailure(message: "Could not save the session in Keychain.")
       }
     } else if status != errSecSuccess { throw CloudFailure(message: "Could not save the session in Keychain.") }
   }
-  static func remove() throws {
-    let status = SecItemDelete(query as CFDictionary)
+  static func remove(origin: URL = CloudAPI.origin) throws {
+    let status = SecItemDelete(query(for: origin) as CFDictionary)
     guard status == errSecSuccess || status == errSecItemNotFound else {
       throw CloudFailure(message: "Could not remove the session from Keychain.")
     }

@@ -17,6 +17,7 @@ struct SettingsView: View {
       Text(L10n.text("Set automatic upload and label printing for each session in the Foliobruma menu."))
         .font(.caption).foregroundStyle(.secondary)
       USBButtonSettings()
+      DeveloperSettings()
     }
     .formStyle(.grouped)
     .padding(12)
