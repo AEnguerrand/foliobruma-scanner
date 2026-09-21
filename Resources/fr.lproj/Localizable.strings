@@ -535,3 +535,5 @@
 "Save the server URL and restart before setting its Access token." = "Enregistrez l’URL du serveur et redémarrez avant de définir son jeton Access.";
 "Access token removed." = "Jeton Access supprimé.";
 "Access token saved in Keychain for the current server." = "Jeton Access enregistré dans le trousseau pour le serveur actuel.";
+
+"Could not find photo edges · Try again" = "Contours de la photo introuvables · Réessayez";

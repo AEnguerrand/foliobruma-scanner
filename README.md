@@ -492,3 +492,18 @@ to that developer server; redirects are still blocked. The Access policy must
 use **Service Auth** and select this token. SaaS sign-in is still required.
 Use **Remove Access token** to remove the local copy. Revoke the token in
 Cloudflare to remove server access.
+
+### Automatic capture and crop limits
+
+Automatic duplicate checks compare the paper content as well as the full frame.
+A hand, label, or lighting change outside the paper should not count as a page
+turn. Paper comparison reduces camera noise and aligns small position changes.
+Similar pages, or a page with only a small new note, can need manual capture;
+detection is approximate.
+The crop outline follows the dimensions of the delivered camera frames.
+The scanner uses the full-resolution camera frame when the still-photo output
+has less detail or a different aspect ratio, so it does not cut off the preview.
+Auto crop finds edges again on the captured photo because the photo and preview
+can have different framing. It keeps a small outer margin and uses the paper
+mask when a rectangle would cut into it. Original photos stay in the session;
+use **Crop from original** to adjust a saved page.

@@ -41,11 +41,18 @@ extension Scanner: AVCapturePhotoCaptureDelegate {
     )
     queue.async {
       self.captureInFlight = true
+      self.capturePreviewImage = self.latest
       self.capturePreviewPrint = self.latest.flatMap {
         CaptureCheck.fingerprint($0, context: self.context)
       }
       self.gate.captured(at: Date.timeIntervalSinceReferenceDate)
-      if self.session.outputs.contains(self.photoOutput),
+      let photoDimensions = self.input?.device.activeFormat.supportedMaxPhotoDimensions.first
+        ?? self.photoOutput.maxPhotoDimensions
+      if let image = self.latest, CaptureCheck.preferPreview(
+        photo: CGSize(width: Int(photoDimensions.width), height: Int(photoDimensions.height)),
+        preview: image.extent.size) {
+        self.process(image, originalData: nil)
+      } else if self.session.outputs.contains(self.photoOutput),
         !self.photoOutput.availablePhotoCodecTypes.isEmpty
       {
         let settings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])

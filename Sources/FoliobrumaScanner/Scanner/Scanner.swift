@@ -88,8 +88,10 @@ final class Scanner: NSObject, ObservableObject {
   var heldReason = ""
   var heldPreflightWarning: String?
   var gate = AutoCaptureGate()
+  var recentPagePrints: [CaptureCheck.Fingerprint] = []
   var recentPrints: [CaptureCheck.Fingerprint] = []
   var recentPreviewPrints: [CaptureCheck.Fingerprint] = []
+  var capturePreviewImage: CIImage?
   var capturePreviewPrint: CaptureCheck.Fingerprint?
 
   var captureOptions: (quad: Quad?, split: Bool, divider: Double, automatic: Bool)?
