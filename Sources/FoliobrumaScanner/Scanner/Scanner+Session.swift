@@ -62,7 +62,7 @@ extension Scanner {
   }
   func newDocument() {
     guard !busy else { return }
-    if tracksActiveSession, UserDefaults.standard.bool(forKey: "cloudAutomatic"), !document.pages.isEmpty {
+    if tracksActiveSession, uploadOnFinish, !document.pages.isEmpty {
       finishItem(nextDocument: true)
     } else { newDocumentLocally() }
   }

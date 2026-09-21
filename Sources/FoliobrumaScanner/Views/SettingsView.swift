@@ -14,6 +14,8 @@ struct SettingsView: View {
       Text(L10n.text("Quit and reopen the app to apply a language change."))
         .font(.callout).foregroundStyle(.secondary)
       CloudSettings()
+      Text(L10n.text("Set automatic upload and label printing for each session in the Foliobruma menu."))
+        .font(.caption).foregroundStyle(.secondary)
       USBButtonSettings()
     }
     .formStyle(.grouped)

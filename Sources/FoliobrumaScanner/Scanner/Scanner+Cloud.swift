@@ -1,7 +1,7 @@
 import AppKit
 
 extension Scanner {
-  func finishItem(nextLetter: Bool = false, nextDocument: Bool = false, uploadRequested: Bool = false, nextSheet: Bool = false) {
+  func finishItem(nextLetter: Bool = false, nextDocument: Bool = false, uploadRequested: Bool = false, printRequested: Bool? = nil, nextSheet: Bool = false) {
     guard !busy, !document.pages.isEmpty else { return }
     let resumeSheetCapture = nextSheet && connected && !reviewing && !metadataWorkspace
     autoCapture = false
@@ -11,7 +11,7 @@ extension Scanner {
       defer { busy = false; exportProgress = nil; finishPendingReview() }
       do {
         try persist()
-        if uploadRequested || (tracksActiveSession && account.automatic) {
+        if uploadRequested || (tracksActiveSession && uploadOnFinish) {
           await account.restore()
           guard account.ready, let user = account.user else {
             throw CloudFailure(message: "Sign in and select an upload archive in Settings. Your scan is saved on this Mac.")
@@ -32,6 +32,9 @@ extension Scanner {
             }
             upload = saved
           } else {
+            if let prior = try CloudUpload.load(in: base), prior.permanentLabel != nil {
+              throw CloudFailure(message: "This item already has a permanent label. Replace its PDF on the website to keep the same label.")
+            }
             status = L10n.text("Creating PDF…")
             let file = "upload-" + UUID().uuidString + ".pdf"
             try await Task.detached(priority: .userInitiated) {
@@ -44,11 +47,14 @@ extension Scanner {
                                  organisationID: account.organisationID, file: file, name: safeTitle + ".pdf")
             try upload.save(in: base)
           }
+          status = L10n.text("Reserving permanent label…")
+          try await upload.reserveLabel(api: account.api, folder: base, title: document.displayTitle)
           status = L10n.text("Uploading PDF…")
           exportProgress = 0
           try await upload.send(api: account.api, folder: base) { value in
             await MainActor.run { self.exportProgress = value }
           }
+          try await upload.attachLabel(api: account.api, folder: base)
           try CloudKeychain.save(account.api.credentials())
           var saved = document
           var details = saved.metadata ?? ItemMetadata()
@@ -56,18 +62,12 @@ extension Scanner {
           saved.metadata = details
           try commit(saved)
           status = L10n.text("Uploaded to Foliobruma")
-          if account.printLabel && (isSheetBatch ? upload.sheetLabelSubmitted != true : !upload.labelOffered) {
+          if (printRequested ?? printOnFinish) && upload.sheetLabelSubmitted != true {
             let label = DocumentLabel(title: document.displayTitle, subtitle: details.reference, link: upload.link!)
             let qr = await Task.detached { label.qrImage() }.value
             guard let qr else { throw CloudFailure(message: "Could not create the QR code.") }
-            if isSheetBatch {
-              try printSheetLabel(label, qr: qr, upload: &upload)
-            } else {
-              // Record before opening the print panel. Retry must not print another label.
-              upload.labelOffered = true
-              try upload.save(in: base)
-              DocumentLabelView(label: label, qr: qr).printLabel()
-            }
+            try await printSessionLabel(label, qr: qr, upload: &upload)
+            status = L10n.text(document.automation?.printerName == QL600Printer.destination ? "QL-600 confirmed label printed" : "Label sent to printer")
           }
         } else {
           status = L10n.text("Item saved on this Mac")

@@ -8,7 +8,7 @@ struct DocumentLabel: Hashable {
   static let size = NSSize(width: 62 * 72 / 25.4, height: 25 * 72 / 25.4)
 
   // A short HTTPS address keeps the code readable at this fixed label size.
-  // No network request is made. Uploaded PDFs use the existing private API route.
+  // No network request is made. New uploads use permanent SaaS label URLs.
   static func validURL(_ text: String) -> URL? {
     let value = text.trimmingCharacters(in: .whitespacesAndNewlines)
     let isPrivatePDF = value.range(of: #"^https://foliobruma\.com/api/organisations/[a-f0-9-]{36}/documents/[a-f0-9-]{36}$"#, options: .regularExpression) != nil
@@ -49,6 +49,12 @@ struct DocumentLabel: Hashable {
     return NSImage(cgImage: bitmap, size: NSSize(width: bounds.width, height: bounds.height))
   }
 
+  var permanentCode: String? {
+    guard let url = Self.validURL(link), url.host == "foliobruma.com", url.path.hasPrefix("/d/") else { return nil }
+    let code = String(url.path.dropFirst(3))
+    return code.range(of: "^[A-Za-z0-9_-]{16}$", options: .regularExpression) != nil ? code : nil
+  }
+
   var printedLink: String {
     guard let url = Self.validURL(link) else { return "" }
     return String(url.absoluteString.dropFirst("https://".count))
@@ -60,11 +66,15 @@ final class DocumentLabelView: NSView {
   let label: DocumentLabel
   let qr: NSImage
   private(set) var completedPrintInfo: NSPrintInfo?
+  private let printImage: NSImage?
   override var isFlipped: Bool { true }
 
   init(label: DocumentLabel, qr: NSImage) {
     self.label = label
     self.qr = qr
+    if let bitmap = try? QL600Printer.bitmap(label), let cg = bitmap.cgImage {
+      self.printImage = NSImage(cgImage: cg, size: NSSize(width: 696, height: 225))
+    } else { self.printImage = nil }
     super.init(frame: NSRect(origin: .zero, size: DocumentLabel.size))
   }
   required init?(coder: NSCoder) { nil }
@@ -74,22 +84,8 @@ final class DocumentLabelView: NSView {
     bounds.fill()
     NSGraphicsContext.current?.imageInterpolation = .none
     let mm = 72.0 / 25.4
-    qr.draw(in: NSRect(x: 1.5 * mm, y: 1.5 * mm, width: 22 * mm, height: 22 * mm),
-             from: .zero, operation: .copy, fraction: 1, respectFlipped: true, hints: nil)
-    let x = 25 * mm
-    let width = 35.5 * mm
-    drawText(label.title, x: x, y: 4 * mm, width: width, size: 8, bold: true)
-    drawText(label.subtitle, x: x, y: 10 * mm, width: width, size: 7, bold: false)
-    drawText(label.printedLink, x: x, y: 16 * mm, width: width, size: 5.5, bold: false)
-  }
-
-  private func drawText(_ text: String, x: CGFloat, y: CGFloat, width: CGFloat,
-                        size: CGFloat, bold: Bool) {
-    let paragraph = NSMutableParagraphStyle()
-    paragraph.lineBreakMode = .byTruncatingTail
-    let font = bold ? NSFont.boldSystemFont(ofSize: size) : NSFont.systemFont(ofSize: size)
-    (text as NSString).draw(in: NSRect(x: x, y: y, width: width, height: size * 1.6),
-      withAttributes: [.font: font, .foregroundColor: NSColor.black, .paragraphStyle: paragraph])
+    printImage?.draw(in: NSRect(x: 1.5 * mm, y: 3 * mm, width: 59 * mm, height: 19 * mm),
+      from: .zero, operation: .copy, fraction: 1, respectFlipped: true, hints: nil)
   }
 
   static func labelPrintInfo() -> NSPrintInfo {

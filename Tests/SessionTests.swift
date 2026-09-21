@@ -432,6 +432,8 @@ import Vision
   try testSheetBatches()
   try testSheetGroups()
   try testSheetLabelRetry()
+  try testQL600Labels()
+  try PermanentLabelTests.run()
   try CloudUploadTests.run()
   try testReviewNavigation()
   try testCatalogAndLabels()

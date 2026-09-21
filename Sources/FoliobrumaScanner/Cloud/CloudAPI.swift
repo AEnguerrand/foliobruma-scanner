@@ -37,7 +37,7 @@ final class CloudAPI: NSObject, URLSessionTaskDelegate {
   func credentials() throws -> Data { try JSONEncoder().encode(token) }
   func clear() { token = nil }
   func request(_ path: String, method: String = "GET", body: Data? = nil,
-               type: String = "application/json", query: [URLQueryItem] = []) async throws -> Data {
+               type: String = "application/json", query: [URLQueryItem] = [], revision: Int? = nil) async throws -> Data {
     var parts = URLComponents(url: Self.origin.appendingPathComponent(path), resolvingAgainstBaseURL: false)!
     parts.queryItems = query.isEmpty ? nil : query
     var request = URLRequest(url: parts.url!)
@@ -46,6 +46,7 @@ final class CloudAPI: NSObject, URLSessionTaskDelegate {
     request.setValue(Self.origin.absoluteString, forHTTPHeaderField: "Origin")
     request.setValue(type, forHTTPHeaderField: "Content-Type")
     request.setValue("application/json", forHTTPHeaderField: "Accept")
+    if let revision { request.setValue("\"\(revision)\"", forHTTPHeaderField: "If-Match") }
     if let token { request.setValue("Bearer " + token, forHTTPHeaderField: "Authorization") }
     let (data, response) = try await session.data(for: request)
     guard let http = response as? HTTPURLResponse else { throw CloudFailure(message: "The server response is invalid.") }

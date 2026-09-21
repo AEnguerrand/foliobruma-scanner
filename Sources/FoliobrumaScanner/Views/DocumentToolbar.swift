@@ -24,13 +24,12 @@ struct DocumentToolbar: View {
             Button(L10n.text("Edit details…"), action: model.showItemMetadata)
             Button(L10n.text("Create label…"), action: model.showItemLabel)
             Button(L10n.text("Clear upload record…"), action: model.clearCloudUpload)
-            if model.isSheetBatch {
+            Group {
               Button(L10n.text("Confirm label handled"), action: model.confirmSheetLabelHandled)
-              Button(L10n.text("Reset batch printer")) { model.batchPrintInfo = nil }
             }
             Button(L10n.text("Open session folder…"), action: model.openSession)
           }.menuStyle(.borderlessButton).font(.headline).disabled(model.busy)
-          Text(L10n.format(account.automatic ? "Pages: %ld · Upload on finish" : "Pages: %ld · Auto upload off", model.document.pages.count))
+          Text(L10n.format(model.uploadOnFinish ? "Pages: %ld · Upload on finish" : "Pages: %ld · Auto upload off", model.document.pages.count))
             .font(.caption).foregroundStyle(.secondary)
         }.frame(maxWidth: 300, alignment: .leading)
         Spacer(minLength: 16)
@@ -38,7 +37,7 @@ struct DocumentToolbar: View {
           .buttonStyle(.borderless)
           .help(L10n.text("Settings"))
           .accessibilityLabel(L10n.text("Settings"))
-        FoliobrumaConnectionButton()
+        FoliobrumaConnectionButton(model: model)
       }.padding(.horizontal, 20).padding(.vertical, 14)
       Divider()
       HStack(spacing: 12) {

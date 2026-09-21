@@ -23,8 +23,9 @@ extension Scanner {
 
   func createNextSheet(resumeCapture: Bool) throws {
     guard let details = document.metadata, isSheetBatch else { return }
+    let automation = document.automation
     try createItem(title: "", metadata: details.nextLetter, scanPages: true,
-                   preserveCaptureHistory: true)
+                   preserveCaptureHistory: true, automation: automation)
     // Keep the recent fingerprints across the boundary. The finished sheet may
     // still be under the camera while its label is attached.
     autoCapture = resumeCapture && connected
@@ -37,28 +38,48 @@ extension Scanner {
     showSheetGroups = true
   }
 
-  // Settings last only for this batch and app run. A cancelled or failed print
-  // keeps the current sheet open so that its label cannot be assigned to another.
-  func printSheetLabel(_ label: DocumentLabel, qr: NSImage, upload: inout CloudUpload) throws {
-    if printBatchID != document.metadata?.batchID {
-      batchPrintInfo = nil
-      printBatchID = document.metadata?.batchID
-    }
-    let info = batchPrintInfo ?? DocumentLabelView.labelPrintInfo()
-    let view = DocumentLabelView(label: label, qr: qr)
+  var uploadOnFinish: Bool { document.automation?.upload == true }
+  var printOnFinish: Bool { document.automation?.printLabel == true }
+
+  func setSessionAutomation(_ value: SessionAutomation) {
+    guard !busy else { return }
     do {
-      try upload.submitSheetLabel(in: folder) {
-        view.printLabel(info: info, showPanel: batchPrintInfo == nil)
+      var next = document
+      next.automation = value
+      let wasCurrent = pdfIsCurrent
+      try commit(next)
+      pdfIsCurrent = wasCurrent
+    } catch { self.error = error.localizedDescription }
+  }
+
+  @MainActor func printSessionLabel(_ label: DocumentLabel, qr: NSImage, upload: inout CloudUpload) async throws {
+    let name = document.automation?.printerName ?? ""
+    if name == QL600Printer.destination {
+      let job = try QL600Printer.raster(QL600Printer.bitmap(label))
+      try upload.beginDirectLabel(in: folder)
+      do {
+        try await Task.detached(priority: .userInitiated) { try QL600Printer.send(job) }.value
+        try upload.finishDirectLabel(in: folder, completed: true, mayHavePrinted: true)
+      } catch {
+        let mayHavePrinted = (error as? QL600Failure)?.sent ?? true
+        try upload.finishDirectLabel(in: folder, completed: false, mayHavePrinted: mayHavePrinted)
+        throw error
       }
-      if let completed = view.completedPrintInfo { batchPrintInfo = completed }
-    } catch {
-      batchPrintInfo = nil
-      throw error
+      return
+    }
+    guard !name.isEmpty, NSPrinter.printerNames.contains(name), let printer = NSPrinter(name: name) else {
+      throw CloudFailure(message: "Select an available label printer in the Foliobruma session settings. The item is still open.")
+    }
+    let info = DocumentLabelView.labelPrintInfo()
+    info.printer = printer
+    let view = DocumentLabelView(label: label, qr: qr)
+    try upload.submitSheetLabel(in: folder) {
+      view.printLabel(info: info, showPanel: false)
     }
   }
 
   func confirmSheetLabelHandled() {
-    guard isSheetBatch, !busy else { return }
+    guard !busy else { return }
     autoCapture = false
     let panel = NSAlert()
     panel.messageText = L10n.text("Confirm label handled?")
@@ -67,7 +88,7 @@ extension Scanner {
     panel.addButton(withTitle: L10n.text("Cancel"))
     guard panel.runModal() == .alertFirstButtonReturn else { return }
     do {
-      guard var upload = try CloudUpload.load(in: folder), upload.sheetLabelStarted == true else { return }
+      guard var upload = try CloudUpload.load(in: folder), upload.labelNeedsReview else { return }
       upload.sheetLabelStarted = false
       upload.sheetLabelSubmitted = true
       try upload.save(in: folder)

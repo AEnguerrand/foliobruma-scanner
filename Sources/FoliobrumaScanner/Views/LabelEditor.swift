@@ -14,6 +14,8 @@ struct LabelEditor: View {
   @State private var qr: NSImage?
   @State private var renderedLink = ""
   @State private var generating = false
+  @State private var printing = false
+  @State private var printed = false
 
   private var link: String { custom ? customLink : itemLink }
   private var label: DocumentLabel { DocumentLabel(title: title, subtitle: subtitle, link: link) }
@@ -29,7 +31,7 @@ struct LabelEditor: View {
       }.pickerStyle(.segmented)
       Text(L10n.text(custom
         ? "Custom labels are not saved with this item."
-        : "An uploaded item uses its private PDF link. You can also paste an existing HTTPS link."))
+        : "An uploaded item uses its permanent SaaS link. You can also paste an existing HTTPS link."))
         .font(.callout).foregroundStyle(.secondary)
       Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 12) {
         field("HTTPS link", text: custom ? $customLink : $itemLink)
@@ -62,10 +64,11 @@ struct LabelEditor: View {
       Text(L10n.text("DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link."))
         .font(.caption).foregroundStyle(.secondary)
       DisclosureGroup(L10n.text("Print setup")) {
-        Text(L10n.text("Select the QL-600 and 62 × 25 mm paper in the print dialog. Use 100% scale. Test one label with your phone."))
+        Text(L10n.text("Use Print with QL-600 for direct USB printing. No driver is needed. Load a DK-22205 roll. Test one label with your phone."))
           .font(.callout).foregroundStyle(.secondary)
       }
       if let failure { Text(failure).foregroundStyle(.red) }
+      if printed { Text(L10n.text("QL-600 confirmed label printed")).foregroundStyle(.secondary) }
       if saved && !custom { Text(L10n.text("Item link saved")).foregroundStyle(.secondary) }
       HStack {
         Button(L10n.text("Done")) { dismiss() }.keyboardShortcut(.cancelAction)
@@ -74,11 +77,26 @@ struct LabelEditor: View {
         }
         Spacer()
         Button(L10n.text("Save label PDF…")) { savePDF() }.disabled(!ready)
+        Button(L10n.text("Print with QL-600")) {
+          printing = true
+          printed = false
+          failure = nil
+          Task { @MainActor in
+            defer { printing = false }
+            do {
+              let job = try QL600Printer.raster(QL600Printer.bitmap(label))
+              try await Task.detached(priority: .userInitiated) { try QL600Printer.send(job) }.value
+              printed = true
+            } catch { failure = error.localizedDescription }
+          }
+        }.disabled(!ready || printing)
         Button(L10n.text("Print…")) {
           if ready, let qr { DocumentLabelView(label: label, qr: qr).printLabel() }
         }.buttonStyle(.borderedProminent).disabled(!ready)
       }
-    }.padding(24).frame(width: 610)
+    }.padding(24).frame(width: 760)
+      .disabled(printing)
+      .interactiveDismissDisabled(printing)
       .onAppear {
         itemLink = model.document.metadata?.webLink ?? ""
         title = model.document.title.trimmingCharacters(in: .whitespacesAndNewlines)

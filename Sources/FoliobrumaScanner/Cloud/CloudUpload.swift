@@ -9,6 +9,8 @@ struct CloudUpload: Codable {
   var userID: String
   var organisationID: String
   var documentID: String?
+  var labelRequestID: String?
+  var permanentLabel: PermanentLabel?
   var started = false
   var complete = false
   var labelOffered = false
@@ -19,6 +21,7 @@ struct CloudUpload: Codable {
 
   var path: String { "api/organisations/\(organisationID)/documents" }
   var link: String? {
+    if let permanentLabel { return permanentLabel.url }
     guard complete, let documentID else { return nil }
     return CloudAPI.origin.appendingPathComponent(path + "/" + documentID).absoluteString
   }
@@ -26,6 +29,7 @@ struct CloudUpload: Codable {
     var copy = document
     if copy.metadata == nil { copy.metadata = ItemMetadata() }
     copy.metadata?.webLink = ""
+    copy.automation = nil
     let encoder = JSONEncoder()
     encoder.outputFormatting = .sortedKeys
     return SHA256.hash(data: try encoder.encode(copy)).map { String(format: "%02x", $0) }.joined()
@@ -38,11 +42,13 @@ struct CloudUpload: Codable {
   func save(in folder: URL) throws {
     try JSONEncoder().encode(self).write(to: folder.appendingPathComponent("cloud-upload.json"), options: .atomic)
   }
+  var labelNeedsReview: Bool { sheetLabelStarted == true || (sheetLabelSubmitted == nil && labelOffered) }
+
   // Save the intent before submitting a print job. After a crash, do not
   // silently send another label when the result of the earlier job is unknown.
   mutating func submitSheetLabel(in folder: URL, submit: () -> Bool) throws {
     if sheetLabelSubmitted == true { return }
-    guard sheetLabelStarted != true else {
+    guard !labelNeedsReview else {
       throw CloudFailure(message: "The label print result is unknown. Check the printer, then use Create label to print it if needed. Use Confirm label handled to continue.")
     }
     sheetLabelStarted = true
@@ -52,8 +58,22 @@ struct CloudUpload: Codable {
     sheetLabelSubmitted = submitted
     try save(in: folder)
     guard submitted else {
-      throw CloudFailure(message: "Label printing stopped. Check the printer, then press Finish sheet to retry. The sheet is still open.")
+      throw CloudFailure(message: "Label printing stopped. Check the printer, then finish the item again to retry. The item is still open.")
     }
+  }
+
+  mutating func beginDirectLabel(in folder: URL) throws {
+    guard sheetLabelSubmitted != true, !labelNeedsReview else {
+      throw CloudFailure(message: "The label print result is unknown. Check the printer, then use Create label to print it if needed. Use Confirm label handled to continue.")
+    }
+    sheetLabelStarted = true
+    try save(in: folder)
+  }
+
+  mutating func finishDirectLabel(in folder: URL, completed: Bool, mayHavePrinted: Bool) throws {
+    sheetLabelSubmitted = completed
+    sheetLabelStarted = !completed && mayHavePrinted
+    try save(in: folder)
   }
 
   static func makePDF(_ document: ScanDocument, in folder: URL, file: String) throws {

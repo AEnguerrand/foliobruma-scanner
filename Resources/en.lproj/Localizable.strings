@@ -453,3 +453,55 @@
 "Upload one PDF when you select Finish item, Next letter, or Finish sheet." = "Upload one PDF when you select Finish item, Next letter, or Finish sheet.";
 "Print after upload. Sheet batches reuse the first label’s printer settings during this app run." = "Print after upload. Sheet batches reuse the first label’s printer settings during this app run.";
 "Remove a side before restoring this side. A sheet can have only two sides." = "Remove a side before restoring this side. A sheet can have only two sides.";
+
+"Print a label when finished" = "Print a label when finished";
+
+"Label printer" = "Label printer";
+
+"Select a label printer" = "Select a label printer";
+
+"Refresh printers" = "Refresh printers";
+
+"Unavailable" = "Unavailable";
+
+"This session" = "This session";
+
+"One 62 × 25 mm label per finished sheet or book. Use a DK-22205 roll. Printing starts after upload, without a print dialog." = "One 62 × 25 mm label per finished sheet or book. Use a DK-22205 roll. Printing starts after upload, without a print dialog.";
+
+"These settings are saved with this session and copied to the next sheet or letter in this batch." = "These settings are saved with this session and copied to the next sheet or letter in this batch.";
+
+"Set automatic upload and label printing for each session in the Foliobruma menu." = "Set automatic upload and label printing for each session in the Foliobruma menu.";
+
+"Print with QL-600" = "Print with QL-600";
+
+"QL-600 confirmed label printed" = "QL-600 confirmed label printed";
+
+"Select an available label printer in the Foliobruma session settings. The item is still open." = "Select an available label printer in the Foliobruma session settings. The item is still open.";
+
+"Could not render the label." = "Could not render the label.";
+
+"The label dimensions are invalid." = "The label dimensions are invalid.";
+
+"Could not read the label pixels." = "Could not read the label pixels.";
+
+"Label printing stopped. Check the printer, then finish the item again to retry. The item is still open." = "Label printing stopped. Check the printer, then finish the item again to retry. The item is still open.";
+
+"Reserving permanent label…" = "Reserving permanent label…";
+
+"The server returned an invalid permanent label." = "The server returned an invalid permanent label.";
+
+"This label belongs to another PDF. Check it on the website." = "This label belongs to another PDF. Check it on the website.";
+
+"Finish the upload before attaching its permanent label." = "Finish the upload before attaching its permanent label.";
+
+"The label changed on the website. Check it before attaching this PDF." = "The label changed on the website. Check it before attaching this PDF.";
+
+"The server did not confirm the permanent label link." = "The server did not confirm the permanent label link.";
+
+"An uploaded item uses its permanent SaaS link. You can also paste an existing HTTPS link." = "An uploaded item uses its permanent SaaS link. You can also paste an existing HTTPS link.";
+
+"Use Print with QL-600 for direct USB printing. No driver is needed. Load a DK-22205 roll. Test one label with your phone." = "Use Print with QL-600 for direct USB printing. No driver is needed. Load a DK-22205 roll. Test one label with your phone.";
+
+"This item already has a permanent label. Replace its PDF on the website to keep the same label." = "This item already has a permanent label. Replace its PDF on the website to keep the same label.";
+
+"Label sent to printer" = "Label sent to printer";

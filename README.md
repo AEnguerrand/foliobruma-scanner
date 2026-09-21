@@ -147,7 +147,7 @@ and label. The first capture is the front; the second capture is the back.
 Related sheets do not need to be together during scanning.
 
 1. In **Foliobruma**, select an archive and enable **Upload automatically** and
-   **Print a label after upload**. With upload off, sheets are saved locally and
+   **Print a label when finished**. With upload off, sheets are saved locally and
    no label prints automatically.
 2. In **Settings → USB button**, select **Finish sheet** and enable the learned
    button. The existing **Next document** and **Next letter** button actions also
@@ -159,10 +159,9 @@ Related sheets do not need to be together during scanning.
    until you finish. A third side cannot be added to the same sheet. Replacement
    remains available in Review. Resolve rejected photos before finishing.
 5. The app saves the sheet, uploads its PDF when enabled, and submits its label
-   when enabled. The first label in a batch opens the macOS print dialog. Check
-   the printer, paper size, scale, and one-copy setting. Later labels in that batch
-   use those settings during the same app run. **Reset batch printer** in the
-   document menu makes the next label open the dialog again.
+   when enabled. In the Foliobruma menu, select **Brother QL-600 · USB** as the
+   label printer. No driver, print queue, or print dialog is needed. The printer
+   must have a 62 mm continuous DK-22205 roll.
 6. Attach the correct label to the sheet sleeve and put it in the folio. The app
    prepares the next sheet and resumes automatic capture when you finish from
    Scan with a connected camera. Recent duplicate checks stay active across the
@@ -171,12 +170,14 @@ Related sheets do not need to be together during scanning.
 An upload error or a cancelled or failed print keeps the current sheet open
 and pauses capture. Check the problem and press **Finish sheet** again. A
 completed upload is reused. A submitted label does not print again on retry.
-A successful print operation means that macOS accepted the job; it does not
-prove that paper came out of the printer. Check the printed label before filing.
+Direct USB printing waits for the QL-600 to report completion and return to its
+ready state. For a macOS queue, success means that macOS accepted the job.
+Check the physical label before filing.
 If the app stops with an unknown print result, check the printer and use
 **Create label…** if a label is missing. Then use **Confirm label handled** in
 the document menu and finish the sheet. This confirmation sends no print job.
-Printer settings are requested again after you quit the app or change batches.
+Session options are saved and copied to the next sheet or letter in the batch.
+A new, unrelated session starts with automatic upload and printing off.
 
 In **Review → Group sheets…**, select sheets from any batch and give the group
 a letter or document name. Select a sheet to inspect its front and back. Use
@@ -213,18 +214,19 @@ The app stores a separate, limited scanner credential in Keychain. It does not
 read browser cookies or ask for your password. Access expires after seven days.
 Use **Connected scanners → Disconnect** on the website to revoke it. Sign out
 in the app removes the local credential, revokes scanner access when reachable,
-and disables automatic upload. Website logout does not disconnect the scanner.
+and stops uploads until you reconnect. Session options stay saved. Website logout
+does not disconnect the scanner.
 Older password-based scanner sessions require a new website sign-in.
 
 This flow requires the matching SaaS pairing endpoints and database migration
 to be deployed. Until then, connection attempts fail without changing local scans.
 
 Enable **Upload automatically** to send scans to the selected archive.
-Enable **Print a label after upload** to print after a successful upload. Both
-options are off by default. For ordinary items, choose the printer and confirm
-each label in the macOS print dialog. Sheet batches reuse the first label’s
-printer settings during that run, as described above. With the label option
-off, no label prints automatically.
+In the Foliobruma menu, enable **Upload automatically** and **Print a label
+when finished** for the current session. Select **Brother QL-600 · USB**.
+A finished sheet or book uploads one PDF and prints one label automatically.
+The options are saved with this session, not as account-wide settings. They
+are off for new sessions. A manual upload has a separate print choice.
 
 1. Scan and review all pages of the letter or book. Rejected photos stay excluded
    unless you choose to keep them.
@@ -234,9 +236,9 @@ off, no label prints automatically.
    it starts the next one. The USB **Next document** action also finishes first.
    An upload failure keeps the current document open. **New item…** is a local
    creation action; use **Finish item** before it when you want to upload.
-4. The label uses the private PDF link. Sign in on the device that reads the QR
+4. The label uses its permanent SaaS URL and full 16-character ID. Sign in on the device that reads the QR
    first. A label does not make the document public. Use **Create label…** to
-   print again or to print after cancelling the first print dialog.
+   print again after checking the result of a failed print.
 
 Upload progress appears in the footer. Uploads accept PDFs up to 500 MiB and use
 8 MiB parts. Server storage and membership limits still apply. Metadata stays in
@@ -268,7 +270,7 @@ Open **Create label…** from the document title menu or the Details view.
 
 - **Item link:** paste an existing permanent HTTPS link from `foliobruma.com`.
   **Save item link** stores it in the current record. After upload, the app uses
-  the private PDF endpoint returned by the upload API. Manually entered links
+  the permanent SaaS URL returned by the label API. Manually entered links
   are not checked for access or availability.
 - **Custom link:** enter any HTTPS destination independently of the current
   record. Custom label text and links are not saved with the record.
@@ -278,14 +280,20 @@ Edit the label title and optional second line. The default uses the item title
 are limited to 100 UTF-8 bytes to keep the QR compact; long printed text is
 shortened, while the QR contains the full link. A short permanent link is best.
 
-The layout is **62 × 25 mm** for the **DK-22205** continuous roll, in black on
-white. Use **Save PDF…** or **Print…**. In the macOS print dialog, select
-the Brother QL-600, the correct paper size, and 100% scale. Printing requires
-a working macOS printer queue and driver. Exporting the label PDF does not.
-The QR has a white border. Test a printed label with a phone before a batch;
-physical print quality and QL-600 feed/cutter behaviour are not yet verified.
+The label is **62 × 25 mm** for the **DK-22205** continuous roll, in black on
+white. Select **Print with QL-600** for direct USB printing. It needs no Brother
+driver or macOS print queue. Connect one QL-600, turn it on, and close its cover.
+The app checks the roll before sending data and waits for completion. If the
+result is unknown, check the physical label before printing again. It does not
+automatically retry a job that might have printed.
+
+The QR is the main element. Its white border includes the physical paper margins,
+so the code can be larger without changing the label size. The full SaaS label ID
+is beside it, with the title below. The preview and PDF use the same layout.
+**Print…** requires a working system queue.
+The printed QR must be tested with a phone before a large batch.
 Label generation works offline. Opening the SaaS link requires a connection.
-Private uploaded PDF links can use up to 180 bytes; these produce denser QR codes.
+Legacy PDF links can use up to 180 bytes; new uploads use short permanent links.
 Sign in to Foliobruma on the reading device before opening a private PDF link.
 
 ### Review and correct pages
@@ -435,11 +443,26 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the source layout, checks, release st
 [MIT](LICENSE). You can use, modify, and distribute the app, including for commercial use, under the license terms.
 
 The Foliobruma account panel groups sign-in and **After scanning** settings.
-Enable **Upload automatically** to make **Print a label after upload** available.
-The label option runs only after a successful upload. Sheet batches reuse
-the printer settings after the first label during the same run.
+Enable **Upload automatically** to make **Print a label when finished** available.
+The label option runs only after a successful upload and uses this session’s
+selected printer. The QL-600 USB option does not open a print dialog.
 
 To upload an item manually, select **Upload to Foliobruma** beside **Export PDF**.
 Sign in if needed, select the destination archive, and select **Upload now**.
 All saved pages are sent as one PDF. This does not enable automatic upload or
 start another item. The sheet also lets you choose whether to print a label.
+
+### QL-600 integration checks
+
+Direct USB printing was checked on macOS 26 with a connected QL-600 and a 62 mm
+continuous roll. The printer produced and cut a test label without a driver;
+the completion and ready responses were received. Physical QR readability still
+needs a check with the reading device. Automated tests decode the packed printer
+raster, including the physical paper margins, and cover uncertain print results.
+
+The scanner saves the SaaS reservation request ID before the request. It reuses
+that ID on retry, attaches the completed PDF with a revision check, and prints
+the permanent `/d/` URL with the full SaaS label code. A lost response is checked
+before retrying. A conflicting website edit stops the operation. If an already
+labelled item's content changes, replace the PDF on the website to keep its ID;
+the scanner does not silently create a second permanent identity.

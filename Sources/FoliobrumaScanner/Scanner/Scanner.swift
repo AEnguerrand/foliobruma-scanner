@@ -65,8 +65,6 @@ final class Scanner: NSObject, ObservableObject {
   @Published var showExport = false
   @Published var showCrop = false
   @Published var showSheetGroups = false
-  var batchPrintInfo: NSPrintInfo?
-  var printBatchID: String?
   @Published var showFraming = false
   @Published var framingImages: [NSImage] = []
   @Published var sessions: [SavedSession] = []
