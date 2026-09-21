@@ -4,6 +4,12 @@ struct CloudSettings: View {
   @ObservedObject private var account = CloudAccount.shared
 
   var body: some View {
+    if account.api.baseURL != CloudAPI.origin {
+      Section {
+        Label(L10n.text("Developer server"), systemImage: "hammer")
+        Text(account.api.baseURL.absoluteString).font(.caption).textSelection(.enabled)
+      }
+    }
     Section {
       VStack(alignment: .leading, spacing: 14) {
         HStack(spacing: 10) {
@@ -19,7 +25,7 @@ struct CloudSettings: View {
         }
         if account.user != nil {
           HStack {
-            Link(L10n.text("Open Foliobruma"), destination: CloudAPI.origin.appendingPathComponent("app/"))
+            Link(L10n.text("Open Foliobruma"), destination: account.api.baseURL.appendingPathComponent("app/"))
             Spacer()
             Button(L10n.text("Sign out")) { Task { await account.signOut() } }
               .disabled(account.working)

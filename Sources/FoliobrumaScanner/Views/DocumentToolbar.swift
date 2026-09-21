@@ -37,6 +37,11 @@ struct DocumentToolbar: View {
           .buttonStyle(.borderless)
           .help(L10n.text("Settings"))
           .accessibilityLabel(L10n.text("Settings"))
+        if account.api.baseURL != CloudAPI.origin {
+          Text("DEV · " + (account.api.baseURL.host ?? ""))
+            .font(.caption).foregroundStyle(.orange)
+            .help(account.api.baseURL.absoluteString)
+        }
         FoliobrumaConnectionButton(model: model)
       }.padding(.horizontal, 20).padding(.vertical, 14)
       Divider()

@@ -23,7 +23,9 @@ extension Scanner {
           let snapshot = document
           let fingerprint = try CloudUpload.fingerprint(snapshot)
           var upload: CloudUpload
-          if let saved = try CloudUpload.load(in: base), !saved.complete || saved.fingerprint == fingerprint {
+          let previous = try CloudUpload.load(in: base)
+          try previous?.requireServer(account.api)
+          if let saved = previous, !saved.complete || saved.fingerprint == fingerprint {
             guard saved.userID == user.id, saved.organisationID == account.organisationID else {
               throw CloudFailure(message: "This item has an upload in another account or archive. Select its original destination to continue.")
             }
@@ -32,7 +34,7 @@ extension Scanner {
             }
             upload = saved
           } else {
-            if let prior = try CloudUpload.load(in: base), prior.permanentLabel != nil {
+            if previous?.permanentLabel != nil {
               throw CloudFailure(message: "This item already has a permanent label. Replace its PDF on the website to keep the same label.")
             }
             status = L10n.text("Creating PDF…")
@@ -45,6 +47,7 @@ extension Scanner {
             }.map(String.init).joined().prefix(110))
             upload = CloudUpload(fingerprint: fingerprint, userID: user.id,
                                  organisationID: account.organisationID, file: file, name: safeTitle + ".pdf")
+            upload.serverOrigin = account.api.baseURL.absoluteString
             try upload.save(in: base)
           }
           status = L10n.text("Reserving permanent label…")
@@ -55,7 +58,7 @@ extension Scanner {
             await MainActor.run { self.exportProgress = value }
           }
           try await upload.attachLabel(api: account.api, folder: base)
-          try CloudKeychain.save(account.api.credentials())
+          try CloudKeychain.save(account.api.credentials(), origin: account.api.baseURL)
           var saved = document
           var details = saved.metadata ?? ItemMetadata()
           details.webLink = upload.link!

@@ -8,9 +8,9 @@ struct PermanentLabel: Codable {
   let revision: Int
   let status: String
 
-  func validate(archive: String, code expectedCode: String? = nil) throws {
+  func validate(archive: String, code expectedCode: String? = nil, origin: URL = CloudAPI.origin) throws {
     guard code.range(of: "^[A-Za-z0-9_-]{16}$", options: .regularExpression) != nil,
-          url == CloudAPI.origin.absoluteString + "/d/" + code,
+          url == origin.absoluteString + "/d/" + code,
           organisationId == archive, revision >= 0,
           expectedCode == nil || code == expectedCode,
           documentId == nil || UUID(uuidString: documentId!) != nil else {
@@ -21,8 +21,9 @@ struct PermanentLabel: Codable {
 
 extension CloudUpload {
   mutating func reserveLabel(api: CloudAPI, folder: URL, title: String) async throws {
+    try requireServer(api)
     if let permanentLabel {
-      try permanentLabel.validate(archive: organisationID)
+      try permanentLabel.validate(archive: organisationID, origin: api.baseURL)
       return
     }
     if labelRequestID == nil { labelRequestID = UUID().uuidString; try save(in: folder) }
@@ -31,7 +32,7 @@ extension CloudUpload {
     let response = try await api.request("api/organisations/\(organisationID)/labels", method: "POST",
       body: JSONEncoder().encode(body))
     let label = try JSONDecoder().decode(PermanentLabel.self, from: response)
-    try label.validate(archive: organisationID)
+    try label.validate(archive: organisationID, origin: api.baseURL)
     guard label.documentId == nil || label.documentId == documentID else {
       throw CloudFailure(message: "This label belongs to another PDF. Check it on the website.")
     }
@@ -40,13 +41,14 @@ extension CloudUpload {
   }
 
   mutating func attachLabel(api: CloudAPI, folder: URL) async throws {
+    try requireServer(api)
     guard complete, let documentID, let reserved = permanentLabel else {
       throw CloudFailure(message: "Finish the upload before attaching its permanent label.")
     }
     let path = "api/labels/" + reserved.code
     func read() async throws -> PermanentLabel {
       let value = try JSONDecoder().decode(PermanentLabel.self, from: await api.request(path))
-      try value.validate(archive: organisationID, code: reserved.code)
+      try value.validate(archive: organisationID, code: reserved.code, origin: api.baseURL)
       return value
     }
     let current = try await read()
@@ -69,7 +71,7 @@ extension CloudUpload {
       guard recovered.documentId == documentID, recovered.status == "ready" else { throw error }
       linked = recovered
     }
-    try linked.validate(archive: organisationID, code: reserved.code)
+    try linked.validate(archive: organisationID, code: reserved.code, origin: api.baseURL)
     guard linked.documentId == documentID, linked.status == "ready" else {
       throw CloudFailure(message: "The server did not confirm the permanent label link.")
     }

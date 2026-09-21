@@ -505,3 +505,16 @@
 "This item already has a permanent label. Replace its PDF on the website to keep the same label." = "This item already has a permanent label. Replace its PDF on the website to keep the same label.";
 
 "Label sent to printer" = "Label sent to printer";
+
+/* Developer server */
+"Developer mode" = "Developer mode";
+"Developer server" = "Developer server";
+"Server URL" = "Server URL";
+"Save server settings" = "Save server settings";
+"Current server" = "Current server";
+"Use an HTTPS origin without a path. This server receives new uploads and issues label URLs. Its sign-in is separate from production." = "Use an HTTPS origin without a path. This server receives new uploads and issues label URLs. Its sign-in is separate from production.";
+"Enter an HTTPS server URL without a path, query, or sign-in details." = "Enter an HTTPS server URL without a path, query, or sign-in details.";
+"Saved. Quit and reopen the scanner to use this server. Current requests keep their original server." = "Saved. Quit and reopen the scanner to use this server. Current requests keep their original server.";
+"This upload belongs to another server. Switch back to its server before continuing." = "This upload belongs to another server. Switch back to its server before continuing.";
+"Set a valid HTTPS server URL in developer settings, then restart the app." = "Set a valid HTTPS server URL in developer settings, then restart the app.";
+"The server requires a browser redirect. Check its access policy for native scanner clients." = "The server requires a browser redirect. Check its access policy for native scanner clients.";
