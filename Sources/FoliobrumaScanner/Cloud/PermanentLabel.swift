@@ -26,7 +26,9 @@ extension CloudUpload {
       try permanentLabel.validate(archive: organisationID, origin: api.baseURL)
       return
     }
-    if labelRequestID == nil { labelRequestID = UUID().uuidString; try save(in: folder) }
+    // The SaaS requires canonical lowercase UUIDs. Normalize old unsent retries too.
+    let requestID = (labelRequestID ?? UUID().uuidString).lowercased()
+    if labelRequestID != requestID { labelRequestID = requestID; try save(in: folder) }
     var body = ["title": String(title.prefix(110)), "requestId": labelRequestID!]
     if complete, let documentID { body["documentId"] = documentID }
     let response = try await api.request("api/organisations/\(organisationID)/labels", method: "POST",

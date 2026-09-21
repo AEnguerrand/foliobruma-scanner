@@ -27,6 +27,8 @@ private final class LabelStub: URLProtocol {
         }
       }
       let body = try! JSONDecoder().decode([String: String].self, from: data)
+      precondition(body["requestId"]!.range(of: "^[a-f0-9-]{36}$", options: .regularExpression) != nil,
+        "Reservation IDs must match the SaaS lowercase UUID contract")
       Self.requestIDs.append(body["requestId"]!)
       if Self.failReservation { status = 503; Self.failReservation = false }
     }
@@ -70,10 +72,11 @@ enum PermanentLabelTests {
   configuration.protocolClasses = [LabelStub.self]
   let api = CloudAPI(configuration: configuration)
   var upload = CloudUpload(fingerprint: "test", userID: "test", organisationID: LabelStub.archive, file: "test.pdf", name: "test.pdf")
+  upload.labelRequestID = "ABCDEFAB-1234-4321-ABCD-123456ABCDEF"
   do { try await upload.reserveLabel(api: api, folder: folder, title: "Test"); preconditionFailure() } catch { }
   upload = try CloudUpload.load(in: folder)!
   let requestID = upload.labelRequestID!
-  precondition(UUID(uuidString: requestID) != nil)
+  precondition(requestID == "abcdefab-1234-4321-abcd-123456abcdef")
   try await upload.reserveLabel(api: api, folder: folder, title: "Test")
   precondition(LabelStub.requestIDs == [requestID, requestID])
   let url = upload.link
