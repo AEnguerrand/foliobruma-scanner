@@ -6,7 +6,7 @@ extension Scanner: AVCapturePhotoCaptureDelegate {
   func capture() { capture(automatic: false) }
   func capture(automatic: Bool) {
     guard connected, !busy, !reviewing, !showRejected, !showFraming, !showCrop, !showExport,
-      !showSessions, !showNewItem, !showMetadata, !showLabel, !metadataWorkspace, !automatic || autoCapture
+      !showSessions, !showSheetGroups, !showNewItem, !showMetadata, !showLabel, !metadataWorkspace, (!sheetIsFull || replacementID != nil), !automatic || autoCapture
     else {
       if automatic {
         queue.async {
@@ -37,7 +37,7 @@ extension Scanner: AVCapturePhotoCaptureDelegate {
     captureReplacementID = replacementID
     keptRejection = nil
     captureOptions = (
-      autoCrop ? quad : nil, replacementID == nil && book && split, divider, automatic
+      autoCrop ? quad : nil, replacementID == nil && !isSheetBatch && book && split, divider, automatic
     )
     queue.async {
       self.captureInFlight = true

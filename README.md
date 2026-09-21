@@ -17,6 +17,7 @@ Foliobruma is a free, open-source document camera app. Place a page under the ca
 - **Page review:** browse a page sidebar, zoom, rotate, reorder, merge two pages, crop from the original, replace a page, or undo the last removal.
 - **Saved sessions:** browse documents by name, page count, and edit date. Original images stay on your Mac.
 - **PDF export:** save the pages in the current document to a local PDF.
+- **Sheet batches:** scan one or two sides per sheet, finish with a USB button, and group related sheets later in Review.
 - **Metadata records and letter batches:** save details without a scan. Use automatic references and shared batch details.
 - **QR labels:** preview, export, and print a compact label with an existing HTTPS link. QR codes are generated on your Mac.
 
@@ -137,6 +138,63 @@ items use `DOC-` references and share the same counter. Gaps are possible after
 a failed write. References do not change when you rename an item. Documents
 can be searched by title, reference, or batch name.
 
+### Mixed papers: one label per physical sheet
+
+For an unsorted box of letters and papers, open **New item…** and enable
+**Start a sheet batch**. Enter a batch name and physical location, such as a
+folio number. Each physical sheet gets its own reference, session, PDF upload,
+and label. The first capture is the front; the second capture is the back.
+Related sheets do not need to be together during scanning.
+
+1. In **Foliobruma**, select an archive and enable **Upload automatically** and
+   **Print a label after upload**. With upload off, sheets are saved locally and
+   no label prints automatically.
+2. In **Settings → USB button**, select **Finish sheet** and enable the learned
+   button. The existing **Next document** and **Next letter** button actions also
+   finish the sheet when a sheet batch is open.
+3. Connect the camera and start automatic capture. Place the front under the
+   camera. Wait for **Front saved**. Turn the sheet over if it has a back to scan.
+4. After the last saved side, press the USB button or click **Finish sheet**.
+   A single-sided sheet needs only one capture. After two sides, capture pauses
+   until you finish. A third side cannot be added to the same sheet. Replacement
+   remains available in Review. Resolve rejected photos before finishing.
+5. The app saves the sheet, uploads its PDF when enabled, and submits its label
+   when enabled. The first label in a batch opens the macOS print dialog. Check
+   the printer, paper size, scale, and one-copy setting. Later labels in that batch
+   use those settings during the same app run. **Reset batch printer** in the
+   document menu makes the next label open the dialog again.
+6. Attach the correct label to the sheet sleeve and put it in the folio. The app
+   prepares the next sheet and resumes automatic capture when you finish from
+   Scan with a connected camera. Recent duplicate checks stay active across the
+   sheet boundary. They remain approximate; check the saved reference and image.
+
+An upload error or a cancelled or failed print keeps the current sheet open
+and pauses capture. Check the problem and press **Finish sheet** again. A
+completed upload is reused. A submitted label does not print again on retry.
+A successful print operation means that macOS accepted the job; it does not
+prove that paper came out of the printer. Check the printed label before filing.
+If the app stops with an unknown print result, check the printer and use
+**Create label…** if a label is missing. Then use **Confirm label handled** in
+the document menu and finish the sheet. This confirmation sends no print job.
+Printer settings are requested again after you quit the app or change batches.
+
+In **Review → Group sheets…**, select sheets from any batch and give the group
+a letter or document name. Select a sheet to inspect its front and back. Use
+**Reading order** to move or unlink sheets, then select **Save group**. A sheet
+can belong to one group. To move it to another group, unlink it and save first.
+An empty group is removed on save. Sheet references, individual PDF links,
+images, and session folders do not change. To swap front and back, use the
+normal page order controls in Review. Image merging is disabled for sheet
+batches so the two sides remain separate.
+
+Groups are saved only on this Mac in `sheet-groups.json`, beside the `Sessions`
+folder. Include this file in backups. Group changes do not create a combined
+PDF or sync to the website. Website grouping needs a separate API and interface
+change; this scanner version uploads each sheet as an independent PDF.
+Automated tests cover 2,000 ordered sheet links, save conflicts, capture state,
+and print retry records. They do not verify a 2,000-sheet camera run or physical
+printer output.
+
 ### Sign in, upload, and print
 
 The **Foliobruma** button at the top right shows whether you are signed in.
@@ -162,9 +220,11 @@ This flow requires the matching SaaS pairing endpoints and database migration
 to be deployed. Until then, connection attempts fail without changing local scans.
 
 Enable **Upload automatically** to send scans to the selected archive.
-Enable **Print a label after upload** to open the macOS print dialog after a
-successful upload. Both options are off by default. Choose the printer and
-confirm printing in the dialog. With the label option off, no print dialog opens.
+Enable **Print a label after upload** to print after a successful upload. Both
+options are off by default. For ordinary items, choose the printer and confirm
+each label in the macOS print dialog. Sheet batches reuse the first label’s
+printer settings during that run, as described above. With the label option
+off, no label prints automatically.
 
 1. Scan and review all pages of the letter or book. Rejected photos stay excluded
    unless you choose to keep them.
@@ -274,6 +334,7 @@ select the document window. The setting is saved on this Mac.
 | **Next document** | Save the current document and start an empty document. Requires at least one saved page. |
 | **New item…** | Open the form for a new document or metadata record. |
 | **Next letter** | Start the next letter in the current batch, with shared batch details. |
+| **Finish sheet** | Save the front and optional back, upload and print when enabled, then prepare the next sheet in a sheet batch. |
 | **Review pages** | Pause capture and inspect saved pages. |
 | **Export PDF** | Open the export summary. You still choose the file location. |
 
@@ -375,7 +436,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the source layout, checks, release st
 
 The Foliobruma account panel groups sign-in and **After scanning** settings.
 Enable **Upload automatically** to make **Print a label after upload** available.
-The label option opens the print dialog only after a successful upload.
+The label option runs only after a successful upload. Sheet batches reuse
+the printer settings after the first label during the same run.
 
 To upload an item manually, select **Upload to Foliobruma** beside **Export PDF**.
 Sign in if needed, select the destination archive, and select **Upload now**.

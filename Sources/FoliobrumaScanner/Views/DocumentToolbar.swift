@@ -24,6 +24,10 @@ struct DocumentToolbar: View {
             Button(L10n.text("Edit details…"), action: model.showItemMetadata)
             Button(L10n.text("Create label…"), action: model.showItemLabel)
             Button(L10n.text("Clear upload record…"), action: model.clearCloudUpload)
+            if model.isSheetBatch {
+              Button(L10n.text("Confirm label handled"), action: model.confirmSheetLabelHandled)
+              Button(L10n.text("Reset batch printer")) { model.batchPrintInfo = nil }
+            }
             Button(L10n.text("Open session folder…"), action: model.openSession)
           }.menuStyle(.borderlessButton).font(.headline).disabled(model.busy)
           Text(L10n.format(account.automatic ? "Pages: %ld · Upload on finish" : "Pages: %ld · Auto upload off", model.document.pages.count))
@@ -55,7 +59,7 @@ struct DocumentToolbar: View {
           Text(L10n.text("Review")).tag("review")
         }.pickerStyle(.segmented).labelsHidden().frame(width: 240).disabled(model.busy)
         Spacer(minLength: 16)
-        if model.document.metadata?.batchID != nil {
+        if model.document.metadata?.batchID != nil && !model.isSheetBatch {
           Button(L10n.text("Next letter"), action: model.nextLetter).disabled(model.busy)
             .help(L10n.text("Start another letter with the same batch details."))
         }
@@ -71,7 +75,9 @@ struct DocumentToolbar: View {
         }
         .disabled(model.busy || model.document.pages.isEmpty)
         .help(L10n.text("Upload this item without turning on automatic upload."))
-        Button(L10n.text("Finish item")) { model.finishItem() }
+        Button(L10n.text(model.isSheetBatch ? "Finish sheet" : "Finish item")) {
+          if model.isSheetBatch { model.finishSheet() } else { model.finishItem() }
+        }
           .buttonStyle(.borderedProminent)
           .disabled(model.busy || model.document.pages.isEmpty)
       }.padding(.horizontal, 20).padding(.vertical, 10)

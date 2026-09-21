@@ -47,6 +47,10 @@ extension Scanner {
   }
   func undo() {
     guard !busy, let removed = deleting else { return }
+    guard !sheetIsFull else {
+      error = L10n.text("Remove a side before restoring this side. A sheet can have only two sides.")
+      return
+    }
     var next = document
     next.pages.insert(removed.page, at: min(removed.index, next.pages.count))
     do {
@@ -71,7 +75,7 @@ extension Scanner {
     } catch { self.error = error.localizedDescription }
   }
   // Change the active record only after its manifest has been written.
-  func createDocument(_ next: ScanDocument) throws {
+  func createDocument(_ next: ScanDocument, preserveCaptureHistory: Bool = false) throws {
     try persist()
     let nextFolder = root.appendingPathComponent("Sessions/" + UUID().uuidString)
     try FileManager.default.createDirectory(
@@ -92,7 +96,7 @@ extension Scanner {
     qualityWarning = nil
     rejectedURL = nil
     if tracksActiveSession { UserDefaults.standard.set(folder.path, forKey: "activeSession") }
-    seedRecentPages()
+    if !preserveCaptureHistory { seedRecentPages() }
   }
   func openSession() {
     guard !busy else { return }

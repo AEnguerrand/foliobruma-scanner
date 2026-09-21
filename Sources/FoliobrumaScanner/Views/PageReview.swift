@@ -7,6 +7,9 @@ struct PageReview: View {
     VStack(spacing: 0) {
       HStack {
         Label(L10n.text("Capture paused"), systemImage: "pause.circle").foregroundStyle(.secondary)
+        if model.isSheetBatch {
+          Button(L10n.text("Group sheets…"), action: model.prepareSheetGroups)
+        }
         Spacer()
         if let index = model.selectedIndex {
           Text(L10n.format("Page %ld of %ld", index + 1, model.document.pages.count)).font(.headline)

@@ -12,6 +12,8 @@ struct CloudUpload: Codable {
   var started = false
   var complete = false
   var labelOffered = false
+  var sheetLabelStarted: Bool?
+  var sheetLabelSubmitted: Bool?
   var file: String
   var name: String
 
@@ -36,6 +38,24 @@ struct CloudUpload: Codable {
   func save(in folder: URL) throws {
     try JSONEncoder().encode(self).write(to: folder.appendingPathComponent("cloud-upload.json"), options: .atomic)
   }
+  // Save the intent before submitting a print job. After a crash, do not
+  // silently send another label when the result of the earlier job is unknown.
+  mutating func submitSheetLabel(in folder: URL, submit: () -> Bool) throws {
+    if sheetLabelSubmitted == true { return }
+    guard sheetLabelStarted != true else {
+      throw CloudFailure(message: "The label print result is unknown. Check the printer, then use Create label to print it if needed. Use Confirm label handled to continue.")
+    }
+    sheetLabelStarted = true
+    try save(in: folder)
+    let submitted = submit()
+    sheetLabelStarted = false
+    sheetLabelSubmitted = submitted
+    try save(in: folder)
+    guard submitted else {
+      throw CloudFailure(message: "Label printing stopped. Check the printer, then press Finish sheet to retry. The sheet is still open.")
+    }
+  }
+
   static func makePDF(_ document: ScanDocument, in folder: URL, file: String) throws {
     let pdf = PDFDocument()
     for source in document.pages {

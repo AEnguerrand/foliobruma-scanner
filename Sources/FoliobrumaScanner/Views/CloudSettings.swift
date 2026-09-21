@@ -61,12 +61,12 @@ struct CloudSettings: View {
       if showAutomation {
       VStack(alignment: .leading, spacing: 5) {
         Toggle(L10n.text("Upload automatically"), isOn: $account.automatic)
-        Text(L10n.text("Upload one PDF when you select Finish item or Next letter."))
+        Text(L10n.text("Upload one PDF when you select Finish item, Next letter, or Finish sheet."))
           .font(.caption).foregroundStyle(.secondary)
       }.disabled(account.working)
       VStack(alignment: .leading, spacing: 5) {
         Toggle(L10n.text("Print a label after upload"), isOn: $account.printLabel)
-        Text(L10n.text("Open the print dialog after a successful upload."))
+        Text(L10n.text("Print after upload. Sheet batches reuse the first label’s printer settings during this app run."))
           .font(.caption).foregroundStyle(.secondary)
       }.disabled(account.working || !account.automatic)
       }

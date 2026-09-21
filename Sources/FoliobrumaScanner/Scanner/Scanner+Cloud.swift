@@ -1,8 +1,9 @@
 import AppKit
 
 extension Scanner {
-  func finishItem(nextLetter: Bool = false, nextDocument: Bool = false, uploadRequested: Bool = false) {
+  func finishItem(nextLetter: Bool = false, nextDocument: Bool = false, uploadRequested: Bool = false, nextSheet: Bool = false) {
     guard !busy, !document.pages.isEmpty else { return }
+    let resumeSheetCapture = nextSheet && connected && !reviewing && !metadataWorkspace
     autoCapture = false
     busy = true
     Task { @MainActor in
@@ -10,7 +11,7 @@ extension Scanner {
       defer { busy = false; exportProgress = nil; finishPendingReview() }
       do {
         try persist()
-        if uploadRequested || account.automatic {
+        if uploadRequested || (tracksActiveSession && account.automatic) {
           await account.restore()
           guard account.ready, let user = account.user else {
             throw CloudFailure(message: "Sign in and select an upload archive in Settings. Your scan is saved on this Mac.")
@@ -55,20 +56,25 @@ extension Scanner {
           saved.metadata = details
           try commit(saved)
           status = L10n.text("Uploaded to Foliobruma")
-          if account.printLabel && !upload.labelOffered {
+          if account.printLabel && (isSheetBatch ? upload.sheetLabelSubmitted != true : !upload.labelOffered) {
             let label = DocumentLabel(title: document.displayTitle, subtitle: details.reference, link: upload.link!)
             let qr = await Task.detached { label.qrImage() }.value
             guard let qr else { throw CloudFailure(message: "Could not create the QR code.") }
-            // Record before opening the print panel. Retry must not print another label.
-            upload.labelOffered = true
-            try upload.save(in: base)
-            DocumentLabelView(label: label, qr: qr).printLabel()
+            if isSheetBatch {
+              try printSheetLabel(label, qr: qr, upload: &upload)
+            } else {
+              // Record before opening the print panel. Retry must not print another label.
+              upload.labelOffered = true
+              try upload.save(in: base)
+              DocumentLabelView(label: label, qr: qr).printLabel()
+            }
           }
         } else {
           status = L10n.text("Item saved on this Mac")
         }
         busy = false
-        if nextLetter { createNextLetter() }
+        if nextSheet { try createNextSheet(resumeCapture: resumeSheetCapture && !pendingReview) }
+        else if nextLetter { createNextLetter() }
         else if nextDocument { newDocumentLocally() }
       } catch { self.error = error.localizedDescription }
     }

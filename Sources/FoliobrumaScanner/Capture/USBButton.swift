@@ -4,7 +4,7 @@ import IOKit.hid
 
 // One selected USB control. Reports and preferences stay on this Mac.
 enum USBButtonAction: String, Codable, CaseIterable {
-  case capture, autoCapture, nextDocument, newItem, nextLetter, review, export
+  case capture, autoCapture, nextDocument, newItem, nextLetter, finishSheet, review, export
 
   var title: String {
     switch self {
@@ -13,6 +13,7 @@ enum USBButtonAction: String, Codable, CaseIterable {
     case .nextDocument: return "Next document"
     case .newItem: return "New item…"
     case .nextLetter: return "Next letter"
+    case .finishSheet: return "Finish sheet"
     case .review: return "Review pages"
     case .export: return "Export PDF"
     }

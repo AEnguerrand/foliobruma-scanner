@@ -59,6 +59,7 @@ struct DocumentLabel: Hashable {
 final class DocumentLabelView: NSView {
   let label: DocumentLabel
   let qr: NSImage
+  private(set) var completedPrintInfo: NSPrintInfo?
   override var isFlipped: Bool { true }
 
   init(label: DocumentLabel, qr: NSImage) {
@@ -91,7 +92,7 @@ final class DocumentLabelView: NSView {
       withAttributes: [.font: font, .foregroundColor: NSColor.black, .paragraphStyle: paragraph])
   }
 
-  func printLabel() {
+  static func labelPrintInfo() -> NSPrintInfo {
     let info = NSPrintInfo(dictionary: [:])
     if let name = NSPrinter.printerNames.first(where: { $0.localizedCaseInsensitiveContains("QL-600") }),
        let printer = NSPrinter(name: name) { info.printer = printer }
@@ -105,9 +106,16 @@ final class DocumentLabelView: NSView {
     info.isHorizontallyCentered = true
     info.isVerticallyCentered = true
     info.scalingFactor = 1
-    let operation = NSPrintOperation(view: self, printInfo: info)
-    operation.showsPrintPanel = true
+    return info
+  }
+
+  @discardableResult
+  func printLabel(info: NSPrintInfo? = nil, showPanel: Bool = true) -> Bool {
+    let operation = NSPrintOperation(view: self, printInfo: info ?? Self.labelPrintInfo())
+    operation.showsPrintPanel = showPanel
     operation.showsProgressPanel = true
-    operation.run()
+    let submitted = operation.run()
+    if submitted { completedPrintInfo = operation.printInfo.copy() as? NSPrintInfo }
+    return submitted
   }
 }
