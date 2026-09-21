@@ -288,7 +288,7 @@ result is unknown, check the physical label before printing again. It does not
 automatically retry a job that might have printed.
 
 The QR is the main element. Its white border includes the physical paper margins,
-so the code can be larger without changing the label size. The full SaaS label ID
+so the code can fill the printable height without changing the label size. The full SaaS label ID
 is beside it, with the title below. The preview and PDF use the same layout.
 **Print…** requires a working system queue.
 The printed QR must be tested with a phone before a large batch.

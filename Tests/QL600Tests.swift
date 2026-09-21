@@ -24,6 +24,17 @@ extension SessionTests {
   for link in ["https://foliobruma.com/d/1234567890abcdef", "https://foliobruma.com/api/organisations/11111111-1111-1111-1111-111111111111/documents/22222222-2222-2222-2222-222222222222"] {
     let label = DocumentLabel(title: "Test sheet with a longer title", subtitle: "LET-1234", link: link)
     let bitmap = try QL600Printer.bitmap(label)
+    if label.permanentCode != nil {
+      var top = 225, bottom = -1
+      for y in 0..<225 {
+        for x in 0..<240 {
+          if let color = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB), color.redComponent < 0.5 {
+            top = min(top, y); bottom = max(bottom, y)
+          }
+        }
+      }
+      precondition(bottom - top + 1 == 225, "Permanent QR must use the full printable height")
+    }
     let data = [UInt8](try QL600Printer.raster(bitmap))
     let header = 200 + 6 + 13 + 17
     precondition(data.count == header + 225 * 93 + 1 && data.last == 0x1a)

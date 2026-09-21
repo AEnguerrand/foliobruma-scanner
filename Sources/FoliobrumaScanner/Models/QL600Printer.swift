@@ -27,10 +27,13 @@ enum QL600Printer {
     guard let cg = CIContext().createCGImage(code, from: bounds) else { throw CloudFailure(message: "Could not create the QR code.") }
     let qr = NSImage(cgImage: cg, size: bounds.size)
     let modules = Int(bounds.width)
-    let scale = min(height / modules, (height + 70) / (modules + 8))
-    let edge = CGFloat(scale * modules)
-    let qrX = CGFloat(max(0, 4 * scale - 18))
-    let textX = max(230, qrX + edge + CGFloat(4 * scale))
+    // Fill the available height instead of rounding the scale down to an integer.
+    // Nearest-neighbour drawing keeps edges black or white; individual modules
+    // differ by at most one device dot. Include four modules of white paper.
+    let edge = CGFloat(min(height, (height + 70) * modules / (modules + 8)))
+    let quiet = ceil(4 * edge / CGFloat(modules))
+    let qrX = max(0, quiet - 18)
+    let textX = max(230, qrX + edge + quiet)
     let image = NSImage(size: NSSize(width: width, height: height), flipped: true) { rect in
       NSColor.white.setFill(); rect.fill()
       NSGraphicsContext.current?.imageInterpolation = .none
