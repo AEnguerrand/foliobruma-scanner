@@ -42,7 +42,7 @@ enum CaptureCheck {
   }
   private static let alignmentContext = CIContext(options: [.cacheIntermediates: false])
   static func pageDuplicate(_ print: Fingerprint, of recent: [Fingerprint]) -> Bool {
-    if duplicate(print, of: recent, tileLimit: 64, exposureLimit: 48, aspectTolerance: 0.03, totalLimit: 5242) { return true }
+    if duplicate(print, of: recent, tileLimit: 64, exposureLimit: 96, aspectTolerance: 0.03, totalLimit: 5242) { return true }
     guard print.pixels.count == 512 * 512 else { return false }
     func image(_ value: Fingerprint) -> CIImage {
       CIImage(bitmapData: Data(value.pixels), bytesPerRow: 512, size: CGSize(width: 512, height: 512),
@@ -74,12 +74,12 @@ enum CaptureCheck {
       guard let candidate = fingerprint(aligned.cropped(to: region), context: alignmentContext, smooth: true) else { return false }
       // Paper flex and interpolation can alter a local text edge. After bounded alignment,
       // at least 98% of paper pixels must still match within the noise tolerance.
-      return duplicate(candidate, of: [fixed], tileLimit: 4096, exposureLimit: 48, totalLimit: 5242, tileSize: 64)
+      return duplicate(candidate, of: [fixed], tileLimit: 4096, exposureLimit: 96, totalLimit: 5242, tileSize: 64, localExposure: true)
     }
   }
   static func duplicate(_ print: Fingerprint, of recent: [Fingerprint], tileLimit: Int = 20,
                         exposureLimit: Double = 12, aspectTolerance: Double = 0.01,
-                        totalLimit: Int = 262144, tileSize: Int = 32) -> Bool {
+                        totalLimit: Int = 262144, tileSize: Int = 32, localExposure: Bool = false) -> Bool {
     recent.contains { other in
       guard print.pixels.count == 512 * 512, other.pixels.count == print.pixels.count,
         abs(print.aspect - other.aspect) < aspectTolerance else { return false }
@@ -91,11 +91,23 @@ enum CaptureCheck {
       var totalChanged = 0
       for by in stride(from: 0, to: 512, by: tileSize) {
         for bx in stride(from: 0, to: 512, by: tileSize) {
+          var tileOffset = offset
+          if localExposure {
+            var sum = 0.0
+            for y in by..<by + tileSize {
+              for x in bx..<bx + tileSize {
+                let i = y * 512 + x
+                sum += Double(print.pixels[i]) - Double(other.pixels[i])
+              }
+            }
+            tileOffset = sum / Double(tileSize * tileSize)
+            guard abs(tileOffset - offset) <= 32 else { return false }
+          }
           var changed = 0
           for y in by..<by + tileSize {
             for x in bx..<bx + tileSize {
               let i = y * 512 + x
-              if abs(Double(print.pixels[i]) - Double(other.pixels[i]) - offset) > 18 {
+              if abs(Double(print.pixels[i]) - Double(other.pixels[i]) - tileOffset) > 18 {
                 changed += 1
               }
             }

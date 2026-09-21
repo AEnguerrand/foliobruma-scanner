@@ -198,6 +198,11 @@ import Vision
   let cleanImage = CIImage(bitmapData: Data(noisyPixels), bytesPerRow: 1024, size: bounds.size,
                           format: .L8, colorSpace: CGColorSpaceCreateDeviceGray())
   let smoothSaved = CaptureCheck.fingerprint(cleanImage, context: context, smooth: true)!
+  let shadedPixels = noisyPixels.enumerated().map { UInt8(clamping: Int($0.element) - 10 - ($0.offset / 1024) / 32) }
+  let shadedImage = CIImage(bitmapData: Data(shadedPixels), bytesPerRow: 1024, size: bounds.size,
+                           format: .L8, colorSpace: CGColorSpaceCreateDeviceGray())
+  precondition(CaptureCheck.pageDuplicate(CaptureCheck.fingerprint(shadedImage, context: context, smooth: true)!, of: [smoothSaved]), "Uneven light on unchanged paper must not create a duplicate")
+
   for i in noisyPixels.indices { noisyPixels[i] = UInt8(clamping: Int(noisyPixels[i]) + (i * 17 % 41) - 20) }
   let noisyImage = CIImage(bitmapData: Data(noisyPixels), bytesPerRow: 1024, size: bounds.size,
                           format: .L8, colorSpace: CGColorSpaceCreateDeviceGray())
