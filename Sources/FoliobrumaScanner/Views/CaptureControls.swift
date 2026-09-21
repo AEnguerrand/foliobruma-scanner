@@ -33,7 +33,7 @@ struct CaptureControls: View {
                 model.autoCapture ? L10n.text("Pause auto capture") : L10n.text("Start auto capture"),
                 systemImage: model.autoCapture ? "pause.fill" : "play.fill")
             }.buttonStyle(.borderedProminent).controlSize(.large)
-              .disabled(!model.connected || model.sheetIsFull || (model.busy && !model.autoCapture))
+              .disabled(!model.connected || (model.busy && !model.autoCapture))
           }
           Button(action: model.capture) {
             Label(
@@ -42,7 +42,7 @@ struct CaptureControls: View {
                 : (model.replacementID == nil ? L10n.text("Capture page") : L10n.text("Capture replacement")),
               systemImage: "camera.fill")
           }.keyboardShortcut(.space, modifiers: []).controlSize(.large)
-            .disabled(!model.connected || model.busy || (model.sheetIsFull && model.replacementID == nil))
+            .disabled(!model.connected || model.busy)
         }
       }.padding(16)
     }

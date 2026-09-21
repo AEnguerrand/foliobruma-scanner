@@ -78,9 +78,6 @@ extension Scanner {
       replacement.id = id
       next.pages[index] = replacement
     } else {
-      if isSheetBatch && next.pages.count + pages.count > 2 {
-        throw CloudFailure(message: "This sheet already has two sides. Finish the sheet before scanning another.")
-      }
       next.pages += pages
     }
     if let rejected = rejected {
@@ -88,7 +85,6 @@ extension Scanner {
       next.resolvedRejections = Array(Set((next.resolvedRejections ?? []) + [rejected]))
     }
     try commit(next)
-    if sheetIsFull { autoCapture = false }
   }
   func resetWorkspace() {
     metadataWorkspace = false

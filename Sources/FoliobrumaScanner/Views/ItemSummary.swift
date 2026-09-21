@@ -53,7 +53,7 @@ struct ItemSummary: View {
         if model.document.metadata?.batchID != nil {
           Divider()
           Text(L10n.text(model.isSheetBatch
-            ? "Keep the front and back of one sheet in this item. Use Finish sheet before scanning another sheet."
+            ? "Keep all sides and folded panels of one sheet in this item. Use Finish sheet before scanning another sheet."
             : "Keep all pages of one letter in this item. Use Next letter only when you start another letter."))
             .font(.callout).foregroundStyle(.secondary)
         }

@@ -47,10 +47,6 @@ extension Scanner {
   }
   func undo() {
     guard !busy, let removed = deleting else { return }
-    guard !sheetIsFull else {
-      error = L10n.text("Remove a side before restoring this side. A sheet can have only two sides.")
-      return
-    }
     var next = document
     next.pages.insert(removed.page, at: min(removed.index, next.pages.count))
     do {

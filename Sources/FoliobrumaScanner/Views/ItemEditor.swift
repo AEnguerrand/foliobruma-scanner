@@ -28,7 +28,7 @@ struct ItemEditor: View {
                 if sheetBatch { letterBatch = false; scanPages = true }
               }
             if sheetBatch {
-              Text(L10n.text("One label per physical sheet. Scan the front and optional back, then press Finish sheet. Group related sheets later in Review."))
+              Text(L10n.text("One label per physical sheet. Scan each side or folded panel, then press Finish sheet. Group related sheets later in Review."))
                 .font(.caption).foregroundStyle(.secondary)
             }
           }
