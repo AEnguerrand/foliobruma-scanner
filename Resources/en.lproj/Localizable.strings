@@ -518,3 +518,20 @@
 "This upload belongs to another server. Switch back to its server before continuing." = "This upload belongs to another server. Switch back to its server before continuing.";
 "Set a valid HTTPS server URL in developer settings, then restart the app." = "Set a valid HTTPS server URL in developer settings, then restart the app.";
 "The server requires a browser redirect. Check its access policy for native scanner clients." = "The server requires a browser redirect. Check its access policy for native scanner clients.";
+
+/* Developer Access token */
+"Enter both Access token fields without spaces or line breaks." = "Enter both Access token fields without spaces or line breaks.";
+"Could not read the Access token from Keychain." = "Could not read the Access token from Keychain.";
+"Access tokens are only available for developer servers." = "Access tokens are only available for developer servers.";
+"Could not save the Access token in Keychain." = "Could not save the Access token in Keychain.";
+"Could not remove the Access token from Keychain." = "Could not remove the Access token from Keychain.";
+"Cloudflare Access token for current server" = "Cloudflare Access token for current server";
+"Access client ID" = "Access client ID";
+"Access client secret" = "Access client secret";
+"Save Access token" = "Save Access token";
+"Remove Access token" = "Remove Access token";
+"No Access token loaded." = "No Access token loaded.";
+"Access token loaded from Keychain." = "Access token loaded from Keychain.";
+"Save the server URL and restart before setting its Access token." = "Save the server URL and restart before setting its Access token.";
+"Access token removed." = "Access token removed.";
+"Access token saved in Keychain for the current server." = "Access token saved in Keychain for the current server.";

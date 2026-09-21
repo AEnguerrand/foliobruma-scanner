@@ -45,7 +45,9 @@ struct CloudOrganisation: Decodable, Identifiable { let id: String; let name: St
     working = true
     defer { working = false }
     do {
-      guard let data = try CloudKeychain.read(origin: api.baseURL) else { return }
+      let origin = api.baseURL
+      api.access = try await Task.detached { try CloudAccess.read(origin) }.value
+      guard let data = try await Task.detached(operation: { try CloudKeychain.read(origin: origin) }).value else { return }
       try api.restore(data)
       try await loadAccount()
     } catch { failure = error.localizedDescription }

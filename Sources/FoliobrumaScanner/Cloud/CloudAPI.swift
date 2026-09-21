@@ -12,6 +12,7 @@ final class CloudAPI: NSObject, URLSessionTaskDelegate {
   static let origin = CloudEnvironment.production
   let baseURL: URL
   private var token: String?
+  var access: CloudAccess?
   static let sessionExpired = Notification.Name("FoliobrumaScannerSessionExpired")
   private let configuration: URLSessionConfiguration
   private lazy var session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
@@ -49,6 +50,11 @@ final class CloudAPI: NSObject, URLSessionTaskDelegate {
     request.setValue(baseURL.absoluteString, forHTTPHeaderField: "Origin")
     request.setValue(type, forHTTPHeaderField: "Content-Type")
     request.setValue("application/json", forHTTPHeaderField: "Accept")
+    if baseURL != CloudEnvironment.production, let access {
+      try access.validate()
+      request.setValue(access.clientID, forHTTPHeaderField: "CF-Access-Client-Id")
+      request.setValue(access.clientSecret, forHTTPHeaderField: "CF-Access-Client-Secret")
+    }
     if let revision { request.setValue("\"\(revision)\"", forHTTPHeaderField: "If-Match") }
     if let token { request.setValue("Bearer " + token, forHTTPHeaderField: "Authorization") }
     let (data, response) = try await session.data(for: request)

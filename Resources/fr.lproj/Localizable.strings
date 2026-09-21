@@ -518,3 +518,20 @@
 "This upload belongs to another server. Switch back to its server before continuing." = "Cet envoi appartient à un autre serveur. Revenez à son serveur avant de continuer.";
 "Set a valid HTTPS server URL in developer settings, then restart the app." = "Définissez une URL de serveur HTTPS valide dans les paramètres développeur, puis redémarrez l’application.";
 "The server requires a browser redirect. Check its access policy for native scanner clients." = "Le serveur exige une redirection du navigateur. Vérifiez sa politique d’accès pour les clients natifs du scanner.";
+
+/* Developer Access token */
+"Enter both Access token fields without spaces or line breaks." = "Saisissez les deux champs du jeton Access sans espace ni saut de ligne.";
+"Could not read the Access token from Keychain." = "Impossible de lire le jeton Access dans le trousseau.";
+"Access tokens are only available for developer servers." = "Les jetons Access sont réservés aux serveurs de développement.";
+"Could not save the Access token in Keychain." = "Impossible d’enregistrer le jeton Access dans le trousseau.";
+"Could not remove the Access token from Keychain." = "Impossible de supprimer le jeton Access du trousseau.";
+"Cloudflare Access token for current server" = "Jeton Cloudflare Access du serveur actuel";
+"Access client ID" = "Identifiant client Access";
+"Access client secret" = "Secret client Access";
+"Save Access token" = "Enregistrer le jeton Access";
+"Remove Access token" = "Supprimer le jeton Access";
+"No Access token loaded." = "Aucun jeton Access chargé.";
+"Access token loaded from Keychain." = "Jeton Access chargé depuis le trousseau.";
+"Save the server URL and restart before setting its Access token." = "Enregistrez l’URL du serveur et redémarrez avant de définir son jeton Access.";
+"Access token removed." = "Jeton Access supprimé.";
+"Access token saved in Keychain for the current server." = "Jeton Access enregistré dans le trousseau pour le serveur actuel.";

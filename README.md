@@ -483,3 +483,12 @@ The server must permit native scanner API requests. A browser-only Cloudflare
 Access login is not sufficient; the scanner does not copy browser cookies or
 follow API redirects. To return to production, disable developer mode, save,
 and restart the app.
+
+For a developer server protected by Cloudflare Access, restart on that server,
+then enter its service token in the developer settings. **Save Access token**
+stores both fields in macOS Keychain for the current origin. The secret is not
+stored in preferences or sessions. The scanner sends the Access headers only
+to that developer server; redirects are still blocked. The Access policy must
+use **Service Auth** and select this token. SaaS sign-in is still required.
+Use **Remove Access token** to remove the local copy. Revoke the token in
+Cloudflare to remove server access.

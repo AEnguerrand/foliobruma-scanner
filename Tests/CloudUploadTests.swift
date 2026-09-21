@@ -88,6 +88,16 @@ enum CloudUploadTests {
     precondition(CloudEnvironment.accountKey(for: staging) != CloudEnvironment.accountKey(for: CloudAPI.origin))
     precondition(CloudEnvironment.archiveKey(for: staging) != CloudEnvironment.archiveKey(for: CloudAPI.origin))
     let stagingAPI = CloudAPI(configuration: configuration, origin: staging)
+    let access = CloudAccess(clientID: "test.access", clientSecret: "synthetic-test-secret")
+    try access.validate()
+    do { try CloudAccess(clientID: "test", clientSecret: "bad\nvalue").validate(); preconditionFailure("Reject header injection") } catch { }
+    stagingAPI.access = access
+    _ = try await stagingAPI.request("api/organisations")
+    precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "CF-Access-Client-Id") == access.clientID)
+    precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "CF-Access-Client-Secret") == access.clientSecret)
+    api.access = access
+    _ = try await api.request("api/organisations")
+    precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "CF-Access-Client-Secret") == nil, "Never send developer Access tokens to production")
     _ = try await stagingAPI.request("api/organisations")
     precondition(CloudStub.requests.last!.url!.host == staging.host)
     precondition(CloudStub.requests.last!.value(forHTTPHeaderField: "Origin") == staging.absoluteString)
