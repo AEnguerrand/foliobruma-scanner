@@ -8,3 +8,4 @@ build/
 # Approved public brand assets only. Keep private scan images excluded.
 !/Resources/Brand/AppIcon.png
 !/Resources/Brand/README-logo.png
+!/Resources/Brand/scan-setup.png

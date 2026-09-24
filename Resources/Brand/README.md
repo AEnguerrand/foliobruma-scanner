@@ -6,6 +6,8 @@ The future SaaS can use the same colours and type style with a different symbol.
 
 - `AppIcon.png`: source image for the macOS icon and app interface.
 - `README-logo.png`: horizontal logo with the wordmark on a light background.
+- `scan-setup.png`: README setup illustration with a Mac, document camera, paper,
+  and optional USB button and label printer.
 - `build.sh` creates the multi-resolution ICNS file with macOS tools.
 
 These assets were prepared with built-in ImageGen. The wordmark is raster artwork;
@@ -17,4 +19,8 @@ Foliobruma and SCANNER. Extract the icon onto transparency and the horizontal
 wordmark onto an opaque light background. Preserve paper texture, colours, and
 camera geometry. Do not add books, a wrapping camera arm, or glossy effects.
 
-Only these two approved PNG assets are exempt from the private-image Git rules.
+The setup illustration uses the same charcoal, cream, and ochre colours. It
+shows generic equipment and blank paper, not a product photo or app screenshot.
+The selected version has no simulated light beam and uses small headings.
+
+Only these three approved PNG assets are exempt from the private-image Git rules.
