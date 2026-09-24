@@ -2,6 +2,11 @@
 
 Small fixes, hardware test reports, and improvements to scanning are welcome. For a larger change, open an issue first to discuss the scope.
 
+See [Build and development](docs/development.md) for build instructions and
+developer server settings. See the [documentation index](docs/README.md) for
+user guides. Keep detailed use instructions in the relevant guide and link
+to it from the README.
+
 ## Source layout
 
 | Path | Purpose |
