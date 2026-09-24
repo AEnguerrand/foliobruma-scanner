@@ -104,6 +104,13 @@ scans and Undo removal appear in the footer only when available.
 
 ## Scan your first document
 
+![Scan setup: a Mac connected to a document camera above paper on a dark surface, with an optional USB button and label printer](Resources/Brand/scan-setup.png)
+
+Use an Apple Silicon Mac with macOS 14 or later, a USB document camera, and a
+contrasting surface with even light. The illustration shows the setup; it is
+not an app screenshot. A USB button and label printer are optional. Local
+scanning and PDF export need no account or internet connection.
+
 1. Connect the scanner by USB. In **Scan setup**, select a **Camera** and click **Connect camera**. Use the refresh button if you connected the camera after opening the app.
 2. Use the document menu to name your document. In Scan setup, choose **Book** or **Single page**.
 3. Put the paper on a contrasting surface with even light. Check that all page edges are visible.
