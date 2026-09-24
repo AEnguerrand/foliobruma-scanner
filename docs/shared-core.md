@@ -2,35 +2,80 @@
 
 The repository has two Swift modules. The Mac app depends on `ScannerCore`.
 `ScannerCore` does not depend on the Mac app. It imports only Foundation and
-has no third-party packages. This is the first code split for a future Windows
-app. It does not add Windows camera, interface, installer, or device support.
+has no third-party packages. The core contains document, storage, batch, upload,
+and print rules. It does not provide a Windows interface or device support.
 
 ## Current boundary
 
-| Code | Location | Responsibility |
-| --- | --- | --- |
-| Document, page, and rejection data | `Sources/ScannerCore/` | Existing Codable session schema, page order, original paths, merge sources, and review records |
-| Metadata and sheet groups | `Sources/ScannerCore/` | Stored fields, group order, and next-letter or next-sheet defaults |
-| Session automation | `Sources/ScannerCore/` | Stored upload and print options; new options default to off |
-| Crop geometry | `Sources/ScannerCore/Quad.swift` | Coordinates, bounds, area, and padding; Foundation geometry types |
-| Capture and warning gates | `Sources/ScannerCore/CaptureGates.swift` | Timing decisions from supplied time and detection flags |
-| Display text | `Sources/FoliobrumaScanner/Models/ScanDocument.swift` | Localized new-document title and display fallback |
-| Storage and file locks | `Sources/FoliobrumaScanner/Models/` and `Scanner/` | Mac library path, reference counter, group locking, session writes, and published state |
-| Camera and image processing | `Sources/FoliobrumaScanner/Scanner/`, `Capture/`, and `Imaging/` | AVFoundation, Vision, Core Image, and USB input |
-| Interface, PDF, labels, and printing | `Sources/FoliobrumaScanner/Views/`, `Models/`, and `Sources/PrinterUSB/` | SwiftUI, AppKit, PDFKit, and IOKit |
-| Account and upload operations | `Sources/FoliobrumaScanner/Cloud/` | Current API client, Keychain credentials, PDF preparation, and retry records |
+| Shared code in `Sources/ScannerCore/` | Responsibility |
+| --- | --- |
+| Document and page models | Existing Codable session schema, original paths, merge sources, and review records |
+| `DocumentOperations.swift` | Rotation, page order, removal, undo insertion, replacement identity, rejection resolution, and completion flags |
+| `SessionStore.swift` | Create, load, and atomically save manifests; list sessions; recover rejected photos |
+| Metadata and automation models | Batch defaults and stored upload and print options |
+| `ItemReference.swift` | Reserve local reference numbers and recover the counter from restored sessions |
+| `SheetGroupStore.swift` | Load and save group order, reject stale writes and overlapping membership, and find sheet records |
+| `CloudUpload.swift` and `UploadPolicy.swift` | Multipart upload, retry records, destination and fingerprint checks, canonical hash input, and print retry state |
+| `PermanentLabel.swift` | Label reservation identity, revision checks, and recovery after a lost attachment reply |
+| `ArchiveServer.swift` | Validate and normalize server origins |
+| `QL600Raster.swift` | Pack supplied black pixels into QL-600 commands |
+| `Quad.swift` and `CaptureGates.swift` | Crop geometry and capture or warning timing |
 
-The shared gates receive a monotonic elapsed time from the platform caller.
-They do not open a camera, detect a hand, save an image, or emit a signal.
+| Mac code | Responsibility |
+| --- | --- |
+| `Models/MacLibraryLock.swift` | Exclusive cross-process file locks through Darwin |
+| `Models/ItemReference.swift` and `Models/SheetGroupStore.swift` | Supply Mac locks to shared operations |
+| `Models/ScanDocument.swift` | Localized default titles and display fallback |
+| `Scanner/` | Select the library path, coordinate camera and interface work, and publish state after saves |
+| `Cloud/CloudAPI.swift` | HTTP transport, redirect and credential policy, Keychain, and error localization |
+| Other files in `Cloud/` | Account interface state, pairing, preferences, PDF rendering, and SHA-256 |
+| `Views/`, `Imaging/`, `Capture/`, and printer files | SwiftUI, Apple image processing, camera preview, QR rendering, USB input, and printer transport |
+
+Mac paths in the table are relative to `Sources/FoliobrumaScanner/`. The direct
+USB printer transport is in `Sources/PrinterUSB/`.
+
+## Platform contracts
+
+`SessionStore` takes an explicit folder. It has no application-support path,
+account requirement, or interface state. Page operations return a new document.
+The Mac caller saves that document before publishing it. A failed write leaves
+the current document and selection unchanged. Removal, replacement, and undo do
+not delete source images. A new session becomes active only after its manifest
+is written. The old session is saved first by the caller.
+
+`LibraryLocking` must hold an exclusive cross-process lock until its body
+returns or throws. Reference allocation and group read/check/write operations
+run inside that lock. The core has no default lock. Windows must supply an
+implementation before it can use these operations. A thread-only lock is not
+sufficient. Group validation also compares the saved snapshot before writing.
+
+`ArchiveTransport` receives a request with its path, method, data, query, and
+revision. The adapter supplies the fixed server origin and credentials. It must
+reject redirects, keep credentials scoped to that origin, and report HTTP
+failures as `CloudFailure` with their status code. Retry rules depend on the
+status: an explicit client rejection permits another start; an uncertain start
+does not. Mac HTTP behavior and Keychain storage stay in the existing adapter.
+Shared errors carry resource keys; the Mac app translates them for display.
+
+PDF rendering and SHA-256 remain platform services. The shared core prepares
+the canonical fingerprint data and reads the exact saved PDF for retries.
+Label reservation IDs are saved before requests. The core checks label revisions
+and recovers a lost attachment reply before it attempts another write.
+
+Print intent is saved before a job can be sent. An unknown print result blocks
+another job until the user checks the physical label. Confirmation updates the
+record without sending a job. `QL600Raster` generates bytes only; the platform
+renders the label, reads pixels, sends USB data, and checks printer completion.
+
+Capture gates receive monotonic elapsed time and detection flags from the
+platform. They do not open a camera, detect a hand, or emit a saved signal.
 Capture thresholds and crop calculations are unchanged by this split.
 
-`ScanDocument` requires a title from its caller. The Mac extension retains the
-existing localized default. Decoding an existing title does not translate it.
-Rejected-scan reasons remain stored resource keys. All existing JSON keys,
-optional fields, coordinate encoding, and original-image paths are retained.
-The Mac bundle identifier and session directory are unchanged.
+## Compatibility and validation
 
-## Build and tests
+Existing JSON keys, optional fields, coordinate encoding, and original-image
+paths are retained. The Mac bundle identifier and session directory are
+unchanged. Stored titles and rejection keys are not translated on decode.
 
 From the repository root:
 
@@ -40,34 +85,29 @@ swift run ScannerCoreChecks  # Shared library and tests only
 ./build.sh                   # Shared static library and Mac app
 ```
 
-The package manifest includes only `Sources/ScannerCore/` and
-`Tests/ScannerCore/`. Mac scripts use `build-core.sh` to build the same source
-as a separate static library for macOS 14. The library is linked into the app;
-there is no extra runtime library to install.
+The package contains only `Sources/ScannerCore/` and `Tests/ScannerCore/`.
+The Mac scripts use `build-core.sh` to build the same source as a separate
+static library for macOS 14. No extra runtime library is installed.
 
-The test executable needs no XCTest installation, so it also runs with Apple
-Command Line Tools alone. Shared tests cover old session decoding, exact JSON
-structure after a round trip, original-image and merge records, batch defaults, capture cooldown, and
-warning resets. CI runs the package on Linux as well as in the Mac test script.
+The test executable works with Apple Command Line Tools alone. Shared tests
+use temporary folders and a fake transport. They check old session decoding,
+page operations, failed writes, original preservation, recovery, reference
+allocation, group conflicts, exact multipart bytes, lost server replies,
+print retry guards, and printer command bytes. Mac integration tests also
+cover localized errors, PDF export, image processing, and the existing flows.
+CI runs the core on Linux and the full app tests and build on macOS.
+
+## Remaining Windows work
+
+- Supply a cross-process lock and an HTTP adapter that satisfies the contracts.
+- Supply credential storage, hashing, PDF and QR rendering, camera access,
+  image processing, USB input, and printer transport.
+- Build a Windows interface and connect its state to the shared operations.
+- Test file-write and lock behavior on Windows, including concurrent writers.
+- Run the session fixtures and hardware tests before claiming compatibility.
+
 Linux checks expose Apple framework dependencies but do not prove Windows
-compatibility. Windows compilation and physical hardware tests remain required.
-
-## Next extractions for Windows
-
-1. Move session file operations behind an explicit storage interface. Keep the
-   current commit-before-published-state rule, atomic writes, and original files.
-2. Separate reference and group rules from their Mac file locks. The Windows
-   implementation must preserve exclusive cross-process access and stale-write
-   checks. Do not replace these locks with a thread-only lock.
-3. Split the archive API and retry rules from Keychain, PDF rendering, and app
-   preferences. Pass credentials and prepared PDF data through explicit inputs.
-4. Add Windows camera, image-processing, PDF, print, and USB implementations.
-   Supply their detection results to the existing shared capture gates.
-5. Add a Windows build and run the same session fixtures there before claiming
-   session compatibility. Then test camera resolution, capture timing, and
-   printer completion with real hardware.
-
-Keep new platform dependencies out of `ScannerCore`. Add a platform interface
-when there is a concrete caller and implementation to test. A Windows frontend
-written in another language will also need a language boundary to use this
-Swift module; this change does not provide C or .NET bindings.
+compatibility. Camera resolution, capture timing, physical labels, and printer
+completion still need checks on the target hardware. A Windows frontend in
+another language also needs bindings to use this Swift library; this change
+does not supply C or .NET bindings.

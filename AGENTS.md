@@ -14,8 +14,8 @@ Foliobruma Scanner is a local macOS document camera app for books, letters, and 
 ## Source map
 
 - `Sources/FoliobrumaScanner/App/`: app entry point and window setup.
-- `Sources/ScannerCore/`: shared document data, geometry, batch defaults, and capture gates.
-- `Sources/FoliobrumaScanner/Models/`: Mac display helpers, locked storage, and printing.
+- `Sources/ScannerCore/`: shared document operations, storage, upload and batch rules, geometry, and capture gates.
+- `Sources/FoliobrumaScanner/Models/`: Mac display helpers, file-lock adapters, and printing.
 - `Sources/FoliobrumaScanner/Scanner/`: observable state and extensions for camera capture, processing, sessions, feedback, and PDF export.
 - `Sources/FoliobrumaScanner/Capture/`: Mac USB button support.
 - `Sources/FoliobrumaScanner/Imaging/`: Apple paper detection and image quality checks.

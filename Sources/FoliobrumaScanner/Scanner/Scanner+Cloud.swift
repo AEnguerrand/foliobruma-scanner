@@ -25,29 +25,17 @@ extension Scanner {
           let fingerprint = try CloudUpload.fingerprint(snapshot)
           var upload: CloudUpload
           let previous = try CloudUpload.load(in: base)
-          try previous?.requireServer(account.api)
-          if let saved = previous, !saved.complete || saved.fingerprint == fingerprint {
-            guard saved.userID == user.id, saved.organisationID == account.organisationID else {
-              throw CloudFailure(message: "This item has an upload in another account or archive. Select its original destination to continue.")
-            }
-            guard saved.fingerprint == fingerprint else {
-              throw CloudFailure(message: "The pages changed during an incomplete upload. Clear its upload record before uploading the changed item.")
-            }
+          if let saved = try CloudUpload.reusable(previous, fingerprint: fingerprint, userID: user.id,
+              organisationID: account.organisationID, api: account.api) {
             upload = saved
           } else {
-            if previous?.permanentLabel != nil {
-              throw CloudFailure(message: "This item already has a permanent label. Replace its PDF on the website to keep the same label.")
-            }
             status = L10n.text("Creating PDF…")
             let file = "upload-" + UUID().uuidString + ".pdf"
             try await Task.detached(priority: .userInitiated) {
               try CloudUpload.makePDF(snapshot, in: base, file: file)
             }.value
-            let safeTitle = String(snapshot.displayTitle.unicodeScalars.filter {
-              !CharacterSet.controlCharacters.contains($0) && $0 != "/" && $0 != "\\"
-            }.map(String.init).joined().prefix(110))
             upload = CloudUpload(fingerprint: fingerprint, userID: user.id,
-                                 organisationID: account.organisationID, file: file, name: safeTitle + ".pdf")
+                                 organisationID: account.organisationID, file: file, name: CloudUpload.pdfName(for: snapshot.displayTitle))
             upload.serverOrigin = account.api.baseURL.absoluteString
             try upload.save(in: base)
           }

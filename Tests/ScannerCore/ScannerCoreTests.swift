@@ -10,7 +10,11 @@ private func expectFalse(_ value: Bool) { precondition(!value) }
 private func expectNil<T>(_ value: T?) { precondition(value == nil) }
 
 @main struct ScannerCoreChecks {
-  static func main() throws {
+  static func main() async throws {
+    try testSharedStorageAndEdits()
+    try testSharedReferencesAndGroups()
+    try await testSharedArchiveWorkflows()
+    try testSharedPrinterRules()
     try testLegacySessionDecoding()
     try testSessionWireFormatAndOriginals()
     try testBatchDefaultsAndGroupOrder()

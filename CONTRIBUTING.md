@@ -12,8 +12,8 @@ to it from the README.
 | Path | Purpose |
 | --- | --- |
 | `Sources/FoliobrumaScanner/App/` | SwiftUI app entry point and window setup |
-| `Sources/ScannerCore/` | Shared document data, crop geometry, batch defaults, and capture gates |
-| `Sources/FoliobrumaScanner/Models/` | Mac display helpers, file locks, storage, and printing |
+| `Sources/ScannerCore/` | Shared document operations, storage, uploads, batch rules, and capture gates |
+| `Sources/FoliobrumaScanner/Models/` | Mac display helpers, file-lock adapters, and printing |
 | `Sources/FoliobrumaScanner/Scanner/` | Observable state and extensions for camera capture, processing, sessions, feedback, and PDF export |
 | `Sources/FoliobrumaScanner/Capture/` | Mac USB button support |
 | `Sources/FoliobrumaScanner/Imaging/` | Apple image processing and detection |

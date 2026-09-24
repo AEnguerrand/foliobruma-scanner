@@ -1,14 +1,14 @@
 import Foundation
 
-struct PermanentLabel: Codable {
-  let code: String
-  let url: String
-  let organisationId: String
-  let documentId: String?
-  let revision: Int
-  let status: String
+public struct PermanentLabel: Codable {
+  public let code: String
+  public let url: String
+  public let organisationId: String
+  public let documentId: String?
+  public let revision: Int
+  public let status: String
 
-  func validate(archive: String, code expectedCode: String? = nil, origin: URL = CloudAPI.origin) throws {
+  public func validate(archive: String, code expectedCode: String? = nil, origin: URL = ArchiveServer.production) throws {
     guard code.range(of: "^[A-Za-z0-9_-]{16}$", options: .regularExpression) != nil,
           url == origin.absoluteString + "/d/" + code,
           organisationId == archive, revision >= 0,
@@ -19,8 +19,8 @@ struct PermanentLabel: Codable {
   }
 }
 
-extension CloudUpload {
-  mutating func reserveLabel(api: CloudAPI, folder: URL, title: String) async throws {
+public extension CloudUpload {
+  mutating func reserveLabel(api: any ArchiveTransport, folder: URL, title: String) async throws {
     try requireServer(api)
     if let permanentLabel {
       try permanentLabel.validate(archive: organisationID, origin: api.baseURL)
@@ -42,7 +42,7 @@ extension CloudUpload {
     try save(in: folder)
   }
 
-  mutating func attachLabel(api: CloudAPI, folder: URL) async throws {
+  mutating func attachLabel(api: any ArchiveTransport, folder: URL) async throws {
     try requireServer(api)
     guard complete, let documentID, let reserved = permanentLabel else {
       throw CloudFailure(message: "Finish the upload before attaching its permanent label.")

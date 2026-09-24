@@ -2,7 +2,7 @@ import ScannerCore
 import AppKit
 
 extension Scanner {
-  var isSheetBatch: Bool { document.metadata?.sheetBatch == true }
+  var isSheetBatch: Bool { document.isSheetBatch }
   var sheetCapturePrompt: String {
     switch document.pages.count {
     case 0: return L10n.text("Place the front of the next sheet under the camera.")
@@ -12,7 +12,7 @@ extension Scanner {
 
   func finishSheet() {
     guard isSheetBatch, !busy, !document.pages.isEmpty else { return }
-    guard rejectedScans.isEmpty else {
+    guard !document.sheetNeedsReview else {
       beginReview()
       showRejected = true
       return
@@ -37,8 +37,8 @@ extension Scanner {
     showSheetGroups = true
   }
 
-  var uploadOnFinish: Bool { document.automation?.upload == true }
-  var printOnFinish: Bool { document.automation?.printLabel == true }
+  var uploadOnFinish: Bool { document.uploadOnFinish }
+  var printOnFinish: Bool { document.printOnFinish }
 
   func setSessionAutomation(_ value: SessionAutomation) {
     guard !busy else { return }
@@ -88,9 +88,7 @@ extension Scanner {
     guard panel.runModal() == .alertFirstButtonReturn else { return }
     do {
       guard var upload = try CloudUpload.load(in: folder), upload.labelNeedsReview else { return }
-      upload.sheetLabelStarted = false
-      upload.sheetLabelSubmitted = true
-      try upload.save(in: folder)
+      try upload.confirmLabelHandled(in: folder)
     } catch { self.error = error.localizedDescription }
   }
 }

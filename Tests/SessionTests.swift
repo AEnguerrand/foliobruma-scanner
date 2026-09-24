@@ -487,6 +487,9 @@ import Vision
     && restored.br == legacy.br && restored.bl == legacy.bl)
   precondition(shared.bounds == CGRect(x: 0.1, y: 0.05, width: 0.8, height: 0.85))
   precondition(ScanDocument().title == L10n.text("Untitled document"))
+  let sharedError: Error = CloudFailure(message: "The page to replace is no longer available.")
+  precondition(sharedError.localizedDescription == L10n.text("The page to replace is no longer available."),
+    "Shared failures must retain the Mac localization adapter")
   print("PASS: shared geometry reads and writes the original Mac coordinate format; localized title")
  }
  static func main() throws {
