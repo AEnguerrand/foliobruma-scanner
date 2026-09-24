@@ -1,3 +1,4 @@
+import ScannerCore
 import AppKit
 import CoreImage
 

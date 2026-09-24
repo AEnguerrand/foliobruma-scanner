@@ -1,3 +1,4 @@
+import ScannerCore
 import SwiftUI
 import AppKit
 

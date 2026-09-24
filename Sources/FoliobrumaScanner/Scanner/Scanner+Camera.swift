@@ -1,3 +1,4 @@
+import ScannerCore
 import AVFoundation
 import CoreImage
 import Foundation

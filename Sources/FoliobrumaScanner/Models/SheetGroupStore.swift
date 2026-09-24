@@ -1,12 +1,6 @@
 import Foundation
 import Darwin
-
-struct SheetGroup: Codable, Identifiable, Equatable {
-  var id = UUID().uuidString
-  var title: String
-  // Stable session folder IDs, in reading order. Images and labels stay in place.
-  var sheets: [String]
-}
+import ScannerCore
 
 struct SheetGroupStore {
   var groups: [SheetGroup]

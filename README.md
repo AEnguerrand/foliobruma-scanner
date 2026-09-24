@@ -438,9 +438,12 @@ Run the regression tests without connecting a scanner:
 
 Tests use temporary sessions and do not request camera access. They cover session persistence, failed-write recovery, page operations, crop coordinates, capture gates, warning gates, quality rejection with manual override, review capture exclusion, page replacement, original-image preservation, old session decoding, saved-document discovery, and PDF export failure recovery.
 
-Source files are grouped by purpose under `Sources/FoliobrumaScanner/`: app setup,
-models, scanner operations, capture gates, image checks, and views. The build and
-test scripts include all Swift files in these folders.
+Shared document data and capture rules are in the `ScannerCore` Swift package
+under `Sources/ScannerCore/`. Mac interface, camera, image processing, storage,
+and device code stay under `Sources/FoliobrumaScanner/` and `Sources/PrinterUSB/`.
+The Mac scripts build and link the shared library. Run `swift run ScannerCoreChecks` to test the
+shared package alone. See [the source boundary](docs/shared-core.md) for details.
+This split prepares code reuse; a Windows app is not available yet.
 
 GitHub Actions uses separate workflows. **Build** tests and builds branch
 pushes, pull requests, and manual runs. **Release** tests, packages, and

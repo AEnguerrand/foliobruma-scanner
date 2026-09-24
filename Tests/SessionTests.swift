@@ -1,3 +1,4 @@
+import ScannerCore
 import Foundation
 import CoreImage
 import AppKit
@@ -470,7 +471,26 @@ import Vision
     == "Enter a complete link without spaces or sign-in details.")
   print("PASS: page input boundaries; adjacent selection; undo selection; failed-save selection; label validation feedback")
  }
+ static func testSharedGeometryCompatibility() throws {
+  // The old Mac model used synthesized CoreGraphics Codable conformance.
+  struct LegacyQuad: Codable { var tl: CGPoint; var tr: CGPoint; var br: CGPoint; var bl: CGPoint }
+  let legacy = LegacyQuad(tl: CGPoint(x: 0.1, y: 0.9), tr: CGPoint(x: 0.8, y: 0.85),
+                          br: CGPoint(x: 0.9, y: 0.1), bl: CGPoint(x: 0.2, y: 0.05))
+  let data = try JSONEncoder().encode(legacy)
+  let shared = try JSONDecoder().decode(Quad.self, from: data)
+  let encoded = try JSONEncoder().encode(shared)
+  let originalJSON = try JSONSerialization.jsonObject(with: data) as! NSDictionary
+  let sharedJSON = try JSONSerialization.jsonObject(with: encoded) as! NSDictionary
+  precondition(originalJSON == sharedJSON, "Shared coordinates must preserve the Mac session format")
+  let restored = try JSONDecoder().decode(LegacyQuad.self, from: encoded)
+  precondition(restored.tl == legacy.tl && restored.tr == legacy.tr
+    && restored.br == legacy.br && restored.bl == legacy.bl)
+  precondition(shared.bounds == CGRect(x: 0.1, y: 0.05, width: 0.8, height: 0.85))
+  precondition(ScanDocument().title == L10n.text("Untitled document"))
+  print("PASS: shared geometry reads and writes the original Mac coordinate format; localized title")
+ }
  static func main() throws {
+  try testSharedGeometryCompatibility()
   try testSheetBatches()
   try testSheetGroups()
   try testSheetLabelRetry()

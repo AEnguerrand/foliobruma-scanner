@@ -1,40 +1,6 @@
 import Foundation
 import Darwin
-
-struct ItemMetadata: Codable, Equatable {
-  var sheetBatch: Bool?
-  var reference: String
-  var batchID: String?
-  var batchName: String
-  var kind: String
-  var author: String
-  var period: String
-  var location: String
-  var tags: String
-  var notes: String
-  var webLink: String
-
-  init(reference: String = "", batchID: String? = nil, batchName: String = "",
-       kind: String = "Document", author: String = "", period: String = "",
-       location: String = "", tags: String = "", notes: String = "", webLink: String = "", sheetBatch: Bool? = nil) {
-    self.sheetBatch = sheetBatch
-    self.reference = reference
-    self.batchID = batchID
-    self.batchName = batchName
-    self.kind = kind
-    self.author = author
-    self.period = period
-    self.location = location
-    self.tags = tags
-    self.notes = notes
-    self.webLink = webLink
-  }
-
-  var nextLetter: ItemMetadata {
-    ItemMetadata(batchID: batchID, batchName: batchName, kind: sheetBatch == true ? "Sheet" : "Letter",
-                 location: location, tags: tags, sheetBatch: sheetBatch)
-  }
-}
+import ScannerCore
 
 // The counter is local to this library, not a public URL or an access token.
 // Reserve before creating a record. Failed writes can leave gaps, never reused numbers.

@@ -14,13 +14,17 @@ Foliobruma Scanner is a local macOS document camera app for books, letters, and 
 ## Source map
 
 - `Sources/FoliobrumaScanner/App/`: app entry point and window setup.
-- `Sources/FoliobrumaScanner/Models/`: saved document and page data.
+- `Sources/ScannerCore/`: shared document data, geometry, batch defaults, and capture gates.
+- `Sources/FoliobrumaScanner/Models/`: Mac display helpers, locked storage, and printing.
 - `Sources/FoliobrumaScanner/Scanner/`: observable state and extensions for camera capture, processing, sessions, feedback, and PDF export.
-- `Sources/FoliobrumaScanner/Capture/`: capture and warning gates.
-- `Sources/FoliobrumaScanner/Imaging/`: paper detection, quality checks, and crop coordinates.
+- `Sources/FoliobrumaScanner/Capture/`: Mac USB button support.
+- `Sources/FoliobrumaScanner/Imaging/`: Apple paper detection and image quality checks.
 - `Sources/FoliobrumaScanner/Views/`: SwiftUI interface and camera preview.
 - `Resources/Info.plist`: app metadata and camera permission text.
-- `Tests/SessionTests.swift`: regression tests using temporary sessions.
+- `Tests/SessionTests.swift`: Mac regression tests using temporary sessions.
+- `Tests/ScannerCore/`: shared package tests; run with `swift run ScannerCoreChecks`.
+- `Package.swift`: shared library target. Keep Apple frameworks out of this target.
+- `build-core.sh`: shared static library build for the Mac app.
 - `build.sh`: compile and locally sign the app.
 - `test.sh`: compile and run the regression tests.
 
