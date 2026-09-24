@@ -1,3 +1,4 @@
+import ScannerCore
 import AppKit
 import CoreImage
 
@@ -34,9 +35,7 @@ extension Scanner {
     status = connected ? L10n.text("Capture paused · Ready when you are") : L10n.text("Select a camera to scan")
   }
   func pageIndex(for text: String) -> Int? {
-    guard let number = Int(text.trimmingCharacters(in: .whitespacesAndNewlines)),
-      number > 0, number <= document.pages.count else { return nil }
-    return number - 1
+    document.pageIndex(for: text)
   }
   func goToPage(_ text: String) {
     guard !busy, let index = pageIndex(for: text) else { return }
@@ -49,11 +48,7 @@ extension Scanner {
     beginReview(document.pages[next].id)
   }
   func movePage(_ delta: Int) {
-    guard !busy, let index = selectedIndex else { return }
-    let nextIndex = index + delta
-    guard document.pages.indices.contains(nextIndex) else { return }
-    var next = document
-    next.pages.swapAt(index, nextIndex)
+    guard !busy, let selected, let next = document.movingPage(id: selected, by: delta) else { return }
     do { try commit(next) } catch { self.error = error.localizedDescription }
   }
   func replaceSelectedPage() {
@@ -67,25 +62,9 @@ extension Scanner {
   }
   func applyCapture(_ pages: [ScanPage], replacing id: String?, resolving rejected: String?) throws
   {
-    var next = document
-    if let id = id {
-      guard pages.count == 1, let index = next.pages.firstIndex(where: { $0.id == id }) else {
-        throw NSError(
-          domain: "Scanner", code: 10,
-          userInfo: [NSLocalizedDescriptionKey: L10n.text("The page to replace is no longer available.")])
-      }
-      var replacement = pages[0]
-      replacement.id = id
-      next.pages[index] = replacement
-    } else {
-      next.pages += pages
-    }
-    if let rejected = rejected {
-      next.rejected?.removeAll { $0.file == rejected }
-      next.resolvedRejections = Array(Set((next.resolvedRejections ?? []) + [rejected]))
-    }
-    try commit(next)
+    try commit(document.applyingCapture(pages, replacing: id, resolving: rejected))
   }
+
   func resetWorkspace() {
     metadataWorkspace = false
     reviewing = false
@@ -108,9 +87,7 @@ extension Scanner {
     guard !busy else { return }
     autoCapture = false
     do {
-      let restored = try JSONDecoder().decode(
-        ScanDocument.self,
-        from: Data(contentsOf: url.appendingPathComponent("session.json")))
+      let restored = try SessionStore(folder: url).load()
       folder = url
       document = restored
       if isSheetBatch { book = false; split = false }
@@ -129,24 +106,13 @@ extension Scanner {
     autoCapture = false
     showSessions = true
     loadingSessions = true
-    let base = root.appendingPathComponent("Sessions")
+    let base = root
     DispatchQueue.global(qos: .userInitiated).async {
-      let folders =
-        (try? FileManager.default.contentsOfDirectory(
-          at: base,
-          includingPropertiesForKeys: [.contentModificationDateKey])) ?? []
-      let items = folders.compactMap { url -> SavedSession? in
-        let manifest = url.appendingPathComponent("session.json")
-        guard let data = try? Data(contentsOf: manifest),
-          let doc = try? JSONDecoder().decode(ScanDocument.self, from: data)
-        else { return nil }
-        let date =
-          (try? manifest.resourceValues(forKeys: [.contentModificationDateKey]))?
-          .contentModificationDate ?? .distantPast
-        return SavedSession(
-          folder: url, title: doc.displayTitle, pageCount: doc.pages.count, modified: date,
-          reference: doc.metadata?.reference, batchName: doc.metadata?.batchName)
-      }.sorted { $0.modified > $1.modified }
+      let items = SessionStore.list(in: base).map { record in
+        SavedSession(folder: record.folder, title: record.document.displayTitle,
+          pageCount: record.document.pages.count, modified: record.modified,
+          reference: record.document.metadata?.reference, batchName: record.document.metadata?.batchName)
+      }
       DispatchQueue.main.async {
         self.sessions = items
         self.loadingSessions = false
@@ -154,22 +120,9 @@ extension Scanner {
     }
   }
   func loadLegacyRejections() {
-    let urls =
-      (try? FileManager.default.contentsOfDirectory(
-        at: folder.appendingPathComponent("Rejected"),
-        includingPropertiesForKeys: nil)) ?? []
-    let known = Set(rejectedScans.map(\.file) + (document.resolvedRejections ?? []))
-    let recovered = urls.filter {
-      $0.pathExtension.lowercased() == "jpg" && !known.contains("Rejected/" + $0.lastPathComponent)
-    }.map {
-      RejectedScan(
-        file: "Rejected/" + $0.lastPathComponent,
-        reason:
-          "Recovered photo. Check it before keeping it. Earlier crop settings may be unavailable.",
-        quad: nil, split: false, divider: 0.5)
-    }
-    document.rejected = rejectedScans + recovered
+    document = SessionStore(folder: folder).recoveringRejections(in: document)
   }
+
   func reviewRejected(_ scan: RejectedScan) {
     guard !busy else { return }
     autoCapture = false
@@ -181,9 +134,7 @@ extension Scanner {
   }
   func dismissRejected(_ scan: RejectedScan) {
     guard !busy else { return }
-    var next = document
-    next.rejected?.removeAll { $0.id == scan.id }
-    next.resolvedRejections = Array(Set((next.resolvedRejections ?? []) + [scan.file]))
+    let next = document.resolvingRejection(scan.file)
     do {
       try commit(next)
       if rejectedURL?.lastPathComponent == URL(fileURLWithPath: scan.file).lastPathComponent {

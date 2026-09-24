@@ -16,6 +16,7 @@
 
 ## Development
 
+- [Shared code and platform code](shared-core.md): source boundary and remaining Windows work.
 - [Build and development](development.md): build from source, run tests, and use a test server.
 - [Contributing](../CONTRIBUTING.md): source layout, validation, release steps, and problem reports.
 - [Release install instructions](../RELEASE-INSTALL.txt): installation, updates, and checksums.

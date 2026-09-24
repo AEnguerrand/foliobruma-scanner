@@ -9,3 +9,7 @@ build/
 !/Resources/Brand/AppIcon.png
 !/Resources/Brand/README-logo.png
 !/Resources/Brand/scan-setup.png
+
+# Swift package build files
+.build/
+.swiftpm/

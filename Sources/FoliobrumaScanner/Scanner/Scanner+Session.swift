@@ -1,23 +1,19 @@
+import ScannerCore
 import AppKit
 
 extension Scanner {
   func prepareFolder() throws {
-    try FileManager.default.createDirectory(
-      at: folder.appendingPathComponent("Originals"), withIntermediateDirectories: true)
-    try FileManager.default.createDirectory(
-      at: folder.appendingPathComponent("Pages"), withIntermediateDirectories: true)
+    try SessionStore(folder: folder).prepare()
     if tracksActiveSession { UserDefaults.standard.set(folder.path, forKey: "activeSession") }
   }
   func restore() throws {
-    let u = folder.appendingPathComponent("session.json")
-    if FileManager.default.fileExists(atPath: u.path) {
-      document = try JSONDecoder().decode(ScanDocument.self, from: Data(contentsOf: u))
+    if let restored = try SessionStore(folder: folder).loadIfPresent() {
+      document = restored
       sessionSaved = true
     }
   }
   func commit(_ next: ScanDocument) throws {
-    try JSONEncoder().encode(next).write(
-      to: folder.appendingPathComponent("session.json"), options: .atomic)
+    try SessionStore(folder: folder).save(next)
     document = next
     sessionSaved = true
     pdfIsCurrent = false
@@ -27,15 +23,13 @@ extension Scanner {
     NSImage(contentsOf: folder.appendingPathComponent(p.file))
   }
   func rotate(_ page: ScanPage) {
-    guard !busy, let i = document.pages.firstIndex(where: { $0.id == page.id }) else { return }
-    var next = document
-    next.pages[i].rotation = (page.rotation + 90) % 360
+    guard !busy, let next = document.rotating(page) else { return }
     do { try commit(next) } catch { self.error = error.localizedDescription }
   }
   func remove(_ page: ScanPage) {
-    guard !busy, let index = document.pages.firstIndex(where: { $0.id == page.id }) else { return }
-    var next = document
-    next.pages.remove(at: index)
+    guard !busy, let removal = document.removing(page) else { return }
+    let next = removal.document
+    let index = removal.index
     do {
       try commit(next)
       deleting = (page, index)
@@ -47,8 +41,7 @@ extension Scanner {
   }
   func undo() {
     guard !busy, let removed = deleting else { return }
-    var next = document
-    next.pages.insert(removed.page, at: min(removed.index, next.pages.count))
+    let next = document.restoring(removed.page, at: removed.index)
     do {
       try commit(next)
       deleting = nil
@@ -73,14 +66,8 @@ extension Scanner {
   // Change the active record only after its manifest has been written.
   func createDocument(_ next: ScanDocument, preserveCaptureHistory: Bool = false) throws {
     try persist()
-    let nextFolder = root.appendingPathComponent("Sessions/" + UUID().uuidString)
-    try FileManager.default.createDirectory(
-      at: nextFolder.appendingPathComponent("Originals"), withIntermediateDirectories: true)
-    try FileManager.default.createDirectory(
-      at: nextFolder.appendingPathComponent("Pages"), withIntermediateDirectories: true)
-    try JSONEncoder().encode(next).write(
-      to: nextFolder.appendingPathComponent("session.json"), options: .atomic)
-    folder = nextFolder
+    let store = try SessionStore.create(next, in: root)
+    folder = store.folder
     document = next
     resetWorkspace()
     sessionSaved = true

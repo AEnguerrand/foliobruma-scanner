@@ -79,6 +79,9 @@ test server. See [Contributing](CONTRIBUTING.md) for source layout, checks,
 release steps, and problem reports.
 
 The app uses Apple frameworks and has no third-party runtime packages.
+Shared document operations, storage, upload, and capture rules are in a separate
+Swift library. See
+[Shared code and platform code](docs/shared-core.md) for the source boundary.
 
 ## License
 

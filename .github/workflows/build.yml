@@ -10,6 +10,18 @@ permissions:
   contents: read
 
 jobs:
+  shared-core:
+    name: Shared core (Linux)
+    runs-on: ubuntu-24.04
+    container: swift:6.0.3
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Test without Apple frameworks
+        run: swift run ScannerCoreChecks
+
   build:
     name: Test and build (Apple Silicon)
     runs-on: macos-15

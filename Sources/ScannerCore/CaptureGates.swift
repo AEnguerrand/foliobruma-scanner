@@ -1,13 +1,14 @@
 // Automatic capture gates use elapsed time, not the number of camera callbacks.
-struct AutoCaptureGate {
-  var clearSince: Double?
-  var cooldownUntil = 0.0
-  mutating func reset() { clearSince = nil }
-  mutating func captured(at now: Double) {
+public struct AutoCaptureGate {
+  public init() {}
+  public var clearSince: Double?
+  public var cooldownUntil = 0.0
+  public mutating func reset() { clearSince = nil }
+  public mutating func captured(at now: Double) {
     clearSince = nil
     cooldownUntil = now + 0.8
   }
-  mutating func ready(at now: Double, moving: Bool, blocked: Bool, duplicate: Bool, hasPage: Bool)
+  public mutating func ready(at now: Double, moving: Bool, blocked: Bool, duplicate: Bool, hasPage: Bool)
     -> Bool
   {
     guard !moving, !blocked, !duplicate, hasPage, now >= cooldownUntil else {
@@ -21,11 +22,12 @@ struct AutoCaptureGate {
     return now - start >= 0.55
   }
 }
-struct PreflightFeedbackGate {
-  var reason: String?
-  var since = 0.0
-  var notified = false
-  mutating func observe(_ value: String?, at now: Double) -> Bool {
+public struct PreflightFeedbackGate {
+  public init() {}
+  public var reason: String?
+  public var since = 0.0
+  public var notified = false
+  public mutating func observe(_ value: String?, at now: Double) -> Bool {
     guard let value = value else {
       reason = nil
       notified = false
@@ -41,12 +43,13 @@ struct PreflightFeedbackGate {
     return true
   }
 }
-struct DuplicateFeedbackGate {
-  var notified = false
-  mutating func notify() -> Bool {
+public struct DuplicateFeedbackGate {
+  public init() {}
+  public var notified = false
+  public mutating func notify() -> Bool {
     guard !notified else { return false }
     notified = true
     return true
   }
-  mutating func reset() { notified = false }
+  public mutating func reset() { notified = false }
 }

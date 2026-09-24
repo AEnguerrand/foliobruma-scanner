@@ -1,3 +1,4 @@
+import ScannerCore
 import Foundation
 import CryptoKit
 import Security

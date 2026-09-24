@@ -1,3 +1,4 @@
+import ScannerCore
 import AppKit
 import CoreImage
 
@@ -12,8 +13,8 @@ struct QL600Failure: LocalizedError {
 // Use Apple's USB framework; no CUPS queue, vendor driver, or runtime package.
 enum QL600Printer {
   static let destination = "Brother QL-600 · USB"
-  static let width = 696
-  static let height = 225 // Plus two 35-dot feed margins: about 25 mm total.
+  static let width = QL600Raster.width
+  static let height = QL600Raster.height // Plus two 35-dot feed margins: about 25 mm total.
 
   @MainActor static func bitmap(_ label: DocumentLabel) throws -> NSBitmapImageRep {
     guard DocumentLabel.validURL(label.link) != nil,
@@ -66,31 +67,12 @@ enum QL600Printer {
   }
 
   static func raster(_ bitmap: NSBitmapImageRep) throws -> Data {
-    guard bitmap.pixelsWide == width, bitmap.pixelsHigh == height else {
-      throw CloudFailure(message: "The label dimensions are invalid.")
-    }
-    var result = Data(repeating: 0, count: 200)
-    result.append(contentsOf: [0x1b, 0x40, 0x1b, 0x69, 0x61, 1])
-    result.append(contentsOf: [0x1b, 0x69, 0x7a, 0xce, 0x0a, 62, 0, UInt8(height), 0, 0, 0, 0, 0])
-    result.append(contentsOf: [0x1b, 0x69, 0x4d, 0x40, 0x1b, 0x69, 0x41, 1,
-                              0x1b, 0x69, 0x4b, 8, 0x1b, 0x69, 0x64, 35, 0])
-    for y in 0..<height {
-      var row = [UInt8](repeating: 0, count: 90)
-      for x in 0..<width {
-        guard let color = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB) else {
-          throw CloudFailure(message: "Could not read the label pixels.")
-        }
-        if (color.redComponent + color.greenComponent + color.blueComponent) / 3 < 0.5 {
-          // Pins are numbered from the right edge of the head.
-          let pin = 12 + width - 1 - x
-          row[pin / 8] |= UInt8(0x80 >> (pin % 8))
-        }
+    try QL600Raster.encode(width: bitmap.pixelsWide, height: bitmap.pixelsHigh) { x, y in
+      guard let color = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB) else {
+        throw CloudFailure(message: "Could not read the label pixels.")
       }
-      result.append(contentsOf: [0x67, 0, 90])
-      result.append(contentsOf: row)
+      return (color.redComponent + color.greenComponent + color.blueComponent) / 3 < 0.5
     }
-    result.append(0x1a)
-    return result
   }
 
   static func send(_ job: Data) throws {

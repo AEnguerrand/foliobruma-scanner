@@ -1,14 +1,24 @@
+import ScannerCore
 import Foundation
 import Security
 
-struct CloudFailure: LocalizedError {
-  let message: String
-  var status: Int? = nil
-  var errorDescription: String? { L10n.text(message) }
+// Shared failures carry stable resource keys. Only the app translates them.
+#if compiler(>=6.0)
+extension CloudFailure: @retroactive LocalizedError {
+  public var errorDescription: String? { L10n.text(message) }
 }
+#else
+extension CloudFailure: LocalizedError {
+  public var errorDescription: String? { L10n.text(message) }
+}
+#endif
 
 // A separate scanner credential never reads or stores browser cookies.
-final class CloudAPI: NSObject, URLSessionTaskDelegate {
+final class CloudAPI: NSObject, URLSessionTaskDelegate, ArchiveTransport {
+  func send(_ request: ArchiveRequest) async throws -> Data {
+    try await self.request(request.path, method: request.method, body: request.body,
+      type: request.contentType, query: request.query, revision: request.revision)
+  }
   static let origin = CloudEnvironment.production
   let baseURL: URL
   private var token: String?

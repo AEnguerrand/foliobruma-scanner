@@ -1,8 +1,9 @@
+import ScannerCore
 import Foundation
 import CryptoKit
 
 enum CloudEnvironment {
-  static let production = URL(string: "https://foliobruma.com")!
+  static let production = ArchiveServer.production
   // Fixed for this app run. Pending requests never change destination mid-operation.
   static let activeOrigin: URL = {
     let defaults = UserDefaults.standard
@@ -12,16 +13,7 @@ enum CloudEnvironment {
   }()
 
   static func normalizedOrigin(_ input: String) -> URL? {
-    guard var parts = URLComponents(string: input.trimmingCharacters(in: .whitespacesAndNewlines)),
-          parts.scheme?.lowercased() == "https", let host = parts.host, !host.isEmpty,
-          !host.contains(where: { $0.isWhitespace }), parts.user == nil, parts.password == nil,
-          parts.query == nil, parts.fragment == nil, parts.path.isEmpty || parts.path == "/",
-          parts.port == nil || (1...65535).contains(parts.port!) else { return nil }
-    parts.scheme = "https"
-    parts.host = host.lowercased()
-    parts.path = ""
-    if parts.port == 443 { parts.port = nil }
-    return parts.url
+    ArchiveServer.normalizedOrigin(input)
   }
 
   static func accountKey(for origin: URL) -> String {

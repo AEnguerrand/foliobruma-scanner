@@ -1,3 +1,4 @@
+import ScannerCore
 #if SCANNER_TESTS
 import Foundation
 

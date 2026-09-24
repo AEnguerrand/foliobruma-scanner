@@ -2,6 +2,7 @@
 set -euo pipefail
 cd "${0:A:h}"
 export DEVELOPER_DIR="${DEVELOPER_DIR:-/Library/Developer/CommandLineTools}"
+./build-core.sh
 SOURCES=(Sources/FoliobrumaScanner/**/*.swift)
 SDK_PATH="$(xcrun --sdk macosx --show-sdk-path)"
 APP="$PWD/build/Foliobruma Scanner.app"
@@ -24,6 +25,7 @@ xcrun swiftc \
   -O -framework SwiftUI -framework AppKit -framework AVFoundation \
   -framework Vision -framework PDFKit -framework CoreImage \
   -framework IOKit -import-objc-header Sources/PrinterUSB/QL600USB.h build/QL600USB.o \
+  -I build/core -L build/core -lScannerCore \
   "${SOURCES[@]}" -o "$APP/Contents/MacOS/FoliobrumaScanner"
 cp -R Resources/*.lproj "$APP/Contents/Resources/"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
