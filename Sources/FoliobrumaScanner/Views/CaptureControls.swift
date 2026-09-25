@@ -6,9 +6,11 @@ struct CaptureControls: View {
     if !model.reviewing {
       VStack(spacing: 10) {
         if model.isSheetBatch {
+          if let details = model.document.metadata {
+            Text([details.batchName, details.reference].filter { !$0.isEmpty }.joined(separator: " · "))
+              .font(.subheadline).foregroundStyle(.secondary)
+          }
           Text(model.sheetCapturePrompt).font(.headline)
-          Text(L10n.text("USB button action: Finish sheet. The next sheet starts automatic capture after completion."))
-            .font(.caption).foregroundStyle(.secondary)
         }
         if model.replacementID != nil {
           HStack {
@@ -43,6 +45,12 @@ struct CaptureControls: View {
               systemImage: "camera.fill")
           }.keyboardShortcut(.space, modifiers: []).controlSize(.large)
             .disabled(!model.connected || model.busy)
+          if model.replacementID == nil && !model.document.pages.isEmpty {
+            Button(model.finishActionTitle,
+                   action: model.finishCurrentItem)
+              .controlSize(.large).disabled(model.busy)
+              .help(L10n.text("Finish and continue (⌘⇧Return)"))
+          }
         }
       }.padding(16)
     }

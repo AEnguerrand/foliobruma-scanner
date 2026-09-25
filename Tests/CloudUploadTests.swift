@@ -57,6 +57,16 @@ enum CloudUploadTests {
     print("PASS: browser pairing challenge, URL and expiry; isolated scanner credentials; multipart retry; lost completion response; uncertain start guard; upload record recovery; private QR decoding")
   }
   static func exercise() async throws {
+    let printRoot = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: printRoot) }
+    let scanner = Scanner(storageRoot: printRoot)
+    let manualLabel = DocumentLabel(title: "Synthetic", subtitle: "DOC-1", link: "https://example.com/test")
+    let printTicket = try LabelPrintStore.begin(in: scanner.folder, link: manualLabel.link, lock: MacLibraryLock())
+    try LabelPrintStore.finish(printTicket, in: scanner.folder, submitted: true, mayHavePrinted: true, lock: MacLibraryLock())
+    var prior = CloudUpload(fingerprint: "test", userID: "test", organisationID: "test", file: "test.pdf", name: "test.pdf")
+    let sent = try await scanner.printSessionLabel(manualLabel, qr: manualLabel.qrImage()!, upload: &prior)
+    precondition(!sent && prior.sheetLabelSubmitted == true, "Finish after manual printing must not need a printer or send another job")
+
     let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
     defer { try? FileManager.default.removeItem(at: folder) }

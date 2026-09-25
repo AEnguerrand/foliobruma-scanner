@@ -51,13 +51,19 @@ shows the setup; it is not an app screenshot. A USB button and label printer
 are optional.
 
 1. Connect the camera by USB. In **Scan setup**, select it and click **Connect camera**.
-2. Name the document from the document menu. Choose **Book** or **Single page**.
+2. Use **Document actions → Rename document…** to name it. Choose **Book** or **Single page**.
 3. Place the paper under the camera and check the gold crop outline. For a book,
    enable **Split into two pages** and adjust **Spine position**.
 4. Click **Start auto capture** and move your hands away. Wait for the green
    **Saved — turn the page** signal before each page turn. For manual capture,
    click **Capture page** or press **Space** in Scan mode.
-5. Open **Review** to check and correct pages. Click **Export PDF** to save the result.
+5. Open **Review** to check and correct pages. Use **Document actions → Export PDF** (⌘E) to save the result.
+
+For a large stack, click **New item…** (+ or ⌘N), choose **Batch of sheets**,
+and select **Start batch**. Scan all sides of one sheet, then select **Finish
+sheet** beside the capture buttons (⌘⇧Return). **Documents** has **Current batch**
+and **Needs review** filters. Manual and automatic printing share a saved label
+record; use **Reprint…** only when another copy is needed.
 
 See [Scanning and review](docs/scanning.md) for the full steps, capture signals,
 shortcuts, and language settings. Check each scan: hand detection, duplicate

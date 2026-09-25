@@ -109,9 +109,15 @@ extension Scanner {
     let base = root
     DispatchQueue.global(qos: .userInitiated).async {
       let items = SessionStore.list(in: base).map { record in
-        SavedSession(folder: record.folder, title: record.document.displayTitle,
+        let labelNeedsReview: Bool
+        do {
+          let link = record.document.metadata?.webLink ?? ""
+          labelNeedsReview = try !link.isEmpty && LabelPrintStore.state(in: record.folder, link: link) == .pending
+        } catch { labelNeedsReview = true }
+        return SavedSession(folder: record.folder, title: record.document.displayTitle,
           pageCount: record.document.pages.count, modified: record.modified,
-          reference: record.document.metadata?.reference, batchName: record.document.metadata?.batchName)
+          reference: record.document.metadata?.reference, batchName: record.document.metadata?.batchName,
+          batchID: record.document.metadata?.batchID, needsReview: labelNeedsReview || !(record.document.rejected ?? []).isEmpty)
       }
       DispatchQueue.main.async {
         self.sessions = items

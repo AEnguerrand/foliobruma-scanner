@@ -527,6 +527,7 @@ import Vision
  static func main() throws {
   try testSharedGeometryCompatibility()
   try testSheetBatches()
+  try testLargeBatchLibrary()
   try testSheetGroups()
   try testSheetLabelRetry()
   try testQL600Labels()

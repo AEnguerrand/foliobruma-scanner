@@ -36,15 +36,9 @@ struct PageReview: View {
       if let page = model.selectedPage {
         ZoomImage(url: model.folder.appendingPathComponent(page.file), rotation: page.rotation).id(
           page.id + page.file)
-        ViewThatFits(in: .horizontal) {
-          HStack {
-            editActions(page)
-            orderActions
-          }.fixedSize(horizontal: true, vertical: false)
-          VStack {
-            HStack { editActions(page) }
-            HStack { orderActions }
-          }
+        HStack {
+          editActions(page)
+          Menu(L10n.text("Page actions")) { orderActions }
         }.padding(14)
       } else {
         ContentUnavailableView {
@@ -76,22 +70,20 @@ struct PageReview: View {
       model.showCrop = true
     }.keyboardShortcut("c", modifiers: [.command, .shift])
       .help(L10n.text("Crop from original (⌘⇧C)"))
-    Button(L10n.text("Replace…"), action: model.replaceSelectedPage)
-      .keyboardShortcut("r", modifiers: [.command, .shift])
-      .help(L10n.text("Replace page (⌘⇧R)"))
     Button(L10n.text("Remove")) { model.remove(page) }
       .keyboardShortcut(.delete, modifiers: [.command])
       .help(L10n.text("Remove page (⌘⌫). Original files are kept."))
   }
   @ViewBuilder var orderActions: some View {
+    Button(L10n.text("Replace…"), action: model.replaceSelectedPage)
+      .help(L10n.text("Replace page (⌘⇧R)"))
+
     Button(L10n.text("Merge with next page…")) { confirmMerge = true }
       .disabled(!model.canMergeWithNextPage)
     Button(L10n.text("Move earlier")) { model.movePage(-1) }
-      .keyboardShortcut(.leftArrow, modifiers: [.command, .shift])
       .help(L10n.text("Move earlier (⌘⇧←)"))
       .disabled((model.selectedIndex ?? 0) == 0)
     Button(L10n.text("Move later")) { model.movePage(1) }
-      .keyboardShortcut(.rightArrow, modifiers: [.command, .shift])
       .help(L10n.text("Move later (⌘⇧→)"))
       .disabled(model.selectedIndex == nil || model.selectedIndex == model.document.pages.count - 1)
   }

@@ -2,6 +2,16 @@ import ScannerCore
 import AppKit
 
 extension Scanner {
+  var finishActionTitle: String {
+    L10n.text(isSheetBatch ? "Finish sheet" : (document.metadata?.batchID != nil ? "Next letter" : "Finish item"))
+  }
+
+  func finishCurrentItem() {
+    if isSheetBatch { finishSheet() }
+    else if document.metadata?.batchID != nil { nextLetter() }
+    else { finishItem() }
+  }
+
   func prepareNewItem() {
     guard !busy else { return }
     autoCapture = false

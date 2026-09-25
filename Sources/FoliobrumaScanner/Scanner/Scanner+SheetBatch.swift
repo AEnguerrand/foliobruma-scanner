@@ -6,7 +6,7 @@ extension Scanner {
   var sheetCapturePrompt: String {
     switch document.pages.count {
     case 0: return L10n.text("Place the front of the next sheet under the camera.")
-    default: return L10n.format("%ld captures saved · Show the next side or panel, or press Finish sheet", document.pages.count)
+    default: return L10n.format("Captures saved: %ld · Scan another side or finish this sheet.", document.pages.count)
     }
   }
 
@@ -48,32 +48,59 @@ extension Scanner {
       let wasCurrent = pdfIsCurrent
       try commit(next)
       pdfIsCurrent = wasCurrent
-    } catch { self.error = error.localizedDescription }
+    } catch { self.error = L10n.text(error.localizedDescription) }
   }
 
-  @MainActor func printSessionLabel(_ label: DocumentLabel, qr: NSImage, upload: inout CloudUpload) async throws {
+  @MainActor func printSessionLabel(_ label: DocumentLabel, qr: NSImage, upload: inout CloudUpload) async throws -> Bool {
     let name = document.automation?.printerName ?? ""
-    if name == QL600Printer.destination {
-      let job = try QL600Printer.raster(QL600Printer.bitmap(label))
-      try upload.beginDirectLabel(in: folder)
+    let alreadySent = try LabelPrintStore.state(in: folder, link: label.link) == .submitted
+    if !alreadySent {
+      try await printTrackedLabel(label, qr: qr, printerName: name, showPanel: false)
+    }
+    // Keep the legacy record readable by previous app versions.
+    upload.sheetLabelStarted = false
+    upload.sheetLabelSubmitted = true
+    try upload.save(in: folder)
+    return !alreadySent
+  }
+
+  @MainActor func printTrackedLabel(_ label: DocumentLabel, qr: NSImage,
+                                    printerName: String, showPanel: Bool,
+                                    reprint: Bool = false) async throws {
+    let base = folder
+    let direct = printerName == QL600Printer.destination
+    let info = DocumentLabelView.labelPrintInfo()
+    if !direct && !showPanel {
+      guard !printerName.isEmpty, NSPrinter.printerNames.contains(printerName),
+            let printer = NSPrinter(name: printerName) else {
+        throw CloudFailure(message: "Select an available label printer in the Foliobruma session settings. The item is still open.")
+      }
+      info.printer = printer
+    }
+    // Prepare the image before recording intent; raster errors send no data.
+    let job = direct ? try QL600Printer.raster(QL600Printer.bitmap(label)) : nil
+    let ticket = try LabelPrintStore.begin(in: base, link: label.link, reprint: reprint, lock: MacLibraryLock())
+    if let job {
       do {
         try await Task.detached(priority: .userInitiated) { try QL600Printer.send(job) }.value
-        try upload.finishDirectLabel(in: folder, completed: true, mayHavePrinted: true)
       } catch {
-        let mayHavePrinted = (error as? QL600Failure)?.sent ?? true
-        try upload.finishDirectLabel(in: folder, completed: false, mayHavePrinted: mayHavePrinted)
+        try LabelPrintStore.finish(ticket, in: base, submitted: false,
+          mayHavePrinted: (error as? QL600Failure)?.sent ?? true, lock: MacLibraryLock())
         throw error
       }
-      return
+      try LabelPrintStore.finish(ticket, in: base, submitted: true, mayHavePrinted: true, lock: MacLibraryLock())
+    } else {
+      let submitted = DocumentLabelView(label: label, qr: qr).printLabel(info: info, showPanel: showPanel)
+      try LabelPrintStore.finish(ticket, in: base, submitted: submitted,
+        mayHavePrinted: false, lock: MacLibraryLock())
+      guard submitted else {
+        throw CloudFailure(message: "Label printing stopped. Check the printer before trying again.")
+      }
     }
-    guard !name.isEmpty, NSPrinter.printerNames.contains(name), let printer = NSPrinter(name: name) else {
-      throw CloudFailure(message: "Select an available label printer in the Foliobruma session settings. The item is still open.")
-    }
-    let info = DocumentLabelView.labelPrintInfo()
-    info.printer = printer
-    let view = DocumentLabelView(label: label, qr: qr)
-    try upload.submitSheetLabel(in: folder) {
-      view.printLabel(info: info, showPanel: false)
+    if var upload = try CloudUpload.load(in: base), upload.link == label.link {
+      upload.sheetLabelStarted = false
+      upload.sheetLabelSubmitted = true
+      try upload.save(in: base)
     }
   }
 
@@ -87,8 +114,13 @@ extension Scanner {
     panel.addButton(withTitle: L10n.text("Cancel"))
     guard panel.runModal() == .alertFirstButtonReturn else { return }
     do {
-      guard var upload = try CloudUpload.load(in: folder), upload.labelNeedsReview else { return }
-      try upload.confirmLabelHandled(in: folder)
-    } catch { self.error = error.localizedDescription }
+      guard let link = document.metadata?.webLink, !link.isEmpty else { return }
+      try LabelPrintStore.confirmHandled(in: folder, link: link, lock: MacLibraryLock())
+      if var upload = try CloudUpload.load(in: folder), upload.link == link {
+        upload.sheetLabelStarted = false
+        upload.sheetLabelSubmitted = true
+        try upload.save(in: folder)
+      }
+    } catch { self.error = L10n.text(error.localizedDescription) }
   }
 }
