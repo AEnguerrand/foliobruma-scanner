@@ -6,6 +6,7 @@ struct ItemEditor: View {
   let creating: Bool
   @Environment(\.dismiss) private var dismiss
   @State private var title = ""
+  @State private var namePrefix = ""
   @State private var details = ItemMetadata()
   @State private var scanPages = false
   @State private var letterBatch = false
@@ -38,6 +39,10 @@ struct ItemEditor: View {
           }
           if letterBatch || sheetBatch || details.batchID != nil {
             TextField(L10n.text("Batch name"), text: $details.batchName)
+            TextField(L10n.text("Name prefix (optional)"), text: $namePrefix)
+            Text(L10n.text("The prefix goes before each document title or automatic reference. Changes apply to this item and later items in the batch."))
+              .font(.caption).foregroundStyle(.secondary)
+            LabeledContent(L10n.text("Name preview"), value: namePreview)
             Text(L10n.text(sheetBatch || details.sheetBatch == true
               ? "Finish sheet copies the batch name, location, and tags to the next sheet."
               : "Next letter copies the batch name, location, and tags. Earlier letters do not change."))
@@ -76,12 +81,22 @@ struct ItemEditor: View {
         if !creating {
           title = model.document.title
           details = model.document.metadata ?? ItemMetadata()
+          namePrefix = details.namePrefix ?? ""
         }
       }
   }
 
+  private var namePreview: String {
+    var preview = details
+    preview.namePrefix = namePrefix
+    if preview.reference.isEmpty { preview.reference = "LET-0001" }
+    return ScanDocument(title: title, metadata: preview).displayTitle
+  }
+
   private func save() {
     do {
+      let prefix = namePrefix.trimmingCharacters(in: .whitespacesAndNewlines)
+      details.namePrefix = prefix.isEmpty || (creating && !letterBatch && !sheetBatch) ? nil : prefix
       if creating {
         var next = details
         if letterBatch { next.batchID = UUID().uuidString; next.kind = "Letter" }
