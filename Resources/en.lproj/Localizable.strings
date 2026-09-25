@@ -556,6 +556,7 @@
 "Current batch" = "Current batch";
 "Needs review" = "Needs review";
 "%ld documents" = "%ld documents";
+"%ld document" = "%ld document";
 "Status" = "Status";
 "Saved" = "Saved";
 "Modified" = "Modified";

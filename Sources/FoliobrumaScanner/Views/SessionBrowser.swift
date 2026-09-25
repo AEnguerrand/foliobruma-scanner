@@ -39,7 +39,8 @@ struct SessionBrowser: View {
         }
         Toggle(L10n.text("Needs review"), isOn: $needsReview)
         Spacer()
-        Text(L10n.format("%ld documents", matchingSessions.count)).foregroundStyle(.secondary)
+        Text(L10n.format(matchingSessions.count == 1 ? "%ld document" : "%ld documents", matchingSessions.count))
+          .foregroundStyle(.secondary)
       }.toggleStyle(.checkbox)
       Group {
         if model.loadingSessions {

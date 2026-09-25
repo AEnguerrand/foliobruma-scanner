@@ -556,6 +556,7 @@
 "Current batch" = "Lot actuel";
 "Needs review" = "À vérifier";
 "%ld documents" = "%ld documents";
+"%ld document" = "%ld document";
 "Status" = "État";
 "Saved" = "Enregistré";
 "Modified" = "Modification";
