@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 import Combine
 import IOKit.hid
 
@@ -57,7 +57,8 @@ final class USBButton: ObservableObject {
   @Published private(set) var testCount = 0
   @Published private(set) var receivedCount = 0
   @Published private(set) var status = ""
-  var settingsVisible = false
+  weak var settingsWindow: NSWindow?
+  var settingsVisible: Bool { settingsWindow?.isVisible == true }
   private let defaults: UserDefaults
   private var manager: IOHIDManager?
   private var gate = USBButtonGate()
@@ -160,6 +161,8 @@ final class USBButton: ObservableObject {
   // Also used by regression tests without opening USB devices.
   func handle(_ signal: USBButtonSignal, at now: TimeInterval) {
     receivedCount += 1
+    // A Settings scene can retain its SwiftUI view after the window closes.
+    if learning && !settingsVisible { cancelLearning() }
     if learning {
       binding.signal = signal
       cancelLearning()

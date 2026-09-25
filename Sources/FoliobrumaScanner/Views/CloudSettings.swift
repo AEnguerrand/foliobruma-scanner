@@ -52,8 +52,8 @@ struct CloudSettings: View {
         }
       }.padding(.vertical, 4)
     }
-    Section {
-      if account.user != nil {
+    if account.user != nil {
+      Section {
         Picker(L10n.text("Upload archive"), selection: $account.organisationID) {
           Text(L10n.text("Select an archive")).tag("")
           ForEach(account.organisations) { archive in Text(archive.name).tag(archive.id) }
@@ -62,13 +62,16 @@ struct CloudSettings: View {
           Text(L10n.text("Create or join an archive on foliobruma.com, then sign in again."))
             .font(.caption).foregroundStyle(.secondary)
         }
+      } header: {
+        Text(L10n.text("Upload destination"))
+      } footer: {
+        Text(L10n.text("Set automatic upload and label printing in the document’s Foliobruma menu."))
+          .font(.caption).foregroundStyle(.secondary)
       }
-
-    } header: {
-      Text(L10n.text("Upload destination"))
-    } footer: {
-      Text(L10n.text("Scans stay on this Mac. Upload needs an account and an archive. Label links require website sign-in."))
-        .font(.caption).foregroundStyle(.secondary)
+    }
+    Section {
+      Text(L10n.text("Account connection is optional. Scanning and PDF export work offline."))
+        .font(.callout).foregroundStyle(.secondary)
     }
     .task { await account.restore() }
   }

@@ -5,6 +5,11 @@ import AppKit
 import PDFKit
 import Vision
 
+private final class USBTestSettingsWindow: NSWindow {
+ var visibleForTest = true
+ override var isVisible: Bool { visibleForTest }
+}
+
 @main struct SessionTests {
  static func readData(_ url: URL) -> Data { try! Data(contentsOf: url) }
  static func waitForWork(_ scanner: Scanner) {
@@ -32,13 +37,23 @@ import Vision
   precondition(actions == [.nextDocument], "Held reports must not repeat actions")
   button.handle(press, at: 3)
   precondition(actions.count == 2)
-  button.settingsVisible = true
+  _ = NSApplication.shared
+  let settings = USBTestSettingsWindow(contentRect: .zero, styleMask: [], backing: .buffered, defer: true)
+  button.settingsWindow = settings
   button.handle(press, at: 4)
   precondition(actions.count == 2 && button.testCount == 3, "Settings tests must not run actions")
-  button.settingsVisible = false
-  button.binding.enabled = false
+  settings.visibleForTest = false
   button.handle(press, at: 5)
-  precondition(actions.count == 2)
+  precondition(actions.count == 3, "A retained but closed Settings window must not block the button")
+  settings.visibleForTest = true
+  button.handle(press, at: 6)
+  precondition(actions.count == 3, "Reopened Settings must block actions again")
+  button.settingsWindow = nil
+  button.handle(press, at: 7)
+  precondition(actions.count == 4, "A released Settings window must not block the button")
+  button.binding.enabled = false
+  button.handle(press, at: 8)
+  precondition(actions.count == 4)
   let restored = USBButton(defaults: defaults)
   precondition(restored.binding.signal == press && restored.binding.action == .nextDocument)
   precondition(!restored.binding.enabled)
