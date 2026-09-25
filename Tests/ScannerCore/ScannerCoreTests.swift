@@ -48,10 +48,17 @@ private func expectNil<T>(_ value: T?) { precondition(value == nil) }
   static func testBatchDefaultsAndGroupOrder() throws {
     let metadata = ItemMetadata(reference: "DOC-0001", batchID: "batch", batchName: "Archive",
       kind: "Sheet", author: "Sender", period: "1900", location: "Folio 1", tags: "Letters",
-      notes: "Private note", webLink: "https://example.com", sheetBatch: true)
+      notes: "Private note", webLink: "https://example.com", sheetBatch: true, namePrefix: "Family")
     let next = metadata.nextLetter
     expectEqual(next.batchID, "batch")
     expectEqual(next.batchName, "Archive")
+    expectEqual(next.namePrefix, "Family")
+    expectEqual(try JSONDecoder().decode(ItemMetadata.self, from: JSONEncoder().encode(metadata)), metadata)
+    var oldFields = try JSONSerialization.jsonObject(with: JSONEncoder().encode(metadata)) as! [String: Any]
+    oldFields.removeValue(forKey: "namePrefix")
+    let oldMetadata = try JSONDecoder().decode(ItemMetadata.self, from: JSONSerialization.data(withJSONObject: oldFields))
+    expectNil(oldMetadata.namePrefix)
+    expectEqual(oldMetadata.reference, metadata.reference)
     expectEqual(next.location, "Folio 1")
     expectEqual(next.tags, "Letters")
     expectEqual(next.kind, "Sheet")

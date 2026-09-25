@@ -1,6 +1,7 @@
 import Foundation
 
 public struct ItemMetadata: Codable, Equatable {
+  public var namePrefix: String?
   public var sheetBatch: Bool?
   public var reference: String
   public var batchID: String?
@@ -15,7 +16,8 @@ public struct ItemMetadata: Codable, Equatable {
 
   public init(reference: String = "", batchID: String? = nil, batchName: String = "",
        kind: String = "Document", author: String = "", period: String = "",
-       location: String = "", tags: String = "", notes: String = "", webLink: String = "", sheetBatch: Bool? = nil) {
+       location: String = "", tags: String = "", notes: String = "", webLink: String = "", sheetBatch: Bool? = nil, namePrefix: String? = nil) {
+    self.namePrefix = namePrefix
     self.sheetBatch = sheetBatch
     self.reference = reference
     self.batchID = batchID
@@ -31,6 +33,6 @@ public struct ItemMetadata: Codable, Equatable {
 
   public var nextLetter: ItemMetadata {
     ItemMetadata(batchID: batchID, batchName: batchName, kind: sheetBatch == true ? "Sheet" : "Letter",
-                 location: location, tags: tags, sheetBatch: sheetBatch)
+                 location: location, tags: tags, sheetBatch: sheetBatch, namePrefix: namePrefix)
   }
 }

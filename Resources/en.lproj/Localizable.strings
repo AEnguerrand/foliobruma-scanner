@@ -534,3 +534,7 @@
 
 "Could not find photo edges · Try again" = "Could not find photo edges · Try again";
 "%ld captures saved · Show the next side or panel, or press Finish sheet" = "%ld captures saved · Show the next side or panel, or press Finish sheet";
+
+"Name prefix (optional)" = "Name prefix (optional)";
+"The prefix goes before each document title or automatic reference. Changes apply to this item and later items in the batch." = "The prefix goes before each document title or automatic reference. Changes apply to this item and later items in the batch.";
+"Name preview" = "Name preview";

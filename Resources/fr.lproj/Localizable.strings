@@ -534,3 +534,7 @@
 
 "Could not find photo edges · Try again" = "Contours de la photo introuvables · Réessayez";
 "%ld captures saved · Show the next side or panel, or press Finish sheet" = "%ld captures enregistrées · Présentez la face ou le volet suivant, ou appuyez sur Terminer la feuille";
+
+"Name prefix (optional)" = "Préfixe du nom (facultatif)";
+"The prefix goes before each document title or automatic reference. Changes apply to this item and later items in the batch." = "Le préfixe précède le titre ou la référence automatique de chaque document. Les modifications concernent cet élément et les éléments suivants du lot.";
+"Name preview" = "Aperçu du nom";

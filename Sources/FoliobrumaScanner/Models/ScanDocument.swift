@@ -9,7 +9,8 @@ extension ScanDocument {
 
   var displayTitle: String {
     let name = title.trimmingCharacters(in: .whitespacesAndNewlines)
-    if !name.isEmpty { return name }
-    return metadata?.reference ?? L10n.text("Untitled document")
+    let base = name.isEmpty ? (metadata?.reference ?? L10n.text("Untitled document")) : name
+    let prefix = metadata?.namePrefix?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    return prefix.isEmpty ? base : prefix + " " + base
   }
 }
