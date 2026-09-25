@@ -558,3 +558,8 @@
 "Diagnostics" = "Diagnostic";
 "Set automatic upload and label printing in the document’s Foliobruma menu." = "Réglez l’envoi automatique et l’impression des étiquettes dans le menu Foliobruma du document.";
 "Account connection is optional. Scanning and PDF export work offline." = "La connexion au compte est facultative. La numérisation et l’export PDF fonctionnent hors ligne.";
+
+// Document name prefixes.
+"Name prefix (optional)" = "Préfixe du nom (facultatif)";
+"The prefix goes before each document title or automatic reference. Changes apply to this item and later items in the batch." = "Le préfixe précède le titre ou la référence automatique de chaque document. Les modifications concernent cet élément et les éléments suivants du lot.";
+"Name preview" = "Aperçu du nom";

@@ -103,6 +103,10 @@ struct LabelEditor: View {
         title = model.document.title.trimmingCharacters(in: .whitespacesAndNewlines)
         if title.isEmpty { title = model.document.metadata?.batchName ?? "" }
         if title.isEmpty { title = model.document.displayTitle }
+        if let prefix = model.document.metadata?.namePrefix,
+           !prefix.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+          title = model.document.displayTitle
+        }
         subtitle = model.document.metadata?.reference ?? ""
       }
       .onChange(of: itemLink) { saved = false }

@@ -20,6 +20,15 @@ All pages of a letter stay in the same record until you select **Next letter**.
 A page turn does not create another letter. Editing batch fields affects the
 current letter and later letters created from it, not earlier records.
 
+For letter and sheet batches, set **Name prefix (optional)** to put text before
+all new document names. For example, `Family` gives `Family LET-0001` when the
+title is empty, or `Family Letter from June` when a title is set. The app adds a
+space between the prefix and the name. **Name preview** shows an example; a new
+item uses the next available reference when saved. The prefix is used in the
+library, PDF export name, upload name, and default label title. Change or clear
+it in **Details → Edit details**. The change applies to the current item and
+later items made from it. Earlier items and their references do not change.
+
 References are unique within this Mac's library, not across devices. Other
 items use `DOC-` references and share the same counter. Gaps are possible after
 a failed write. References do not change when you rename an item. Documents

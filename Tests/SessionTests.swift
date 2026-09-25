@@ -323,6 +323,38 @@ private final class USBTestSettingsWindow: NSWindow {
   precondition(scanner.selected == pages[0].id)
   print("PASS: page merge order, rotation, pixels, source preservation, reload, PDF, crop, and failed-write recovery")
  }
+ static func testBatchNamePrefix() throws {
+  let root = FileManager.default.temporaryDirectory.appendingPathComponent("prefix-test-" + UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: root) }
+  let scanner = Scanner(storageRoot: root)
+  for sheetBatch in [false, true] {
+    let metadata = ItemMetadata(batchID: UUID().uuidString, sheetBatch: sheetBatch, namePrefix: " Family ")
+    try scanner.createItem(title: "Letter from June", metadata: metadata, scanPages: true)
+    precondition(scanner.document.displayTitle == "Family Letter from June")
+    let firstFolder = scanner.folder
+    let firstReference = scanner.document.metadata!.reference
+    if sheetBatch { try scanner.createNextSheet(resumeCapture: false) }
+    else { scanner.createNextLetter() }
+    precondition(scanner.error == nil)
+    let reference = scanner.document.metadata!.reference
+    precondition(reference != firstReference && scanner.document.displayTitle == "Family " + reference)
+    try scanner.restore()
+    precondition(scanner.document.displayTitle == "Family " + reference)
+    var details = scanner.document.metadata!
+    details.namePrefix = "Archive"
+    try scanner.saveMetadata(title: "", metadata: details)
+    precondition(scanner.document.displayTitle == "Archive " + reference)
+    let first = try SessionStore(folder: firstFolder).loadIfPresent()!
+    precondition(first.displayTitle == "Family Letter from June" && first.metadata?.reference == firstReference)
+    details.namePrefix = nil
+    try scanner.saveMetadata(title: "", metadata: details)
+    precondition(scanner.document.displayTitle == reference)
+    if sheetBatch { try scanner.createNextSheet(resumeCapture: false) }
+    else { scanner.createNextLetter() }
+    precondition(scanner.document.metadata?.namePrefix == nil)
+  }
+  print("PASS: batch name prefix, saved-session restore, edits, clearing, and earlier-item preservation")
+ }
  static func testCatalogAndLabels() throws {
   let root = FileManager.default.temporaryDirectory.appendingPathComponent("catalog-test-" + UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: root) }
@@ -516,6 +548,7 @@ private final class USBTestSettingsWindow: NSWindow {
   try PermanentLabelTests.run()
   try CloudUploadTests.run()
   try testReviewNavigation()
+  try testBatchNamePrefix()
   try testCatalogAndLabels()
   try testPageMerge()
   testDuplicateDetail()
