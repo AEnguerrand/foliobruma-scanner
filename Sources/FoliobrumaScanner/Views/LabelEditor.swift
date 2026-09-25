@@ -30,52 +30,59 @@ struct LabelEditor: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 16) {
       Text(L10n.text("Label")).font(.title2)
-      Picker(L10n.text("Label destination"), selection: $custom) {
-        Text(L10n.text("Item link")).tag(false)
-        Text(L10n.text("Custom link")).tag(true)
-      }.pickerStyle(.segmented)
-      Text(L10n.text(custom
-        ? "Custom label text is not saved. Printed links are kept in this session to prevent repeat jobs."
-        : "An uploaded item uses its permanent SaaS link. You can also paste an existing HTTPS link."))
-        .font(.callout).foregroundStyle(.secondary)
-      Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 12) {
-        field("HTTPS link", text: custom ? $customLink : $itemLink)
-        field("Label title", text: $title)
-        field("Second line (optional)", text: $subtitle)
+      ScrollView {
+        VStack(alignment: .leading, spacing: 16) {
+          Picker(L10n.text("Label destination"), selection: $custom) {
+            Text(L10n.text("Item link")).tag(false)
+            Text(L10n.text("Custom link")).tag(true)
+          }.pickerStyle(.segmented)
+          Text(L10n.text(custom
+            ? "Custom label text is not saved. Printed links are kept in this session to prevent repeat jobs."
+            : "An uploaded item uses its permanent SaaS link. You can also paste an existing HTTPS link."))
+            .font(.callout).foregroundStyle(.secondary)
+          Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 12) {
+            field("HTTPS link", text: custom ? $customLink : $itemLink)
+            field("Label title", text: $title)
+            field("Second line (optional)", text: $subtitle)
+          }
+          if !custom {
+            Button(L10n.text("Save item link")) { saveLink() }.disabled(!valid || model.busy)
+          }
+          if !link.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+             let message = DocumentLabel.validationMessage(link) {
+            Label(L10n.text(message), systemImage: "exclamationmark.circle")
+              .font(.callout).foregroundStyle(.red).fixedSize(horizontal: false, vertical: true)
+          }
+          Group {
+            if ready, let qr {
+              LabelPreview(label: label, qr: qr).id(label)
+                .frame(width: DocumentLabel.size.width, height: DocumentLabel.size.height)
+                .scaleEffect(2.4)
+                .frame(width: DocumentLabel.size.width * 2.4, height: DocumentLabel.size.height * 2.4)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(L10n.text("Label preview"))
+                .accessibilityValue([label.title, label.subtitle, label.printedLink]
+                  .filter { !$0.isEmpty }.joined(separator: ", "))
+            } else if generating {
+              ProgressView(L10n.text("Preparing label…"))
+                .frame(maxWidth: .infinity, minHeight: 160)
+            } else {
+              Text(L10n.text(failure != nil ? "Label preview unavailable" : "Enter a link to preview the label."))
+                .foregroundStyle(.secondary).frame(maxWidth: .infinity, minHeight: 160)
+            }
+          }.frame(maxWidth: .infinity)
+          Text(L10n.text("DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link."))
+            .font(.caption).foregroundStyle(.secondary)
+          DisclosureGroup(L10n.text("Print setup")) {
+            Text(L10n.text("Use Print with QL-600 for direct USB printing. No driver is needed. Load a DK-22205 roll. Test one label with your phone."))
+              .font(.callout).foregroundStyle(.secondary)
+          }
+          if let failure { Text(failure).foregroundStyle(.red) }
+        }.frame(maxWidth: .infinity, alignment: .leading).padding(4)
       }
-      if !link.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-         let message = DocumentLabel.validationMessage(link) {
-        Label(L10n.text(message), systemImage: "exclamationmark.circle")
-          .font(.callout).foregroundStyle(.red).fixedSize(horizontal: false, vertical: true)
-      }
-      Group {
-        if ready, let qr {
-          LabelPreview(label: label, qr: qr).id(label)
-            .frame(width: DocumentLabel.size.width, height: DocumentLabel.size.height)
-            .scaleEffect(2.4)
-            .frame(width: DocumentLabel.size.width * 2.4, height: DocumentLabel.size.height * 2.4)
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(L10n.text("Label preview"))
-            .accessibilityValue([label.title, label.subtitle, label.printedLink]
-              .filter { !$0.isEmpty }.joined(separator: ", "))
-        } else if generating {
-          ProgressView(L10n.text("Preparing label…"))
-            .frame(maxWidth: .infinity, minHeight: 160)
-        } else {
-          Text(L10n.text(failure != nil ? "Label preview unavailable" : "Enter a link to preview the label."))
-            .foregroundStyle(.secondary).frame(maxWidth: .infinity, minHeight: 160)
-        }
-      }.frame(maxWidth: .infinity)
-      Text(L10n.text("DK-22205 · 62 × 25 mm · Black on white. Long text is shortened on the label. The QR contains the full link."))
-        .font(.caption).foregroundStyle(.secondary)
-      DisclosureGroup(L10n.text("Print setup")) {
-        Text(L10n.text("Use Print with QL-600 for direct USB printing. No driver is needed. Load a DK-22205 roll. Test one label with your phone."))
-          .font(.callout).foregroundStyle(.secondary)
-      }
-      if let failure { Text(failure).foregroundStyle(.red) }
       if printState == .pending {
         Label(L10n.text("Print result unknown. Check the printer before sending another label."), systemImage: "exclamationmark.triangle")
-          .foregroundStyle(.orange)
+          .foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true)
         Button(L10n.text("Confirm label handled")) {
           model.confirmSheetLabelHandled()
           refreshPrintState()
@@ -86,12 +93,9 @@ struct LabelEditor: View {
       }
       if printed { Text(L10n.text("QL-600 confirmed label printed")).foregroundStyle(.secondary) }
       if saved && !custom { Text(L10n.text("Item link saved")).foregroundStyle(.secondary) }
-      HStack {
+      Divider()
+      AdaptiveActions {
         Button(L10n.text("Done")) { dismiss() }.keyboardShortcut(.cancelAction)
-        if !custom {
-          Button(L10n.text("Save item link")) { saveLink() }.disabled(!valid || model.busy)
-        }
-        Spacer()
         Button(L10n.text("Save label PDF…")) { savePDF() }.disabled(!ready)
         Button(L10n.text(printState == nil ? "Print with QL-600" : "Reprint with QL-600…")) {
           requestPrint(direct: true)
@@ -100,7 +104,7 @@ struct LabelEditor: View {
           requestPrint(direct: false)
         }.buttonStyle(.borderedProminent).disabled(!ready || !stateReadable || model.busy)
       }
-    }.padding(24).frame(width: 760)
+    }.padding(24).fittedPanel(width: 760, height: 640)
       .disabled(printing)
       .interactiveDismissDisabled(printing)
       .confirmationDialog(L10n.text("Print another copy?"), isPresented: $confirmReprint, titleVisibility: .visible) {

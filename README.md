@@ -63,7 +63,9 @@ For a large stack, click **New item…** (+ or ⌘N), choose **Batch of sheets**
 and select **Start batch**. Scan all sides of one sheet, then select **Finish
 sheet** beside the capture buttons (⌘⇧Return). **Documents** has **Current batch**
 and **Needs review** filters. Manual and automatic printing share a saved label
-record; use **Reprint…** only when another copy is needed.
+record; use **Reprint…** only when another copy is needed. Dialog content scrolls
+when space is limited; action buttons stay below it. Zoom controls use a compact
+layout in narrow previews.
 
 See [Scanning and review](docs/scanning.md) for the full steps, capture signals,
 shortcuts, and language settings. Check each scan: hand detection, duplicate

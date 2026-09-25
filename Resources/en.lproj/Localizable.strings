@@ -579,3 +579,5 @@
 "Scan all sides of one sheet, then choose Finish sheet. Each sheet gets one reference." = "Scan all sides of one sheet, then choose Finish sheet. Each sheet gets one reference.";
 "Names use this prefix and a unique reference unless you enter a title." = "Names use this prefix and a unique reference unless you enter a title.";
 "Captures saved: %ld · Scan another side or finish this sheet." = "Captures saved: %ld · Scan another side or finish this sheet.";
+
+"Details only" = "Details only";

@@ -34,7 +34,7 @@ struct ManualUploadView: View {
         .buttonStyle(.borderedProminent)
         .disabled(!account.ready || account.working || model.busy || model.document.pages.isEmpty)
       }.padding(20)
-    }.frame(width: 480, height: 720)
+    }.fittedPanel(width: 480, height: 720)
       .onAppear { printLabel = model.printOnFinish }
   }
 }

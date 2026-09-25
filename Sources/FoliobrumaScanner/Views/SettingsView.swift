@@ -21,6 +21,6 @@ struct SettingsView: View {
     }
     .formStyle(.grouped)
     .padding(12)
-    .frame(width: 600, height: 760)
+    .fittedPanel(width: 600, height: 760, withinParent: false)
   }
 }

@@ -9,11 +9,14 @@ struct CaptureControls: View {
           if let details = model.document.metadata {
             Text([details.batchName, details.reference].filter { !$0.isEmpty }.joined(separator: " · "))
               .font(.subheadline).foregroundStyle(.secondary)
+              .lineLimit(2).truncationMode(.middle)
+              .help([details.batchName, details.reference].filter { !$0.isEmpty }.joined(separator: " · "))
           }
           Text(model.sheetCapturePrompt).font(.headline)
+            .fixedSize(horizontal: false, vertical: true).multilineTextAlignment(.center)
         }
         if model.replacementID != nil {
-          HStack {
+          AdaptiveActions {
             Label(
               L10n.text("Replace one page · Original files are kept"),
               systemImage: "arrow.triangle.2.circlepath")
@@ -24,7 +27,7 @@ struct CaptureControls: View {
             .disabled(model.busy)
           }.font(.callout)
         }
-        HStack(spacing: 16) {
+        AdaptiveActions {
           if model.replacementID == nil {
             Button {
               model.autoCapture.toggle()

@@ -579,3 +579,5 @@
 "Scan all sides of one sheet, then choose Finish sheet. Each sheet gets one reference." = "Numérisez tous les côtés d’une feuille, puis choisissez Terminer la feuille. Chaque feuille reçoit une référence.";
 "Names use this prefix and a unique reference unless you enter a title." = "Les noms utilisent ce préfixe et une référence unique, sauf si vous saisissez un titre.";
 "Captures saved: %ld · Scan another side or finish this sheet." = "Captures enregistrées : %ld · Numérisez un autre côté ou terminez cette feuille.";
+
+"Details only" = "Détails uniquement";

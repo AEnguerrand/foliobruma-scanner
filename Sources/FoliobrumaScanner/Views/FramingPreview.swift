@@ -26,6 +26,6 @@ struct FramingPreview: View {
           }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
       }
-    }.padding(24).frame(width: 720, height: 520).interactiveDismissDisabled(model.busy)
+    }.padding(24).fittedPanel(width: 720, height: 520).interactiveDismissDisabled(model.busy)
   }
 }

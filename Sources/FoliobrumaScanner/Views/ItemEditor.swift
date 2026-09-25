@@ -42,7 +42,9 @@ struct ItemEditor: View {
             TextField(L10n.text("Name prefix (optional)"), text: $namePrefix)
             Text(L10n.text("Names use this prefix and a unique reference unless you enter a title."))
               .font(.caption).foregroundStyle(.secondary)
-            LabeledContent(L10n.text("Name preview"), value: namePreview)
+            LabeledContent(L10n.text("Name preview")) {
+              Text(namePreview).lineLimit(2).truncationMode(.middle).help(namePreview)
+            }
             if !creating {
               Text(L10n.text(sheetBatch || details.sheetBatch == true
                 ? "Finish sheet copies the batch name, location, and tags to the next sheet."
@@ -81,7 +83,7 @@ struct ItemEditor: View {
         Button(L10n.text(creating ? (sheetBatch || letterBatch ? "Start batch" : (workflow == .record ? "Create item" : "Start scanning")) : "Save details")) { save() }
           .keyboardShortcut(.defaultAction).buttonStyle(.borderedProminent).disabled(model.busy)
       }
-    }.padding(24).frame(width: 560, height: creating && !showDetails ? (sheetBatch || letterBatch ? 520 : 420) : 650)
+    }.padding(24).fittedPanel(width: 560, height: creating && !showDetails ? (sheetBatch || letterBatch ? 520 : 420) : 650)
       .onAppear {
         if !creating {
           showDetails = true

@@ -55,9 +55,9 @@ struct SessionBrowser: View {
         } else {
           Table(matchingSessions, selection: $selection, sortOrder: $sortOrder) {
             TableColumn(L10n.text("Document"), value: \.title) { item in
-              Text(item.title).lineLimit(1)
+              Text(item.title).lineLimit(1).help(item.title)
             }.width(min: 160, ideal: 230)
-            TableColumn(L10n.text("Reference"), value: \.referenceLabel) { Text($0.reference ?? "") }
+            TableColumn(L10n.text("Reference"), value: \.referenceLabel) { Text($0.reference ?? "").lineLimit(1).help($0.reference ?? "") }
               .width(min: 80, ideal: 100)
             TableColumn(L10n.text("Pages"), value: \.pageCount) { Text(String($0.pageCount)).monospacedDigit() }
               .width(50)
@@ -67,9 +67,9 @@ struct SessionBrowser: View {
               } else if item.folder.resolvingSymlinksInPath() == model.folder.resolvingSymlinksInPath() {
                 Text(L10n.text("Current"))
               } else { Text(L10n.text("Saved")) }
-            }.width(min: 90, ideal: 110)
-            TableColumn(L10n.text("Modified"), value: \.modified) { Text($0.modified, style: .date) }
-              .width(min: 80, ideal: 100)
+            }.width(min: 110, ideal: 150)
+            TableColumn(L10n.text("Modified"), value: \.modified) { Text($0.modified, style: .date).lineLimit(1) }
+              .width(min: 100, ideal: 120)
           }
           .contextMenu(forSelectionType: URL.self) { ids in
             if let folder = ids.first {
@@ -95,7 +95,7 @@ struct SessionBrowser: View {
         }.keyboardShortcut(.defaultAction).disabled(selection == nil)
           .buttonStyle(.borderedProminent)
       }
-    }.padding(24).frame(width: 840, height: 560)
+    }.padding(24).fittedPanel(width: 840, height: 560)
       .onAppear { currentBatch = model.document.metadata?.batchID != nil }
       .onChange(of: search) { selection = nil }
       .onChange(of: currentBatch) { selection = nil }
