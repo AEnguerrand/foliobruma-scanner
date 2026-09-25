@@ -52,8 +52,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for the source layout, checks, release
 
 ## Developer server
 
-Production is the default server. To test another server, open **Settings** and
-click the version text five times. Enable **Developer mode**, enter an HTTPS
+Production is the default server. To test another server, open **Settings → Advanced**. Enable **Developer mode**, enter an HTTPS
 origin such as `https://staging.foliobruma.com`, then click **Save server settings**.
 Quit and reopen the scanner. A DEV indicator shows the active server.
 

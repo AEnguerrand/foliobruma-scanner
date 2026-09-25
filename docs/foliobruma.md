@@ -6,7 +6,7 @@
 
 The **Foliobruma** button at the top right shows whether you are signed in.
 Click it to connect, select an archive, or change upload and label options.
-The same controls are in **Settings → Foliobruma account**. Camera controls
+The same controls are in **Settings → Account**. Camera controls
 remain in **Scan setup**.
 
 Select **Connect on website**. Your normal browser opens Foliobruma. Sign in on

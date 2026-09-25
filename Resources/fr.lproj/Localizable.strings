@@ -535,6 +535,31 @@
 "Could not find photo edges · Try again" = "Contours de la photo introuvables · Réessayez";
 "%ld captures saved · Show the next side or panel, or press Finish sheet" = "%ld captures enregistrées · Présentez la face ou le volet suivant, ou appuyez sur Terminer la feuille";
 
+// Settings navigation and USB setup.
+"General" = "Général";
+"Account" = "Compte";
+"Advanced" = "Avancé";
+"About" = "À propos";
+"Version" = "Version";
+"Server" = "Serveur";
+"Scanning and PDF export work offline. Your scans stay on this Mac." = "La numérisation et l’export PDF fonctionnent hors ligne. Vos scans restent sur ce Mac.";
+"Select a connected button" = "Sélectionnez un bouton connecté";
+"Press the physical button once" = "Appuyez une fois sur le bouton physique";
+"Button setup needed" = "Configuration du bouton requise";
+"Button action enabled" = "Action du bouton activée";
+"Button action off" = "Action du bouton désactivée";
+"Actions pause while Settings is open." = "Les actions sont suspendues dans les réglages.";
+"Learn the button signal" = "Enregistrez le signal du bouton";
+"Button signal saved" = "Signal du bouton enregistré";
+"Learn again" = "Réapprendre";
+"Button action" = "Action du bouton";
+"Close Settings and select the document window to use the button." = "Fermez les réglages et sélectionnez la fenêtre du document pour utiliser le bouton.";
+"Test presses" = "Appuis de test";
+"Diagnostics" = "Diagnostic";
+"Set automatic upload and label printing in the document’s Foliobruma menu." = "Réglez l’envoi automatique et l’impression des étiquettes dans le menu Foliobruma du document.";
+"Account connection is optional. Scanning and PDF export work offline." = "La connexion au compte est facultative. La numérisation et l’export PDF fonctionnent hors ligne.";
+
+// Document name prefixes.
 "Name prefix (optional)" = "Préfixe du nom (facultatif)";
 "The prefix goes before each document title or automatic reference. Changes apply to this item and later items in the batch." = "Le préfixe précède le titre ou la référence automatique de chaque document. Les modifications concernent cet élément et les éléments suivants du lot.";
 "Name preview" = "Aperçu du nom";

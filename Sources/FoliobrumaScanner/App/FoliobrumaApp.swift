@@ -6,7 +6,7 @@ import SwiftUI
       WindowGroup("Foliobruma Scanner") { ContentView() }.defaultSize(
         width: 1440, height: 1000
       ).commands { ScannerCommands() }
-      Settings { SettingsView() }
+      Settings { SettingsView() }.windowResizability(.contentSize)
     }
   }
 
