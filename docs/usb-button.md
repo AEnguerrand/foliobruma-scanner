@@ -4,7 +4,7 @@
 
 Open **Settings → USB button**. Select the device, select an action, then click
 **Learn button** and press the physical button once. Learning stays active until
-you press or click **Cancel**. **Signals received** shows input from the selected
+you press or click **Cancel**. **Diagnostics → Signals received** shows input from the selected
 device, even before learning. Press it again to check the
 **Test presses** counter. Enable **Enable button action**, close Settings, and
 select the document window. The setting is saved on this Mac.
@@ -21,7 +21,8 @@ select the document window. The setting is saved on this Mac.
 | **Export PDF** | Open the export summary. You still choose the file location. |
 
 One device and one learned signal can be assigned at a time. Actions run only
-in the active document window. They are blocked in Settings, dialogs, and while
+in the active document window. Closing Settings restores button actions, including
+when macOS keeps the Settings view in memory. Actions are blocked in Settings, dialogs, and while
 the app is busy. Reports less than 0.6 seconds apart are treated as one press;
 wait at least 0.6 seconds between presses. Device removal stops input. Reconnect
 to the same USB port if the device has no serial number, or select and learn it

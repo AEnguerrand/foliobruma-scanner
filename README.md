@@ -17,6 +17,7 @@ Foliobruma is a free, open-source document camera app. Place a page under the ca
 - **Page review:** browse a page sidebar, zoom, rotate, reorder, merge two pages, crop from the original, replace a page, or undo the last removal.
 - **Saved sessions:** browse documents by name, page count, and edit date. Original images stay on your Mac.
 - **PDF export:** save the pages in the current document to a local PDF.
+- **USB button:** assign a physical button to an action. Close Settings and select the document window to use it.
 - **Sheet batches:** scan all sides or folded panels per sheet, finish with a USB button, and group related sheets later in Review.
 - **Metadata records and letter batches:** save details without a scan. Use automatic references and shared batch details.
 - **QR labels:** preview, export, and print a compact label with an existing HTTPS link. QR codes are generated on your Mac.
@@ -62,6 +63,12 @@ are optional.
 See [Scanning and review](docs/scanning.md) for the full steps, capture signals,
 shortcuts, and language settings. Check each scan: hand detection, duplicate
 checks, and automatic crop are approximate. See [Troubleshooting and limits](docs/troubleshooting.md).
+
+## Settings
+
+Open **Settings** and select **General**, **USB button**, **Account**, or
+**Advanced** in the sidebar. USB setup shows whether the action is enabled;
+signal counts and device details are under **Diagnostics**.
 
 ## Documentation
 

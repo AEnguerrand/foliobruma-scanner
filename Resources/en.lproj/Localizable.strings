@@ -534,3 +534,27 @@
 
 "Could not find photo edges · Try again" = "Could not find photo edges · Try again";
 "%ld captures saved · Show the next side or panel, or press Finish sheet" = "%ld captures saved · Show the next side or panel, or press Finish sheet";
+
+// Settings navigation and USB setup.
+"General" = "General";
+"Account" = "Account";
+"Advanced" = "Advanced";
+"About" = "About";
+"Version" = "Version";
+"Server" = "Server";
+"Scanning and PDF export work offline. Your scans stay on this Mac." = "Scanning and PDF export work offline. Your scans stay on this Mac.";
+"Select a connected button" = "Select a connected button";
+"Press the physical button once" = "Press the physical button once";
+"Button setup needed" = "Button setup needed";
+"Button action enabled" = "Button action enabled";
+"Button action off" = "Button action off";
+"Actions pause while Settings is open." = "Actions pause while Settings is open.";
+"Learn the button signal" = "Learn the button signal";
+"Button signal saved" = "Button signal saved";
+"Learn again" = "Learn again";
+"Button action" = "Button action";
+"Close Settings and select the document window to use the button." = "Close Settings and select the document window to use the button.";
+"Test presses" = "Test presses";
+"Diagnostics" = "Diagnostics";
+"Set automatic upload and label printing in the document’s Foliobruma menu." = "Set automatic upload and label printing in the document’s Foliobruma menu.";
+"Account connection is optional. Scanning and PDF export work offline." = "Account connection is optional. Scanning and PDF export work offline.";
