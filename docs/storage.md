@@ -33,3 +33,7 @@ Include this file in backups. See [Records and batches](batches.md) for group li
 Optional uploads add `cloud-upload.json` and retained `upload-<id>.pdf` files
 to the session folder. See [Retry an upload](foliobruma.md#retry-an-upload)
 before clearing an upload record.
+
+Manual and automatic label printing share `label-prints.json` in each session.
+Keep this file in backups to retain repeat-print checks and unknown print results.
+The `.label-print.lock` file coordinates print reservations across app windows.

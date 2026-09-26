@@ -97,6 +97,30 @@ extension SessionTests {
   print("PASS: single-sided and folded four-panel sheets; USB completion; capture after two sides; undo and reading order; duplicate history; replacement; rejected and modal guards; failed-write recovery; reload")
  }
 
+ static func testLargeBatchLibrary() throws {
+  let root = FileManager.default.temporaryDirectory.appendingPathComponent("large-batch-" + UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: root) }
+  let batch = UUID().uuidString
+  for index in 0..<1000 {
+    let details = ItemMetadata(reference: "LET-" + String(index), batchID: batch, batchName: "Synthetic batch", sheetBatch: true)
+    let rejected = index % 100 == 0
+      ? [RejectedScan(file: "Rejected/test.jpg", reason: "Test", split: false, divider: 0.5)] : []
+    _ = try SessionStore.create(ScanDocument(title: "", metadata: details,
+      pages: [ScanPage(file: "Pages/test.jpg", original: "Originals/test.jpg")], rejected: rejected), in: root)
+  }
+  let scanner = Scanner(storageRoot: root)
+  scanner.browseSessions()
+  let deadline = Date().addingTimeInterval(20)
+  while scanner.loadingSessions && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.01)) }
+  precondition(!scanner.loadingSessions)
+  let sheets = scanner.sessions.filter { $0.batchID == batch }
+  precondition(sheets.count == 1000 && Set(sheets.compactMap(\.reference)).count == 1000)
+  precondition(sheets.filter(\.needsReview).count == 10)
+  scanner.openSession(at: sheets[500].folder)
+  precondition(scanner.isSheetBatch && scanner.document.pages.count == 1 && !scanner.autoCapture)
+  print("PASS: 1,000-sheet library load; batch identity; 10 review items; session reopen without capture")
+ }
+
  static func testSheetGroups() throws {
   let root = FileManager.default.temporaryDirectory.appendingPathComponent("sheet-groups-test-" + UUID().uuidString)
   try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)

@@ -563,3 +563,46 @@
 "Name prefix (optional)" = "Préfixe du nom (facultatif)";
 "The prefix goes before each document title or automatic reference. Changes apply to this item and later items in the batch." = "Le préfixe précède le titre ou la référence automatique de chaque document. Les modifications concernent cet élément et les éléments suivants du lot.";
 "Name preview" = "Aperçu du nom";
+
+"Label" = "Étiquette";
+"Label…" = "Étiquette…";
+"Recovery" = "Récupération";
+"Document actions" = "Actions du document";
+"Show or hide scan setup" = "Afficher ou masquer les réglages de numérisation";
+"Finish and continue (⌘⇧Return)" = "Terminer et continuer (⌘⇧Entrée)";
+"Page actions" = "Actions de la page";
+"Workflow" = "Mode de travail";
+"One document" = "Un document";
+"Batch of sheets" = "Lot de feuilles";
+"Batch of letters" = "Lot de lettres";
+"Optional details" = "Détails facultatifs";
+"Start batch" = "Commencer le lot";
+"Start scanning" = "Commencer la numérisation";
+"Current batch" = "Lot actuel";
+"Needs review" = "À vérifier";
+"%ld documents" = "%ld documents";
+"%ld document" = "%ld document";
+"Status" = "État";
+"Saved" = "Enregistré";
+"Modified" = "Modification";
+"Open" = "Ouvrir";
+"Label already sent" = "Étiquette déjà envoyée";
+"Print result unknown. Check the printer before sending another label." = "Résultat inconnu. Vérifiez l’imprimante avant d’envoyer une autre étiquette.";
+"Label already sent. Finish will not print it again." = "Étiquette déjà envoyée. Terminer ne la réimprimera pas.";
+"Reprint with QL-600…" = "Réimprimer avec QL-600…";
+"Reprint…" = "Réimprimer…";
+"Print another copy?" = "Imprimer un autre exemplaire ?";
+"Reprint" = "Réimprimer";
+"This label was already sent or its result is unknown. Check the sheet and printer first. Reprint sends another copy of the same label." = "Cette étiquette a déjà été envoyée ou son résultat est inconnu. Vérifiez d’abord la feuille et l’imprimante. Réimprimer envoie un autre exemplaire de la même étiquette.";
+"Finish sheet saves this sheet and prepares the next one." = "Terminer la feuille enregistre cette feuille et prépare la suivante.";
+
+"This label was already sent or its print result is unknown. Check the printer before choosing Reprint." = "Cette étiquette a déjà été envoyée ou son résultat est inconnu. Vérifiez l’imprimante avant de choisir Réimprimer.";
+"The label print record changed. Check the printer before continuing." = "Le suivi d’impression a changé. Vérifiez l’imprimante avant de continuer.";
+"Label printing stopped. Check the printer before trying again." = "L’impression s’est arrêtée. Vérifiez l’imprimante avant de réessayer.";
+"Custom label text is not saved. Printed links are kept in this session to prevent repeat jobs." = "Le texte personnalisé n’est pas enregistré. Les liens imprimés sont conservés dans cette session pour éviter les impressions en double.";
+
+"Scan all sides of one sheet, then choose Finish sheet. Each sheet gets one reference." = "Numérisez tous les côtés d’une feuille, puis choisissez Terminer la feuille. Chaque feuille reçoit une référence.";
+"Names use this prefix and a unique reference unless you enter a title." = "Les noms utilisent ce préfixe et une référence unique, sauf si vous saisissez un titre.";
+"Captures saved: %ld · Scan another side or finish this sheet." = "Captures enregistrées : %ld · Numérisez un autre côté ou terminez cette feuille.";
+
+"Details only" = "Détails uniquement";

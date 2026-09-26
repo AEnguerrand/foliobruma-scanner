@@ -81,7 +81,7 @@ Enable **Upload automatically** to make **Print a label when finished** availabl
 The label option runs only after a successful upload and uses this session’s
 selected printer. The QL-600 USB option does not open a print dialog.
 
-To upload an item manually, select **Upload to Foliobruma** beside **Export PDF**.
+To upload an item manually, select **Document actions → Upload to Foliobruma**.
 Sign in if needed, select the destination archive, and select **Upload now**.
 All saved pages are sent as one PDF. This does not enable automatic upload or
 start another item. The sheet also lets you choose whether to print a label.

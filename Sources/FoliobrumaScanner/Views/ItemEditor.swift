@@ -8,9 +8,16 @@ struct ItemEditor: View {
   @State private var title = ""
   @State private var namePrefix = ""
   @State private var details = ItemMetadata()
-  @State private var scanPages = false
-  @State private var letterBatch = false
-  @State private var sheetBatch = false
+  private enum Workflow: String, CaseIterable {
+    case document = "One document"
+    case sheets = "Batch of sheets"
+    case letters = "Batch of letters"
+    case record = "Details only"
+  }
+  @State private var workflow = Workflow.document
+  @State private var showDetails = false
+  private var sheetBatch: Bool { workflow == .sheets }
+  private var letterBatch: Bool { workflow == .letters }
   @State private var failure: String?
 
   var body: some View {
@@ -19,18 +26,11 @@ struct ItemEditor: View {
       Form {
         Section(L10n.text("Document")) {
           if creating {
-            Picker(L10n.text("Start with"), selection: $scanPages) {
-              Text(L10n.text("Metadata only")).tag(false)
-              Text(L10n.text("Scan pages")).tag(true)
-            }.pickerStyle(.segmented)
-            Toggle(L10n.text("Start a letter batch"), isOn: $letterBatch)
-              .disabled(sheetBatch)
-            Toggle(L10n.text("Start a sheet batch"), isOn: $sheetBatch)
-              .onChange(of: sheetBatch) {
-                if sheetBatch { letterBatch = false; scanPages = true }
-              }
+            Picker(L10n.text("Workflow"), selection: $workflow) {
+              ForEach(Workflow.allCases, id: \.self) { Text(L10n.text($0.rawValue)).tag($0) }
+            }
             if sheetBatch {
-              Text(L10n.text("One label per physical sheet. Scan each side or folded panel, then press Finish sheet. Group related sheets later in Review."))
+              Text(L10n.text("Scan all sides of one sheet, then choose Finish sheet. Each sheet gets one reference."))
                 .font(.caption).foregroundStyle(.secondary)
             }
           }
@@ -40,17 +40,23 @@ struct ItemEditor: View {
           if letterBatch || sheetBatch || details.batchID != nil {
             TextField(L10n.text("Batch name"), text: $details.batchName)
             TextField(L10n.text("Name prefix (optional)"), text: $namePrefix)
-            Text(L10n.text("The prefix goes before each document title or automatic reference. Changes apply to this item and later items in the batch."))
+            Text(L10n.text("Names use this prefix and a unique reference unless you enter a title."))
               .font(.caption).foregroundStyle(.secondary)
-            LabeledContent(L10n.text("Name preview"), value: namePreview)
-            Text(L10n.text(sheetBatch || details.sheetBatch == true
-              ? "Finish sheet copies the batch name, location, and tags to the next sheet."
-              : "Next letter copies the batch name, location, and tags. Earlier letters do not change."))
+            LabeledContent(L10n.text("Name preview")) {
+              Text(namePreview).lineLimit(2).truncationMode(.middle).help(namePreview)
+            }
+            if !creating {
+              Text(L10n.text(sheetBatch || details.sheetBatch == true
+                ? "Finish sheet copies the batch name, location, and tags to the next sheet."
+                : "Next letter copies the batch name, location, and tags. Earlier letters do not change."))
+                .font(.caption).foregroundStyle(.secondary)
+            }
+          }
+          if !creating || (!letterBatch && !sheetBatch) {
+            TextField(L10n.text("Title (optional)"), text: $title)
+            Text(L10n.text("Leave the title empty to use the automatic reference."))
               .font(.caption).foregroundStyle(.secondary)
           }
-          TextField(L10n.text("Title (optional)"), text: $title)
-          Text(L10n.text("Leave the title empty to use the automatic reference."))
-            .font(.caption).foregroundStyle(.secondary)
           if !letterBatch && !sheetBatch && details.batchID == nil {
             Picker(L10n.text("Item type"), selection: $details.kind) {
               ForEach(["Document", "Folder", "Book", "Letter"], id: \.self) {
@@ -59,11 +65,12 @@ struct ItemEditor: View {
             }
           }
         }
-        Section(L10n.text("Description")) {
+        DisclosureGroup(L10n.text("Optional details"), isExpanded: $showDetails) {
+          if creating && (letterBatch || sheetBatch) {
+            TextField(L10n.text("Title (optional)"), text: $title)
+          }
           TextField(L10n.text("Author or sender"), text: $details.author)
           TextField(L10n.text("Date or period"), text: $details.period)
-        }
-        Section(L10n.text("Filing")) {
           TextField(L10n.text("Physical location"), text: $details.location)
           TextField(L10n.text("Tags"), text: $details.tags)
           TextField(L10n.text("Notes"), text: $details.notes, axis: .vertical).lineLimit(3...6)
@@ -73,12 +80,13 @@ struct ItemEditor: View {
       HStack {
         Button(L10n.text("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)
         Spacer()
-        Button(L10n.text(creating ? "Create item" : "Save details")) { save() }
+        Button(L10n.text(creating ? (sheetBatch || letterBatch ? "Start batch" : (workflow == .record ? "Create item" : "Start scanning")) : "Save details")) { save() }
           .keyboardShortcut(.defaultAction).buttonStyle(.borderedProminent).disabled(model.busy)
       }
-    }.padding(24).frame(width: 560, height: 650)
+    }.padding(24).fittedPanel(width: 560, height: creating && !showDetails ? (sheetBatch || letterBatch ? 520 : 420) : 650)
       .onAppear {
         if !creating {
+          showDetails = true
           title = model.document.title
           details = model.document.metadata ?? ItemMetadata()
           namePrefix = details.namePrefix ?? ""
@@ -101,7 +109,7 @@ struct ItemEditor: View {
         var next = details
         if letterBatch { next.batchID = UUID().uuidString; next.kind = "Letter" }
         if sheetBatch { next.batchID = UUID().uuidString; next.kind = "Sheet"; next.sheetBatch = true }
-        try model.createItem(title: title, metadata: next, scanPages: scanPages || sheetBatch)
+        try model.createItem(title: title, metadata: next, scanPages: workflow != .record)
       } else {
         try model.saveMetadata(title: title, metadata: details)
       }

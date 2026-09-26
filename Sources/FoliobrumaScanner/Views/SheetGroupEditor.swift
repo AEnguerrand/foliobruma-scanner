@@ -48,10 +48,10 @@ struct SheetGroupEditor: View {
                     .disabled(inOtherGroup(record.id))
                   Button { previewID = record.id; side = 0 } label: {
                     VStack(alignment: .leading) {
-                      Text(record.document.displayTitle)
+                      Text(record.document.displayTitle).lineLimit(2).help(record.document.displayTitle)
                       Text([record.document.metadata?.reference ?? "", record.document.metadata?.batchName ?? ""]
                         .filter { !$0.isEmpty }.joined(separator: " · "))
-                        .font(.caption).foregroundStyle(.secondary)
+                        .font(.caption).foregroundStyle(.secondary).lineLimit(2)
                       if inOtherGroup(record.id) {
                         Text(L10n.text("In another group")).font(.caption).foregroundStyle(.secondary)
                       }
@@ -106,7 +106,7 @@ struct SheetGroupEditor: View {
           .disabled(loading || saving || (!existing && group.sheets.isEmpty)
             || (!group.sheets.isEmpty && group.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty))
       }
-    }.padding(24).frame(width: 960, height: 640).disabled(saving)
+    }.padding(24).fittedPanel(width: 960, height: 640).disabled(saving)
       .task {
         let root = model.root
         do {

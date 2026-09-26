@@ -62,6 +62,6 @@ struct RejectedReview: View {
       }
       if model.busy { ProgressView(L10n.text("Saving scan…")) }
       if let error = model.error { Text(error).foregroundStyle(.red).font(.callout) }
-    }.padding(22).frame(width: 760, height: 580).interactiveDismissDisabled(model.busy)
+    }.padding(22).fittedPanel(width: 760, height: 580).interactiveDismissDisabled(model.busy)
   }
 }

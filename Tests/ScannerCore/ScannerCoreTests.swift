@@ -15,6 +15,7 @@ private func expectNil<T>(_ value: T?) { precondition(value == nil) }
     try testSharedReferencesAndGroups()
     try await testSharedArchiveWorkflows()
     try testSharedPrinterRules()
+    try testPrintHistory()
     try testLegacySessionDecoding()
     try testSessionWireFormatAndOriginals()
     try testBatchDefaultsAndGroupOrder()

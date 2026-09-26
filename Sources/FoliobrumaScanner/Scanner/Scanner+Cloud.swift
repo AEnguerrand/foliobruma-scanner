@@ -54,12 +54,14 @@ extension Scanner {
           saved.metadata = details
           try commit(saved)
           status = L10n.text("Uploaded to Foliobruma")
-          if (printRequested ?? printOnFinish) && upload.sheetLabelSubmitted != true {
+          if printRequested ?? printOnFinish {
             let label = DocumentLabel(title: document.displayTitle, subtitle: details.reference, link: upload.link!)
             let qr = await Task.detached { label.qrImage() }.value
             guard let qr else { throw CloudFailure(message: "Could not create the QR code.") }
-            try await printSessionLabel(label, qr: qr, upload: &upload)
-            status = L10n.text(document.automation?.printerName == QL600Printer.destination ? "QL-600 confirmed label printed" : "Label sent to printer")
+            let sent = try await printSessionLabel(label, qr: qr, upload: &upload)
+            status = L10n.text(sent
+              ? (document.automation?.printerName == QL600Printer.destination ? "QL-600 confirmed label printed" : "Label sent to printer")
+              : "Label already sent")
           }
         } else {
           status = L10n.text("Item saved on this Mac")
@@ -68,7 +70,7 @@ extension Scanner {
         if nextSheet { try createNextSheet(resumeCapture: resumeSheetCapture && !pendingReview) }
         else if nextLetter { createNextLetter() }
         else if nextDocument { newDocumentLocally() }
-      } catch { self.error = error.localizedDescription }
+      } catch { self.error = L10n.text(error.localizedDescription) }
     }
   }
 
@@ -83,6 +85,6 @@ extension Scanner {
     do {
       let url = folder.appendingPathComponent("cloud-upload.json")
       if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
-    } catch { self.error = error.localizedDescription }
+    } catch { self.error = L10n.text(error.localizedDescription) }
   }
 }

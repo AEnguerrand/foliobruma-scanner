@@ -52,7 +52,7 @@ struct SettingsView: View {
       }.frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(nsColor: .windowBackgroundColor))
     }
-    .frame(width: 820, height: 620)
+    .fittedPanel(width: 820, height: 620, withinParent: false)
     // Track the Settings window itself, not the lifetime of an individual page.
     .background(USBButtonWindow { USBButton.shared.settingsWindow = $0 })
     .onAppear { USBButton.shared.start() }

@@ -12,15 +12,15 @@ not an app screenshot. A USB button and label printer are optional. Local
 scanning and PDF export need no account or internet connection.
 
 1. Connect the scanner by USB. In **Scan setup**, select a **Camera** and click **Connect camera**. Use the refresh button if you connected the camera after opening the app.
-2. Use the document menu to name your document. In Scan setup, choose **Book** or **Single page**.
+2. Use **Document actions → Rename document…** to name your document. In Scan setup, choose **Book** or **Single page**.
 3. Put the paper on a contrasting surface with even light. Check that all page edges are visible.
 4. Check the gold crop outline. For a book, enable **Split into two pages** and adjust **Spine position** to the centre of the spread. You can also drag the gold handle or click **Centre spine**. Use **Preview crop and split** to inspect a camera frame without saving pages.
 5. Click **Start auto capture**, then move your hands away. For manual capture, click **Capture page** or press **Space** in Scan mode.
 6. Wait for the green **Saved — turn the page** signal and chime before turning the page. Repeat for each page or spread.
-7. Choose **Review**. Capture pauses. Select a page in the sidebar, or enter a page number and click **Go**. Zoom and scroll to inspect the text. Use **Rotate**, **Move earlier**, **Move later**, **Remove**, or **Undo removal** as needed.
-8. Click **Export PDF**, check the page count and rejected-photo notice, then choose where to save the file. Progress appears at the bottom of the window. Open the result from **Files → Open PDF** or **Show PDF in Finder**.
+7. Choose **Review**. Capture pauses. Select a page in the sidebar, or enter a page number and click **Go**. Zoom and scroll to inspect the text. Use **Rotate**, **Crop from original…**, or **Remove** as needed. **Page actions** contains replacement, merging, and page order. **Undo removal** is in the footer.
+8. Select **Document actions → Export PDF** (⌘E), check the page count and rejected-photo notice, then choose where to save the file. Progress appears at the bottom of the window. Open the result from **Files → Open PDF** or **Show PDF in Finder**.
 
-Use **Documents → New item…** for another book or group of pages. Select **Scan pages** to use the camera. The document title menu also contains **New item…** and **Rename document…**. Use **Documents** to search saved documents and open one by name. **Open session folder…** remains available for sessions stored elsewhere. Closing the app keeps the session. Returning to Scan does not restart automatic capture.
+Use **Documents → New item…** for another book or group of pages. Choose **One document** to use the camera. The + toolbar button also opens **New item…**. Use **Document actions → Rename document…** to rename it. Use **Documents** to search saved documents and open one by name. **Open session folder…** remains available for sessions stored elsewhere. Closing the app keeps the session. Returning to Scan does not restart automatic capture.
 
 ## Capture signals
 
@@ -46,7 +46,7 @@ Automatic capture requires at least 0.55 seconds of a clear, still page. Camera 
 - **Rejected** opens photos that are excluded from the PDF. Inspect the image with zoom before using **Keep this scan anyway**. **Rescan** returns to the camera, but keeps the rejected photo in the review list until you keep or dismiss it. **Dismiss from review** keeps its image file and removes the review entry.
 - The footer distinguishes the saved session from the exported PDF. After an edit, **PDF needs export** means that the earlier PDF has not changed. Export again to include the edit. PDF export status applies to the current app session.
 
-Keyboard controls: **⌘O** opens Documents, **⌘N** opens New item, **⌘E** opens the export summary, **← / →** changes the selected review page, **⌘⇧← / ⌘⇧→** moves that page earlier or later, **⌘R** rotates it, and **⌘Z** undoes the last removal. **Space** captures a page in Scan mode. Use Tab to move between controls.
+Keyboard controls: **⌘O** opens Documents, **⌘N** opens New item, **⌘E** opens the export summary, **← / →** changes the selected review page, **⌘⇧← / ⌘⇧→** moves that page earlier or later, **⌘R** rotates it, and **⌘Z** undoes the last removal. **⌘⇧Return** finishes the current item or sheet. **Space** captures a page in Scan mode. Use Tab to move between controls.
 
 ### Review shortcuts
 
@@ -93,15 +93,15 @@ The interface supports English and French. On first use, the app follows the
 macOS language preference. It uses English when the preferred languages are not
 supported.
 
-Open **Foliobruma Scanner → Settings…** (⌘,) or click the gear button in the
-toolbar. Select **System language**, **English**, or **Français**. Quit and reopen
+Open **Foliobruma Scanner → Settings…** (⌘,) from the menu bar. Select **System language**, **English**, or **Français**. Quit and reopen
 the app to apply the change. The selection applies only to this app. Document
 names and session files do not change. This setting does not translate scanned
 text or add OCR.
 
-The top row contains Documents, the document title menu, Settings, and the
-Foliobruma account control. The second row contains Details, Scan, Review, and
-completion actions. In Details, use Add scans to start adding pages. Rejected
+The native Mac toolbar contains Documents, New item, Scan, Review, Details,
+Document actions, and the Foliobruma account control. In Scan, use the right
+sidebar button to hide setup after the camera is ready. Finish is beside the
+capture buttons. Use Page actions in Review for replacement, merging, and order. In Details, use Add scans to start adding pages. Rejected
 scans and Undo removal appear in the footer only when available.
 
 ## Related guides

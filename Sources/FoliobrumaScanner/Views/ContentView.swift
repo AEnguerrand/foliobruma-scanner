@@ -5,14 +5,14 @@ struct ContentView: View {
   @StateObject var model = Scanner()
   @State private var usbWindow: NSWindow?
   @State private var rename = false
+  @State private var showSetup = true
+  @State private var showUpload = false
   @State private var draftTitle = ""
   @State private var browserNextAction: SessionBrowser.NextAction?
   @State private var reviewRejectedAfterExport = false
   let gold = Color(red: 1, green: 0.74, blue: 0.27)
   var body: some View {
     VStack(spacing: 0) {
-      DocumentToolbar(model: model, rename: $rename)
-      Divider()
       if model.metadataWorkspace {
         ItemSummary(model: model)
       } else {
@@ -26,13 +26,19 @@ struct ContentView: View {
           }
           CaptureControls(model: model)
         }
-        if !model.reviewing { CaptureSettings(model: model).frame(width: 290) }
+        if !model.reviewing && (showSetup || !model.connected) { CaptureSettings(model: model).frame(width: 290) }
       }
       }
       Divider()
       SessionFooter(model: model)
     }.background(Color(nsColor: .windowBackgroundColor))
       .frame(minWidth: 900, minHeight: 640)
+      .navigationTitle(model.document.displayTitle)
+      .navigationSubtitle(L10n.format("Pages: %ld", model.document.pages.count))
+      .focusedSceneObject(model)
+      .toolbar { DocumentToolbar(model: model, rename: $rename, showSetup: $showSetup, showUpload: $showUpload) }
+      .sheet(isPresented: $showUpload) { ManualUploadView(model: model) }
+      .task { if model.tracksActiveSession { await CloudAccount.shared.restore() } }
       .onReceive(NotificationCenter.default.publisher(for: AVCaptureSession.didStopRunningNotification, object: model.session)
         .receive(on: DispatchQueue.main)) { _ in
           model.connected = false

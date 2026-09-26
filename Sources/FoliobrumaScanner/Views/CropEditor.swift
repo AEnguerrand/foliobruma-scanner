@@ -71,7 +71,7 @@ struct CropEditor: View {
         .help(L10n.text("Save crop (⌘↩)"))
       }
       if let error = model.error { Text(error).foregroundStyle(.red).font(.callout) }
-    }.padding(22).frame(width: 740, height: 580).interactiveDismissDisabled(model.busy)
+    }.padding(22).fittedPanel(width: 740, height: 580).interactiveDismissDisabled(model.busy)
       .task {
         guard let page = model.selectedPage else { loading = false; return }
         let url = model.folder.appendingPathComponent(page.original)

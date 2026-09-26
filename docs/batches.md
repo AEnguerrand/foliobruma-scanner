@@ -4,14 +4,13 @@
 
 ## Metadata records and letter batches
 
-Open the document title menu and select **New item…** (⌘N). Select **Details
-only** to record a physical item without a camera, or **Scan pages** to start
-with scanning. The title is optional. An empty title uses the automatic
+Click **New item…** (+ or ⌘N). Choose **One document** to scan, or **Details
+only** to record a physical item without a camera. The title is optional. An empty title uses the automatic
 reference. Type, author or sender, date or period, physical location, tags, and
 notes are optional details. Use **Details → Edit details** to change them later.
 Use **Add scans** to add pages to the same record.
 
-For a batch of letters, enable **Start a letter batch**. Enter the batch name,
+For a batch of letters, choose **Batch of letters**. Enter the batch name,
 location, and tags once. Each letter gets a reference such as `LET-0001`.
 **Next letter** saves a new, empty record and copies those three batch fields.
 It clears the title, author, date, notes, and web link. It pauses automatic
@@ -36,8 +35,8 @@ can be searched by title, reference, or batch name.
 
 ## Mixed papers: one label per physical sheet
 
-For an unsorted box of letters and papers, open **New item…** and enable
-**Start a sheet batch**. Enter a batch name and physical location, such as a
+For an unsorted box of letters and papers, open **New item…** and choose
+**Batch of sheets**. Enter a batch name and physical location, such as a
 folio number. Each physical sheet gets its own reference, session, PDF upload,
 and label. Capture each side or folded panel in reading order. A folded sheet
 can contain more than two captures, with one PDF and one label for the sheet.
@@ -73,8 +72,9 @@ Direct USB printing waits for the QL-600 to report completion and return to its
 ready state. For a macOS queue, success means that macOS accepted the job.
 Check the physical label before filing.
 If the app stops with an unknown print result, check the printer and use
-**Create label…** if a label is missing. Then use **Confirm label handled** in
-the document menu and finish the sheet. This confirmation sends no print job.
+**Document actions → Label… → Reprint…** if a label is missing. If the correct
+label is already on the sheet, use **Confirm label handled** in the label window
+and finish the sheet. This confirmation sends no print job.
 Session options are saved and copied to the next sheet or letter in the batch.
 A new, unrelated session starts with automatic upload and printing off.
 
@@ -94,6 +94,18 @@ change; this scanner version uploads each sheet as an independent PDF.
 Automated tests cover 2,000 ordered sheet links, save conflicts, capture state,
 and print retry records. They do not verify a 2,000-sheet camera run or physical
 printer output.
+
+## Find a sheet in a large batch
+
+**Documents** opens a table with references, page counts, and review status.
+The current batch filter is on when a batch is open. Clear it to see all
+sessions. Use **Needs review** to find rejected photos or unknown print results for the
+saved item link.
+Search by title, reference, or batch name. Click a column heading to sort. Select a row and press Return, click
+**Open**, or double-click the row. The library loads in the background.
+
+Automated checks load and reopen a synthetic 1,000-sheet library. They do not
+measure a continuous 1,000-sheet camera or printer run.
 
 ## Related guides
 

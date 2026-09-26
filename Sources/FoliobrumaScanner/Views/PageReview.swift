@@ -36,15 +36,9 @@ struct PageReview: View {
       if let page = model.selectedPage {
         ZoomImage(url: model.folder.appendingPathComponent(page.file), rotation: page.rotation).id(
           page.id + page.file)
-        ViewThatFits(in: .horizontal) {
-          HStack {
-            editActions(page)
-            orderActions
-          }.fixedSize(horizontal: true, vertical: false)
-          VStack {
-            HStack { editActions(page) }
-            HStack { orderActions }
-          }
+        AdaptiveActions {
+          editActions(page)
+          Menu(L10n.text("Page actions")) { orderActions }
         }.padding(14)
       } else {
         ContentUnavailableView {
@@ -76,22 +70,20 @@ struct PageReview: View {
       model.showCrop = true
     }.keyboardShortcut("c", modifiers: [.command, .shift])
       .help(L10n.text("Crop from original (⌘⇧C)"))
-    Button(L10n.text("Replace…"), action: model.replaceSelectedPage)
-      .keyboardShortcut("r", modifiers: [.command, .shift])
-      .help(L10n.text("Replace page (⌘⇧R)"))
     Button(L10n.text("Remove")) { model.remove(page) }
       .keyboardShortcut(.delete, modifiers: [.command])
       .help(L10n.text("Remove page (⌘⌫). Original files are kept."))
   }
   @ViewBuilder var orderActions: some View {
+    Button(L10n.text("Replace…"), action: model.replaceSelectedPage)
+      .help(L10n.text("Replace page (⌘⇧R)"))
+
     Button(L10n.text("Merge with next page…")) { confirmMerge = true }
       .disabled(!model.canMergeWithNextPage)
     Button(L10n.text("Move earlier")) { model.movePage(-1) }
-      .keyboardShortcut(.leftArrow, modifiers: [.command, .shift])
       .help(L10n.text("Move earlier (⌘⇧←)"))
       .disabled((model.selectedIndex ?? 0) == 0)
     Button(L10n.text("Move later")) { model.movePage(1) }
-      .keyboardShortcut(.rightArrow, modifiers: [.command, .shift])
       .help(L10n.text("Move later (⌘⇧→)"))
       .disabled(model.selectedIndex == nil || model.selectedIndex == model.document.pages.count - 1)
   }
@@ -131,14 +123,22 @@ struct ZoomImage: View {
             description: Text(L10n.text("Check that the session image file is still on this Mac.")))
         }
       }.background(.black).environment(\.colorScheme, .dark)
-      HStack {
-        Button(L10n.text("Fit")) { zoom = 1 }.keyboardShortcut("0")
-          .help(L10n.text("Fit image (⌘0)"))
-        Slider(value: $zoom, in: 1...5).frame(width: 180).accessibilityLabel(L10n.text("Image zoom"))
-        Text(L10n.format("%ld%% of fit", Int(zoom * 100))).monospacedDigit()
-          .fixedSize().help(L10n.text("Zoom relative to the fitted page"))
-        Spacer()
-      }.padding(10)
+      ViewThatFits(in: .horizontal) {
+        HStack {
+          fitButton
+          zoomSlider.frame(width: 180)
+          zoomLabel
+        }.fixedSize(horizontal: true, vertical: false)
+        VStack(spacing: 6) {
+          HStack {
+            fitButton
+            Spacer()
+            Text(zoom, format: .percent.precision(.fractionLength(0)))
+              .monospacedDigit().help(L10n.text("Zoom relative to the fitted page"))
+          }
+          zoomSlider
+        }
+      }.frame(maxWidth: .infinity, alignment: .leading).padding(10)
     }.task(id: url) {
       loading = true
       image = nil
@@ -151,4 +151,17 @@ struct ZoomImage: View {
       zoom = 1
     }
   }
+
+  private var fitButton: some View {
+    Button(L10n.text("Fit")) { zoom = 1 }.keyboardShortcut("0")
+      .help(L10n.text("Fit image (⌘0)"))
+  }
+  private var zoomSlider: some View {
+    Slider(value: $zoom, in: 1...5).accessibilityLabel(L10n.text("Image zoom"))
+  }
+  private var zoomLabel: some View {
+    Text(L10n.format("%ld%% of fit", Int(zoom * 100))).monospacedDigit()
+      .fixedSize().help(L10n.text("Zoom relative to the fitted page"))
+  }
+
 }

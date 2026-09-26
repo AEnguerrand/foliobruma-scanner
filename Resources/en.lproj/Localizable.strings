@@ -563,3 +563,46 @@
 "Name prefix (optional)" = "Name prefix (optional)";
 "The prefix goes before each document title or automatic reference. Changes apply to this item and later items in the batch." = "The prefix goes before each document title or automatic reference. Changes apply to this item and later items in the batch.";
 "Name preview" = "Name preview";
+
+"Label" = "Label";
+"Label…" = "Label…";
+"Recovery" = "Recovery";
+"Document actions" = "Document actions";
+"Show or hide scan setup" = "Show or hide scan setup";
+"Finish and continue (⌘⇧Return)" = "Finish and continue (⌘⇧Return)";
+"Page actions" = "Page actions";
+"Workflow" = "Workflow";
+"One document" = "One document";
+"Batch of sheets" = "Batch of sheets";
+"Batch of letters" = "Batch of letters";
+"Optional details" = "Optional details";
+"Start batch" = "Start batch";
+"Start scanning" = "Start scanning";
+"Current batch" = "Current batch";
+"Needs review" = "Needs review";
+"%ld documents" = "%ld documents";
+"%ld document" = "%ld document";
+"Status" = "Status";
+"Saved" = "Saved";
+"Modified" = "Modified";
+"Open" = "Open";
+"Label already sent" = "Label already sent";
+"Print result unknown. Check the printer before sending another label." = "Print result unknown. Check the printer before sending another label.";
+"Label already sent. Finish will not print it again." = "Label already sent. Finish will not print it again.";
+"Reprint with QL-600…" = "Reprint with QL-600…";
+"Reprint…" = "Reprint…";
+"Print another copy?" = "Print another copy?";
+"Reprint" = "Reprint";
+"This label was already sent or its result is unknown. Check the sheet and printer first. Reprint sends another copy of the same label." = "This label was already sent or its result is unknown. Check the sheet and printer first. Reprint sends another copy of the same label.";
+"Finish sheet saves this sheet and prepares the next one." = "Finish sheet saves this sheet and prepares the next one.";
+
+"This label was already sent or its print result is unknown. Check the printer before choosing Reprint." = "This label was already sent or its print result is unknown. Check the printer before choosing Reprint.";
+"The label print record changed. Check the printer before continuing." = "The label print record changed. Check the printer before continuing.";
+"Label printing stopped. Check the printer before trying again." = "Label printing stopped. Check the printer before trying again.";
+"Custom label text is not saved. Printed links are kept in this session to prevent repeat jobs." = "Custom label text is not saved. Printed links are kept in this session to prevent repeat jobs.";
+
+"Scan all sides of one sheet, then choose Finish sheet. Each sheet gets one reference." = "Scan all sides of one sheet, then choose Finish sheet. Each sheet gets one reference.";
+"Names use this prefix and a unique reference unless you enter a title." = "Names use this prefix and a unique reference unless you enter a title.";
+"Captures saved: %ld · Scan another side or finish this sheet." = "Captures saved: %ld · Scan another side or finish this sheet.";
+
+"Details only" = "Details only";
