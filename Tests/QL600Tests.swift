@@ -22,7 +22,7 @@ extension SessionTests {
   do { try upload.beginDirectLabel(in: root); preconditionFailure("Uncertain print must not repeat") } catch { }
   try upload.finishDirectLabel(in: root, completed: true, mayHavePrinted: true)
   do { try upload.beginDirectLabel(in: root); preconditionFailure("Completed print must not repeat") } catch { }
-  for link in ["https://foliobruma.com/d/1234567890abcdef", "https://foliobruma.com/api/organisations/11111111-1111-1111-1111-111111111111/documents/22222222-2222-2222-2222-222222222222"] {
+  for link in ["https://foliobruma.com/l/1234567890abcdef", "https://staging.foliobruma.com/l/1234567890abcdef", "https://foliobruma.com/d/1234567890abcdef", "https://foliobruma.com/api/organisations/11111111-1111-1111-1111-111111111111/documents/22222222-2222-2222-2222-222222222222"] {
     let label = DocumentLabel(title: "Test sheet with a longer title", subtitle: "LET-1234", link: link)
     let bitmap = try QL600Printer.bitmap(label)
     if label.permanentCode != nil {

@@ -606,3 +606,15 @@
 "Captures saved: %ld · Scan another side or finish this sheet." = "Captures enregistrées : %ld · Numérisez un autre côté ou terminez cette feuille.";
 
 "Details only" = "Détails uniquement";
+
+"Binder / box" = "Classeur / boîte";
+
+"Binder or box label" = "Étiquette de classeur ou de boîte";
+
+"Connect one Brother QL-600 by USB and load a DK-22205 roll. This label does not change the current scan." = "Branchez une Brother QL-600 en USB et chargez un rouleau DK-22205. Cette étiquette ne modifie pas le scan en cours.";
+
+"This location label was already sent. Reprint sends another copy." = "Cette étiquette de rangement a déjà été envoyée. Réimprimer envoie un autre exemplaire.";
+
+"Cannot open this label" = "Impossible d’ouvrir cette étiquette";
+
+"Open a binder or box label from the Foliobruma website." = "Ouvrez une étiquette de classeur ou de boîte depuis le site Foliobruma.";

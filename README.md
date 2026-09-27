@@ -93,7 +93,7 @@ checks, and automatic crop are approximate. See [Troubleshooting and limits](doc
 - **USB button:** assign a physical button to an action. Close Settings and select the document window to use it.
 - **Sheet batches:** scan all sides or folded panels per sheet, finish with a USB button, and group related sheets later in Review.
 - **Metadata records and letter batches:** save details without a scan. Use automatic references, an optional document name prefix, and shared batch details.
-- **QR labels:** preview, export, and print a compact label with an existing HTTPS link. QR codes are generated on your Mac.
+- **QR labels:** preview, export, and print a compact label with an existing HTTPS link. Open binder or box labels from the archive website and print them directly with the QL-600. QR codes are generated on your Mac.
 
 There is no OCR or telemetry in this version. Cloud upload is optional and off by default. Exported PDFs contain page images, without a searchable text layer.
 
