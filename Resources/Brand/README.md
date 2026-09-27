@@ -23,4 +23,18 @@ The setup illustration uses the same charcoal, cream, and ochre colours. It
 shows generic equipment and blank paper, not a product photo or app screenshot.
 The selected version has no simulated light beam and uses small headings.
 
-Only these three approved PNG assets are exempt from the private-image Git rules.
+## Public app screenshots and demo
+
+- `app-review.png`: real English app interface with three synthetic sample pages.
+- `app-review-fr.png`: the same review interface in French.
+- `review-demo.gif`: silent, stepped walkthrough of page review and PDF export preparation.
+  It uses real app screenshots held for a few seconds per step, not a continuous
+  camera recording. It does not demonstrate live capture or capture timing.
+
+The screenshots were prepared on 27 September 2026 from source commit
+`4cbdc38` in an isolated demo app. The demo uses a separate bundle identifier, temporary
+session storage, and generated garden notes. It does not load private sessions
+or connect to an account. The production app source is unchanged.
+
+Only the named public PNG and GIF files are exempt from the private-image Git
+rules. Do not add private scans or screenshots of private document lists.

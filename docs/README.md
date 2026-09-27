@@ -6,6 +6,7 @@
 
 | Guide | Contents |
 | --- | --- |
+| [Camera compatibility](cameras.md) | Recorded camera and USB button results, test steps, and report form. |
 | [Scanning and review](scanning.md) | First scan, capture signals, page corrections, shortcuts, and language settings. |
 | [Records and batches](batches.md) | Metadata records, letter batches, sheet batches, and sheet groups. |
 | [Account connection and uploads](foliobruma.md) | Optional sign-in, automatic and manual uploads, and retries. |

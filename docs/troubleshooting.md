@@ -18,7 +18,7 @@
 - **Curved pages stay curved.** Perspective correction is supported; curved-book dewarping is not. The spine split is a straight line.
 - **Detection can miss problems.** Hand and duplicate checks are approximate. Similar pages can be mistaken for duplicates, and lighting changes can cause duplicates to pass.
 - **Review image quality.** Checks cover hands, very dark images, heavy blur, and detected page edges at the camera boundary. They do not reliably detect glare, shadows, missing text, or fine-detail blur.
-- **Hardware support is limited.** Other cameras may work, but only the IRIScan Desk 6 Pro has been tested. Live warning timing and sound playback need more hardware testing.
+- **Hardware support is limited.** Other cameras may work, but only the IRIScan Desk 6 Pro has been tested. Live warning timing and sound playback need more hardware testing. See [Camera compatibility](cameras.md) for the recorded results and missing test details.
 
 ## Automatic capture and crop limits
 
