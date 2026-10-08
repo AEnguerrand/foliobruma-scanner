@@ -540,6 +540,7 @@ private final class USBTestSettingsWindow: NSWindow {
   print("PASS: shared geometry reads and writes the original Mac coordinate format; localized title")
  }
  static func main() throws {
+  try runLocationLabelChecks()
   try testSharedGeometryCompatibility()
   try testSheetBatches()
   try testLargeBatchLibrary()
