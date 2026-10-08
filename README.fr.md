@@ -20,8 +20,8 @@ Apple Silicon · macOS 14 ou version ultérieure · Gratuit, sous licence MIT ·
 
 *Interface réelle avec des pages fictives. Aucun document privé n’est montré.*
 
-<details>
-<summary>Voir la démonstration de vérification et de préparation de l’export PDF (environ 30 secondes)</summary>
+<details open>
+<summary>Voir la démonstration de vérification et de préparation de l’export PDF (15 secondes)</summary>
 
 ![Démonstration en anglais : sélection d’une page, rotation et préparation de l’export PDF](Resources/Brand/review-demo.gif)
 
