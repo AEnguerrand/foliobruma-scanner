@@ -28,8 +28,10 @@ The selected version has no simulated light beam and uses small headings.
 - `app-review.png`: real English app interface with three synthetic sample pages.
 - `app-review-fr.png`: the same review interface in French.
 - `review-demo.gif`: silent, stepped walkthrough of page review and PDF export preparation.
-  It uses real app screenshots held for a few seconds per step, not a continuous
-  camera recording. It does not demonstrate live capture or capture timing.
+  It repeats five real app screenshots, with three seconds for each step (15 seconds
+  in total). The demo section is open by default in both READMEs and can be closed.
+  This is not a continuous camera recording. It does not demonstrate live capture
+  or capture timing.
 
 The screenshots were prepared on 27 September 2026 from source commit
 `4cbdc38` in an isolated demo app. The demo uses a separate bundle identifier, temporary

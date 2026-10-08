@@ -19,8 +19,8 @@ Apple Silicon · macOS 14 or later · Free under the MIT license · English and 
 
 *Real app interface with synthetic sample pages. No private scans are shown.*
 
-<details>
-<summary>Watch the review and PDF export preparation demo (about 30 seconds)</summary>
+<details open>
+<summary>Watch the review and PDF export preparation demo (15 seconds)</summary>
 
 ![App walkthrough: select a page, rotate it, restore its orientation, and prepare a PDF export](Resources/Brand/review-demo.gif)
 
