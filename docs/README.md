@@ -27,3 +27,5 @@
 
 - [Interface review](product-review.md): findings and validation from an earlier interface review.
   This is a review record, not a user guide.
+
+- [Raspberry Pi phase 0 diagnostics](../RaspberryPi/README.md): camera, label, and iPhone HTTPS hardware checks.

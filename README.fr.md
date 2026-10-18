@@ -146,6 +146,11 @@ Les guides détaillés suivants sont en anglais :
 - [Fichiers et sauvegardes](docs/storage.md) : originaux, sessions et sauvegardes.
 - [Toute la documentation](docs/README.md) : guides et notes de développement.
 
+La station Raspberry Pi proposée est en phase 0. Le
+[paquet de diagnostic Pi](RaspberryPi/README.md) décrit les tests du matériel
+et du lien HTTPS avec l’iPhone (en anglais). Aucune version Pi de l’application
+n’est encore disponible.
+
 ## Compiler et contribuer
 
 Consultez [Compilation et développement (en anglais)](docs/development.md)

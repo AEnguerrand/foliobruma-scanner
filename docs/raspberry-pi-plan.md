@@ -337,3 +337,9 @@ interfaces, not a passed test of this station.
 - [libusb API](https://libusb.sourceforge.io/api-1.0/), [OpenCV image I/O](https://docs.opencv.org/4.x/d4/da8/group__imgcodecs.html), [Cairo PDF output](https://www.cairographics.org/manual/cairo-PDF-Surfaces.html), and [libqrencode](https://fukuchi.org/works/qrencode/).
 - [Hummingbird HTTP framework](https://github.com/hummingbird-project/hummingbird) and [systemd service lifecycle](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html).
 - [WebKit iOS media policies](https://webkit.org/blog/6784/new-video-policies-for-ios/). Test sound and foreground/background behaviour on the target iPhone.
+
+## Phase 0 package status
+
+The [diagnostic package](../RaspberryPi/README.md) provides the first hardware
+checks and a [report template](../RaspberryPi/REPORT.md). Hardware acceptance
+is pending. The package does not add the phase 1 station service or change the Mac app.
