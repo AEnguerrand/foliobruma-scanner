@@ -41,6 +41,26 @@ jobs:
           RaspberryPi/build/qr-matrix > RaspberryPi/results/ci-matrix.txt
           RaspberryPi/.build/debug/DiagnosticLabel RaspberryPi/results/ci-matrix.txt RaspberryPi/results/ci-label.raster
 
+  pi-service:
+    name: Pi service (Linux host checks)
+    runs-on: ubuntu-24.04
+    container: swift:6.0.3
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install service check tools
+        run: apt-get update && apt-get install -y python3-venv openssl poppler-utils
+      - name: Install isolated Pi dependencies
+        run: |
+          python3 -m venv RaspberryPi/build/service-venv
+          RaspberryPi/build/service-venv/bin/pip install -r RaspberryPi/requirements.txt
+      - name: Test HTTPS, storage, and phone control
+        run: PI_PYTHON=RaspberryPi/build/service-venv/bin/python ./RaspberryPi/test-station.sh
+      - name: Build the service
+        run: ./RaspberryPi/build-station.sh
+
   build:
     name: Test and build (Apple Silicon)
     runs-on: macos-15

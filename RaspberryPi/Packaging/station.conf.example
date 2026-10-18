@@ -1,0 +1,10 @@
+# Copy to /etc/foliobruma-station.conf. Use the Pi's reserved LAN address.
+STATION_BIND=192.168.1.50
+STATION_ORIGIN=https://scanner.local:8443
+STATION_CAMERA=/dev/v4l/by-id/REPLACE_WITH_PHASE_0_DEVICE
+STATION_SIZE=3264x2448
+STATION_FPS=5
+STATION_CERT=/var/lib/foliobruma-scanner/tls/server.crt
+STATION_KEY=/var/lib/foliobruma-scanner/tls/server.key
+STATION_LIBRARY=/var/lib/foliobruma-scanner/library
+STATION_PYTHON=/opt/foliobruma-scanner/RaspberryPi/.venv/bin/python

@@ -23,3 +23,8 @@ RaspberryPi/results/
 RaspberryPi/tls/
 __pycache__/
 *.pyc
+
+# Pi private runtime and local browser checks
+RaspberryPi/.venv/
+.playwright-cli/
+output/playwright/

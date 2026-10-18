@@ -1,0 +1,29 @@
+[Unit]
+Description=Foliobruma local scan station
+After=network-online.target
+Wants=network-online.target
+# The marker is required. An absent library must not become a new library.
+ConditionPathExists=/var/lib/foliobruma-scanner/library/station-library
+
+[Service]
+Type=simple
+User=foliobruma
+Group=foliobruma
+SupplementaryGroups=video
+EnvironmentFile=/etc/foliobruma-station.conf
+ExecStart=/opt/foliobruma-scanner/RaspberryPi/run-station.sh
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=90
+RuntimeDirectory=foliobruma
+RuntimeDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/foliobruma-scanner /run/foliobruma
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target
