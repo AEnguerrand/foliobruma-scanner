@@ -32,7 +32,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install diagnostic build libraries
-        run: apt-get update && apt-get install -y python3 openssl pkg-config libusb-1.0-0-dev libqrencode-dev
+        run: apt-get update && apt-get install -y build-essential python3 openssl pkg-config libusb-1.0-0-dev libqrencode-dev
       - name: Build real adapters and run host checks
         run: |
           ./RaspberryPi/build-diagnostics.sh
