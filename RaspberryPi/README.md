@@ -1,6 +1,7 @@
 # Raspberry Pi phase 0 diagnostics
 
 This package tests the proposed Pi station. It is not a Pi app release.
+For the separate phase 1 development service, see [the station guide](STATION.md).
 The Mac app and its build remain separate. The package does not open a scan
 library, upload files, or install a background service.
 

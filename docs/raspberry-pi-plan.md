@@ -342,4 +342,13 @@ interfaces, not a passed test of this station.
 
 The [diagnostic package](../RaspberryPi/README.md) provides the first hardware
 checks and a [report template](../RaspberryPi/REPORT.md). Hardware acceptance
-is pending. The package does not add the phase 1 station service or change the Mac app.
+is pending. The diagnostic tools do not change the Mac app.
+
+## Phase 1 development status
+
+The [manual station service](../RaspberryPi/STATION.md) is implemented separately
+under `RaspberryPi/`. It uses a Swift coordinator with ScannerCore and a small
+aiohttp/Pillow platform adapter. Hummingbird remains an evaluated alternative.
+The Mac source and build remain separate. See the [result record](../RaspberryPi/PHASE1-RESULTS.md)
+for software evidence and open hardware gates. Phase 0 hardware acceptance and
+phase 1 Pi/iPhone acceptance are still pending. Production label printing is phase 2.
