@@ -17,3 +17,9 @@ build/
 # Swift package build files
 .build/
 .swiftpm/
+
+# Pi diagnostic output can contain USB details, test images, and local TLS keys.
+RaspberryPi/results/
+RaspberryPi/tls/
+__pycache__/
+*.pyc

@@ -113,6 +113,10 @@ signal counts and device details are under **Diagnostics**.
 - [Saved files and backups](docs/storage.md): originals, session folders, and backup guidance.
 - [All documentation](docs/README.md): user guides and development notes.
 
+The proposed Raspberry Pi station is in phase 0. See the
+[Pi diagnostic package](RaspberryPi/README.md) for hardware tests and the iPhone
+HTTPS test. A Pi app release is not available.
+
 ## Build and contribute
 
 See [Build and development](docs/development.md) to build from source or use a

@@ -22,6 +22,25 @@ jobs:
       - name: Test without Apple frameworks
         run: swift run ScannerCoreChecks
 
+  pi-diagnostics:
+    name: Pi diagnostics (Linux host checks)
+    runs-on: ubuntu-24.04
+    container: swift:6.0.3
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install diagnostic build libraries
+        run: apt-get update && apt-get install -y build-essential python3 openssl pkg-config libusb-1.0-0-dev libqrencode-dev
+      - name: Build real adapters and run host checks
+        run: |
+          ./RaspberryPi/build-diagnostics.sh
+          ./RaspberryPi/test-diagnostics.sh
+          mkdir -p RaspberryPi/results
+          RaspberryPi/build/qr-matrix > RaspberryPi/results/ci-matrix.txt
+          RaspberryPi/.build/debug/DiagnosticLabel RaspberryPi/results/ci-matrix.txt RaspberryPi/results/ci-label.raster
+
   build:
     name: Test and build (Apple Silicon)
     runs-on: macos-15

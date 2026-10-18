@@ -1,0 +1,2 @@
+# Local phase 0 test only. Create the foliobruma group before loading this rule.
+SUBSYSTEM=="usb", ATTR{idVendor}=="04f9", ATTR{idProduct}=="20c0", GROUP="foliobruma", MODE="0660"
