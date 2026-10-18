@@ -17,6 +17,7 @@
 
 ## Development
 
+- [Raspberry Pi station plan](raspberry-pi-plan.md): proposed Pi service, iPhone interface, label printing, and Mac compatibility gates. No Pi release is available yet.
 - [Shared code and platform code](shared-core.md): source boundary and remaining Windows work.
 - [Build and development](development.md): build from source, run tests, and use a test server.
 - [Contributing](../CONTRIBUTING.md): source layout, validation, release steps, and problem reports.
