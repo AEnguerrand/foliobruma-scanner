@@ -69,3 +69,26 @@ the scanner does not silently create a second permanent identity.
 
 See [Account connection and uploads](foliobruma.md) for automatic printing
 and [Records and batches](batches.md) for sheet workflows.
+
+## Binder and box labels from the website
+
+In the archive website, open **Labels**, enter the physical location, and select
+**Prepare location label**. Select **Open in Foliobruma Scanner**, then check the
+preview and select **Print with QL-600**. Use the same DK-22205 roll and 62 × 25 mm
+size as scan labels. Opening the website link never prints automatically.
+
+The QR uses a short private `/l/` address. The reading device must sign in as an
+organisation member to see documents at that exact physical location. Renaming a
+location needs a new label. This window does not change the open scan, upload a
+file, or need a scanner account connection.
+
+Only `https://foliobruma.com/l/` and `https://staging.foliobruma.com/l/` links with a
+valid label code are accepted by the `foliobruma-scanner://label` handoff. The
+request carries the label title and link, with no browser credentials. Install a
+version with this handoff before using the website button.
+
+Website location labels share their own print history at
+`~/Library/Application Support/Sovenelia Scanner/Location Labels/label-prints.json`.
+A second request for the same link requires **Reprint**. Unknown USB results remain
+pending after restart; check the printer before retrying. This history is separate
+from scan sessions. It does not track browser printing or copies from another Mac.

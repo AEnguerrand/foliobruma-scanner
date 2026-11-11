@@ -2,6 +2,7 @@ import SwiftUI
 
 #if !SCANNER_TESTS
   @main struct FoliobrumaApp: App {
+    @NSApplicationDelegateAdaptor(LabelHandoffDelegate.self) private var labelHandoff
     var body: some Scene {
       WindowGroup("Foliobruma Scanner") { ContentView() }.defaultSize(
         width: 1440, height: 1000

@@ -606,3 +606,15 @@
 "Captures saved: %ld · Scan another side or finish this sheet." = "Captures saved: %ld · Scan another side or finish this sheet.";
 
 "Details only" = "Details only";
+
+"Binder / box" = "Binder / box";
+
+"Binder or box label" = "Binder or box label";
+
+"Connect one Brother QL-600 by USB and load a DK-22205 roll. This label does not change the current scan." = "Connect one Brother QL-600 by USB and load a DK-22205 roll. This label does not change the current scan.";
+
+"This location label was already sent. Reprint sends another copy." = "This location label was already sent. Reprint sends another copy.";
+
+"Cannot open this label" = "Cannot open this label";
+
+"Open a binder or box label from the Foliobruma website." = "Open a binder or box label from the Foliobruma website.";

@@ -9,6 +9,12 @@
 		<string>en</string>
 		<string>fr</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array><dict>
+		<key>CFBundleURLName</key><string>org.sovenelia.scanner.label</string>
+		<key>CFBundleURLSchemes</key><array><string>foliobruma-scanner</string></array>
+		<key>CFBundleTypeRole</key><string>Viewer</string>
+	</dict></array>
 	<key>CFBundleExecutable</key>
 	<string>FoliobrumaScanner</string>
 	<key>CFBundleIdentifier</key>
